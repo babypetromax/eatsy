@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Dynamically set title later -->
-    <title>เมนูอาหาร</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>เมนูอาหาร</title> <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
@@ -38,11 +36,11 @@
         }
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'Sarabun', 'Inter', sans-serif; /* Added Sarabun for Thai */
+            font-family: 'Sarabun', 'Inter', sans-serif;
             margin: 0; padding: 0;
             background-color: var(--color-background); color: var(--color-text-primary);
             overscroll-behavior-y: contain;
-            padding-bottom: 160px; /* Space for floating icons */
+            padding-bottom: 225px; /* Adjusted space for floating icons */
         }
         body::-webkit-scrollbar { display: none; }
         body { -ms-overflow-style: none; scrollbar-width: none; }
@@ -81,9 +79,9 @@
              width: calc(100% - 20px); border-radius: 0 0 10px 10px;
         }
         .menu-name-container { margin-bottom: 5px; }
-        #menu-name { font-size: 28px; font-weight: bold; /* Adjusted size */ text-transform: uppercase; margin: 0; color: var(--color-darkest); line-height: 1.2; }
+        #menu-name { font-size: 28px; font-weight: bold; text-transform: uppercase; margin: 0; color: var(--color-darkest); line-height: 1.2; }
         #menu-description { font-size: 14px; margin: 0 0 10px 0; color: var(--color-medium-green); line-height: 1.5; }
-        #menu-price { font-size: 18px; /* Adjusted size */ font-weight: bold; margin: 0; color: var(--color-medium-beige); display: flex; align-items: center; flex-wrap: wrap; gap: 5px 0; }
+        #menu-price { font-size: 18px; font-weight: bold; margin: 0; color: var(--color-medium-beige); display: flex; align-items: center; flex-wrap: wrap; gap: 5px 0; }
         .price-item { display: inline-flex; align-items: center; margin-right: 10px; }
         .price-label { font-size: 0.8em; font-weight: normal; color: var(--color-text-secondary); margin-right: 4px; }
         .price-value { margin-right: 5px; }
@@ -131,45 +129,74 @@
         .menu-item:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 4px 8px rgba(0,0,0,0.15); filter: brightness(1.05); }
         .menu-item img { width: 100%; height: auto; display: block; }
 
-        /* --- Floating Cart Icon --- */
-        #cart-icon-container {
-            position: fixed; bottom: 20px; right: 20px; background-color: var(--color-medium-green); color: var(--color-white);
-            width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); z-index: 1000;
-            transition: background-color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
+        /* --- Floating Icons --- */
+        .floating-icon {
+             position: fixed; right: 20px;
+             background-color: var(--color-medium-green); color: var(--color-white);
+             width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+             cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+             transition: background-color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
+             z-index: 1000;
+             border: none; /* Ensure buttons don't have default borders */
+             padding: 0; /* Ensure buttons don't have default padding */
+         }
+         .floating-icon:hover { background-color: var(--color-dark-green); transform: scale(1.1); }
+         .floating-icon .badge {
+             position: absolute; top: -5px; right: -5px; background-color: var(--color-danger); color: white;
+             border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold;
+             display: flex; justify-content: center; align-items: center; line-height: 22px; border: 1px solid white;
+             transition: transform var(--transition-speed-fast) ease;
+         }
+         .floating-icon.updated .badge { transform: scale(1.3); }
+         /* Ensure disabled state is visually clear */
+        .floating-icon:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: var(--color-medium-green); /* Keep base color or slightly greyed out */
+            transform: none; /* Disable hover transform */
         }
-        #cart-icon-container:hover { background-color: var(--color-dark-green); transform: scale(1.1); }
-        #cart-item-count {
-            position: absolute; top: -5px; right: -5px; background-color: var(--color-danger); color: white;
-            border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold;
-            display: flex; justify-content: center; align-items: center; line-height: 22px; border: 1px solid white;
-            transition: transform var(--transition-speed-fast) ease;
-        }
-        #cart-icon-container.updated #cart-item-count { transform: scale(1.3); }
+        .floating-icon:disabled:hover {
+             background-color: var(--color-medium-green); /* Prevent hover color change when disabled */
+             transform: none;
+         }
 
-        /* --- Cart Popup --- */
-        #cart-popup {
-            position: fixed;
-            bottom: 85px; right: 20px; width: 90%; max-width: 380px;
+
+         #call-staff-icon-container { bottom: 150px; z-index: 1002; font-size: 22px; }
+         #my-food-icon-container { bottom: 85px; z-index: 1001; font-size: 22px; }
+         #cart-icon-container { bottom: 20px; z-index: 1000; font-size: 24px; }
+
+        /* Spinner for loading state on icons */
+         .floating-icon .fa-spinner { font-size: 24px; }
+
+        /* --- Popups (Cart & My Food) --- */
+        .popup-container {
+            position: fixed; right: 20px; width: 90%; max-width: 380px;
             background-color: var(--color-white-transparent); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
             border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 998; display: none; flex-direction: column;
-            max-height: 45vh; overflow: hidden;
+            display: none; flex-direction: column; overflow: hidden;
             opacity: 0; transform: translateY(20px) scale(0.95);
-            transition: opacity var(--transition-speed-medium) ease-out, transform var(--transition-speed-medium) ease-out;
+            transition: opacity var(--transition-speed-medium) ease-out, transform var(--transition-speed-medium) ease-out, bottom var(--transition-speed-medium) ease-out;
             pointer-events: none;
         }
-        #cart-popup.open {
-            display: flex; opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
-        }
-        .cart-header {
+        .popup-container.open { display: flex; opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+        #cart-popup { bottom: 215px; max-height: 45vh; z-index: 998; }
+        #my-food-popup { bottom: 150px; max-height: 50vh; z-index: 999; }
+
+        .popup-header {
             display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;
-            background-color: rgba(182, 173, 144, 0.8); border-bottom: 1px solid var(--color-border);
-            border-radius: 10px 10px 0 0; flex-shrink: 0;
+            border-bottom: 1px solid var(--color-border); border-radius: 10px 10px 0 0; flex-shrink: 0;
         }
-        .cart-header h3 { margin: 0; font-size: 1.1em; color: var(--color-darkest); }
-        .cart-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-text-secondary); }
-        #cart-items-list { padding: 5px 15px; overflow-y: auto; flex-grow: 1; }
+        .popup-header h3 { margin: 0; font-size: 1.1em; color: var(--color-darkest); }
+        .popup-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-text-secondary); line-height: 1; }
+
+        #cart-popup .popup-header { background-color: rgba(182, 173, 144, 0.8); } /* Specific header color */
+        #my-food-popup .popup-header { background-color: rgba(164, 172, 134, 0.8); } /* Specific header color */
+
+        .popup-items-list { padding: 5px 15px; overflow-y: auto; flex-grow: 1; }
+        .popup-empty-message { text-align: center; color: var(--color-text-secondary); padding: 20px; }
+
+        /* Cart Item Specific Styles */
         .cart-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9em; }
         .cart-item:last-child { border-bottom: none; }
         .cart-item-details { flex-grow: 1; margin-right: 10px; }
@@ -183,62 +210,10 @@
         }
         .cart-quantity-btn:hover { background-color: #ced4da; }
         .cart-item-quantity { min-width: 20px; text-align: center; font-weight: bold; }
-         .cart-remove-btn { background: none; border: none; color: var(--color-danger); font-size: 16px; cursor: pointer; margin-left: 10px; transition: color var(--transition-speed-fast) ease; }
+         .cart-remove-btn { background: none; border: none; color: var(--color-danger); font-size: 16px; cursor: pointer; margin-left: 10px; transition: color var(--transition-speed-fast) ease; padding: 0; }
          .cart-remove-btn:hover { color: #a0232f; }
-        .cart-footer {
-            padding: 15px; border-top: 1px solid var(--color-border); background-color: var(--color-footer-transparent);
-            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 0 10px 10px; flex-shrink: 0;
-        }
-        .cart-total { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 1.1em; }
-        .cart-actions { display: flex; justify-content: center; gap: 10px; }
-        .cart-action-btn {
-            padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
-            font-size: 0.9em; transition: opacity 0.2s ease; flex-grow: 1; margin: 0;
-        }
-        .cart-action-btn:hover { opacity: 0.85; }
-        .order-btn { background-color: var(--color-light-green); color: var(--color-darkest); }
-        .checkout-btn { background-color: var(--color-medium-beige); color: var(--color-white); }
-        .cart-empty-message { text-align: center; color: var(--color-text-secondary); padding: 20px; }
 
-        /* --- Floating My Food Icon --- */
-        #my-food-icon-container {
-            position: fixed; bottom: 85px; right: 20px;
-            background-color: var(--color-medium-green); color: var(--color-white);
-            width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 22px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); z-index: 1001;
-            transition: background-color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
-        }
-        #my-food-icon-container:hover { background-color: var(--color-dark-green); transform: scale(1.1); }
-        #my-food-item-count {
-            position: absolute; top: -5px; right: -5px; background-color: var(--color-danger); color: white;
-            border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold;
-            display: flex; justify-content: center; align-items: center; line-height: 22px; border: 1px solid white;
-            transition: transform var(--transition-speed-fast) ease;
-        }
-        #my-food-icon-container.updated #my-food-item-count { transform: scale(1.3); }
-
-        /* --- My Food Popup --- */
-        #my-food-popup {
-            position: fixed; bottom: 150px; right: 20px; width: 90%; max-width: 380px;
-            background-color: var(--color-white-transparent); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-            border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 999; display: none; flex-direction: column;
-            max-height: 50vh; overflow: hidden;
-            opacity: 0; transform: translateY(20px) scale(0.95);
-            transition: opacity var(--transition-speed-medium) ease-out, transform var(--transition-speed-medium) ease-out;
-            pointer-events: none;
-        }
-        #my-food-popup.open {
-            display: flex; opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
-        }
-        .my-food-header {
-            display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;
-            background-color: rgba(164, 172, 134, 0.8); border-bottom: 1px solid var(--color-border);
-            border-radius: 10px 10px 0 0; flex-shrink: 0;
-        }
-        .my-food-header h3 { margin: 0; font-size: 1.1em; color: var(--color-darkest); }
-        .my-food-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-text-secondary); }
-        #my-food-items-list { padding: 5px 15px; overflow-y: auto; flex-grow: 1; }
+         /* Ordered Item Specific Styles */
         .ordered-item {
             padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9em;
             display: flex; justify-content: space-between; align-items: center;
@@ -248,13 +223,24 @@
         .ordered-item-name { font-weight: bold; color: var(--color-dark-green); }
         .ordered-item-info { color: var(--color-medium-beige); font-size: 0.9em; }
         .ordered-item-total { font-weight: bold; color: var(--color-medium-beige); flex-shrink: 0;}
+        #ordered-grand-total { text-align: right; font-weight: bold; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--color-border);}
 
-        .my-food-footer {
+
+        /* Popup Footer */
+        .popup-footer {
             padding: 15px; border-top: 1px solid var(--color-border); background-color: var(--color-footer-transparent);
             backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 0 10px 10px; flex-shrink: 0;
         }
-        .my-food-actions { display: flex; justify-content: center; gap: 10px; }
-        .my-food-empty-message { text-align: center; color: var(--color-text-secondary); padding: 20px; }
+        .cart-total { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 1.1em; }
+        .popup-actions { display: flex; justify-content: center; gap: 10px; }
+        .popup-action-btn {
+            padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
+            font-size: 0.9em; transition: opacity 0.2s ease, background-color 0.2s ease; flex-grow: 1; margin: 0;
+        }
+        .popup-action-btn:hover:not(:disabled) { opacity: 0.85; }
+        .popup-action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .order-btn { background-color: var(--color-light-green); color: var(--color-darkest); }
+        .checkout-btn { background-color: var(--color-medium-beige); color: var(--color-white); }
 
         /* --- Table Number Display (Interactive) --- */
         #table-number-display {
@@ -263,49 +249,35 @@
             font-family: 'Sarabun', 'Inter', sans-serif; font-size: 0.9rem; font-weight: bold;
             padding: 8px 15px; border-radius: 9999px; /* Capsule shape */
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            cursor: pointer; /* Make it clickable */
-            transition: background-color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
-            user-select: none; /* Prevent text selection */
+            cursor: pointer; transition: background-color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
+            user-select: none;
         }
-        #table-number-display:hover {
-            background-color: var(--color-dark-green);
-            transform: scale(1.05);
-        }
-        #table-number-display .table-icon { /* Optional icon */
-             margin-right: 5px;
-        }
-        #table-number-display .placeholder-text {
-             font-style: italic;
-             opacity: 0.8;
-         }
+        #table-number-display:hover { background-color: var(--color-dark-green); transform: scale(1.05); }
+        #table-number-display .table-icon { margin-right: 5px; }
+        #table-number-display .placeholder-text { font-style: italic; opacity: 0.8; }
 
 
         /* --- Table Selection Modal --- */
         #table-select-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--color-modal-bg);
-            display: none; /* Hidden by default */
-            justify-content: center; align-items: center; z-index: 1050;
+            display: none; justify-content: center; align-items: center; z-index: 1050;
             opacity: 0; transition: opacity var(--transition-speed-medium) ease;
         }
-        #table-select-modal.open {
-            display: flex; opacity: 1;
-        }
+        #table-select-modal.open { display: flex; opacity: 1; }
         .table-select-content {
             background-color: var(--color-white); border-radius: 10px;
             padding: 20px; max-width: 90%; width: 300px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             transform: scale(0.95); transition: transform var(--transition-speed-medium) ease;
         }
-        #table-select-modal.open .table-select-content {
-            transform: scale(1);
-        }
+        #table-select-modal.open .table-select-content { transform: scale(1); }
         .table-select-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px;
         }
         .table-select-header h4 { margin: 0; font-size: 1.2em; color: var(--color-darkest); }
-        .table-select-close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-secondary); line-height: 1; }
+        .table-select-close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-secondary); line-height: 1; padding: 0; }
         #table-list {
             max-height: 60vh; overflow-y: auto;
             display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
@@ -318,38 +290,22 @@
             transition: background-color var(--transition-speed-fast) ease, color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
         }
         .table-list-item:hover {
-            background-color: var(--color-lightest-green);
-            color: var(--color-darkest);
-            transform: scale(1.05);
+            background-color: var(--color-lightest-green); color: var(--color-darkest); transform: scale(1.05);
         }
         .table-list-item.selected {
-             background-color: var(--color-medium-green);
-             color: var(--color-white);
-             border-color: var(--color-dark-green);
+             background-color: var(--color-medium-green); color: var(--color-white); border-color: var(--color-dark-green);
          }
 
         /* --- First Load Prompt Notification --- */
         #table-prompt-notification {
-            position: fixed;
-            top: -100px; /* Start hidden above */
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--color-info);
-            color: var(--color-white);
-            padding: 10px 20px;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            z-index: 1100;
-            font-size: 0.9em;
-            font-weight: bold;
-            text-align: center;
-            opacity: 0;
-            transition: top var(--transition-speed-medium) ease-out, opacity var(--transition-speed-medium) ease-out;
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background-color: var(--color-info); color: var(--color-white);
+            padding: 10px 20px; border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15); z-index: 1100;
+            font-size: 0.9em; font-weight: bold; text-align: center;
+            opacity: 0; transition: top var(--transition-speed-medium) ease-out, opacity var(--transition-speed-medium) ease-out;
         }
-        #table-prompt-notification.show {
-            top: 0;
-            opacity: 1;
-        }
+        #table-prompt-notification.show { top: 0; opacity: 1; }
 
 
         /* --- Responsive Adjustments --- */
@@ -360,18 +316,9 @@
              #menu-price { font-size: 20px; }
              .price-label { font-size: 0.8em; }
              .add-to-cart-button { width: 28px; height: 28px; line-height: 28px; font-size: 18px; }
-
-             .top-section {
-                 width: calc(100% + 40px);
-                 margin-left: -20px; margin-right: -20px;
-             }
-             #menu-details {
-                 margin-left: 20px; margin-right: 20px;
-                 width: calc(100% - 40px);
-             }
-             #table-number-display {
-                 font-size: 1rem; bottom: 15px; left: 15px; padding: 10px 20px;
-             }
+             .top-section { width: calc(100% + 40px); margin-left: -20px; margin-right: -20px; }
+             #menu-details { margin-left: 20px; margin-right: 20px; width: calc(100% - 40px); }
+             #table-number-display { font-size: 1rem; bottom: 15px; left: 15px; padding: 10px 20px; }
              #table-prompt-notification { font-size: 1em; }
         }
         @media (min-width: 768px) { .bottom-menu { column-count: 4; } }
@@ -381,34 +328,30 @@
     </style>
 </head>
 <body>
-    <!-- Table Number Display (Clickable Trigger) -->
-    <div id="table-number-display" title="เลือกหมายเลขโต๊ะ">
+    <div id="table-number-display" title="เลือกหมายเลขโต๊ะ" role="button" aria-haspopup="true" aria-controls="table-select-modal">
         <span id="table-number-text"><span class="placeholder-text">เลือกโต๊ะ</span></span>
     </div>
 
-    <!-- Table Selection Modal -->
-    <div id="table-select-modal">
+    <div id="table-select-modal" role="dialog" aria-modal="true" aria-labelledby="table-select-title">
         <div class="table-select-content">
             <div class="table-select-header">
-                <h4>เลือกหมายเลขโต๊ะ</h4>
-                <button class="table-select-close-btn" title="ปิด">&times;</button>
+                <h4 id="table-select-title">เลือกหมายเลขโต๊ะ</h4>
+                <button class="table-select-close-btn" title="ปิด" aria-label="ปิดหน้าต่างเลือกโต๊ะ">&times;</button>
             </div>
             <div id="table-list">
-                <!-- Table numbers will be populated here by JS -->
+                <p>กำลังโหลดรายการโต๊ะ...</p>
             </div>
         </div>
     </div>
 
-    <!-- First Load Table Prompt Notification -->
-    <div id="table-prompt-notification">
+    <div id="table-prompt-notification" role="alert">
         <i class="fas fa-info-circle"></i> กรุณาเลือกหมายเลขโต๊ะของท่านค่ะ
     </div>
 
-    <div class="container">
-        <!-- Top Section: Image and Details -->
-        <div class="top-section">
+    <main class="container">
+        <section class="top-section" aria-labelledby="menu-name">
              <div class="image-container" id="image-swipe-area">
-                 <img id="main-food-image" class="main-food-image" src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Salad Bowl">
+                 <img id="main-food-image" class="main-food-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="กำลังโหลดรูปภาพเมนู...">
              </div>
              <div id="menu-details">
                  <div class="menu-name-container">
@@ -419,1007 +362,1492 @@
                      <span class="price-item hidden">
                          <span class="price-label" id="label-small">เล็ก:</span>
                          <span class="price-value" id="price-small">฿0</span>
-                         <button class="add-to-cart-button" data-size="Small" title="เพิ่มขนาดเล็กลงตระกร้า">+</button>
+                         <button class="add-to-cart-button" data-size="Small" title="เพิ่มขนาดเล็กลงตระกร้า" aria-label="เพิ่มขนาดเล็กลงตระกร้า">+</button>
                      </span>
                       <span class="price-separator hidden" id="price-sep-small">|</span>
                      <span class="price-item hidden">
                          <span class="price-label" id="label-normal">ปกติ:</span>
                          <span class="price-value" id="price-normal">฿0</span>
-                         <button class="add-to-cart-button" data-size="Normal" title="เพิ่มขนาดปกติลงตระกร้า">+</button>
+                         <button class="add-to-cart-button" data-size="Normal" title="เพิ่มขนาดปกติลงตระกร้า" aria-label="เพิ่มขนาดปกติลงตระกร้า">+</button>
                      </span>
                      <span class="price-separator hidden" id="price-sep">|</span>
                      <span class="price-item hidden">
                          <span class="price-label" id="label-extra">พิเศษ:</span>
                          <span class="price-value" id="price-extra">฿0</span>
-                         <button class="add-to-cart-button" data-size="Extra" title="เพิ่มขนาดพิเศษลงตระกร้า">+</button>
+                         <button class="add-to-cart-button" data-size="Extra" title="เพิ่มขนาดพิเศษลงตระกร้า" aria-label="เพิ่มขนาดพิเศษลงตระกร้า">+</button>
                      </span>
                      <span class="price-separator hidden" id="price-sep-family">|</span>
                      <span class="price-item hidden">
                          <span class="price-label" id="label-family">ครอบครัว:</span>
                          <span class="price-value" id="price-family">฿0</span>
-                         <button class="add-to-cart-button" data-size="Family" title="เพิ่มขนาดครอบครัวลงตระกร้า">+</button>
+                         <button class="add-to-cart-button" data-size="Family" title="เพิ่มขนาดครอบครัวลงตระกร้า" aria-label="เพิ่มขนาดครอบครัวลงตระกร้า">+</button>
                      </span>
                  </p>
              </div>
-        </div>
+        </section>
 
-        <!-- Category Bar -->
-        <div class="category-bar">
-            <div class="category-item" data-category="จานหลัก"> <i class="fas fa-utensils"></i> <span>จานหลัก</span> </div>
-            <div class="category-item" data-category="เฮลท์ตี้ โบวล์"> <i class="fas fa-seedling"></i> <span>เฮลท์ตี้ โบวล์</span> </div>
-            <div class="category-item" data-category="ทานเล่น"> <i class="fas fa-cookie-bite"></i> <span>ทานเล่น</span> </div>
-            <div class="category-item" data-category="สลัด"> <i class="fas fa-leaf"></i> <span>สลัด</span> </div>
-            <div class="category-item" data-category="ทะเล"> <i class="fas fa-fish"></i> <span>ทะเล</span> </div>
-            <div class="category-item" data-category="ของหวาน"> <i class="fas fa-ice-cream"></i> <span>ของหวาน</span> </div>
-            <div class="category-item" data-category="เครื่องดื่ม"> <i class="fas fa-coffee"></i> <span>เครื่องดื่ม</span> </div>
-         </div>
+        <nav class="category-bar" aria-label="หมวดหมู่เมนูอาหาร">
+             <p>กำลังโหลดหมวดหมู่...</p>
+         </nav>
 
-        <!-- Menu Grid -->
-        <div class="bottom-menu">
-            <!-- Menu items will be populated here by JS -->
-        </div>
+        <section class="bottom-menu" aria-live="polite">
+            <p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">กำลังโหลดรายการอาหาร...</p>
+        </section>
 
-    </div> <!-- End .container -->
+    </main> <button id="call-staff-icon-container" class="floating-icon" title="เรียกพนักงาน" aria-label="เรียกพนักงาน">
+        <i class="fas fa-bell"></i>
+    </button>
 
-    <!-- Floating My Food Icon -->
-    <div id="my-food-icon-container" title="เปิด/ปิด รายการอาหารของฉัน">
+    <button id="my-food-icon-container" class="floating-icon" title="เปิด/ปิด รายการอาหารของฉัน" aria-label="เปิด/ปิด รายการอาหารของฉัน" aria-haspopup="true" aria-controls="my-food-popup" aria-expanded="false">
         <i class="fas fa-receipt"></i>
-        <span id="my-food-item-count" class="hidden">0</span>
-    </div>
-    <!-- Floating Cart Icon -->
-    <div id="cart-icon-container" title="เปิด/ปิด ตระกร้า">
-        <i class="fas fa-shopping-cart"></i>
-        <span id="cart-item-count" class="hidden">0</span>
-    </div>
+        <span id="my-food-item-count" class="badge hidden" aria-label="จำนวนรายการอาหารที่สั่งแล้ว">0</span>
+    </button>
 
-    <!-- My Food Popup -->
-    <div id="my-food-popup">
-        <div class="my-food-header">
-            <h3>รายการอาหารที่สั่งแล้ว</h3>
-            <button class="my-food-close-btn" title="ปิดรายการ">&times;</button>
+    <button id="cart-icon-container" class="floating-icon" title="เปิด/ปิด ตระกร้า" aria-label="เปิด/ปิด ตระกร้าสินค้า" aria-haspopup="true" aria-controls="cart-popup" aria-expanded="false">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="cart-item-count" class="badge hidden" aria-label="จำนวนรายการในตระกร้า">0</span>
+    </button>
+
+    <div id="my-food-popup" class="popup-container" role="dialog" aria-modal="true" aria-labelledby="my-food-title">
+        <div class="popup-header my-food-header">
+            <h3 id="my-food-title">รายการอาหารที่สั่งแล้ว</h3>
+            <button class="popup-close-btn my-food-close-btn" title="ปิดรายการ" aria-label="ปิดหน้าต่างรายการอาหารที่สั่งแล้ว">&times;</button>
         </div>
-        <div id="my-food-items-list">
-            <p class="my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>
-        </div>
-        <div class="my-food-footer">
-            <div class="my-food-actions">
-                <button class="cart-action-btn checkout-btn" id="my-food-checkout-button">ชำระเงิน</button>
+        <div id="my-food-items-list" class="popup-items-list">
+            <p class="popup-empty-message my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>
+            </div>
+        <div id="ordered-grand-total" class="hidden">ยอดรวมที่สั่งแล้ว: ฿0</div>
+        <div class="popup-footer my-food-footer">
+            <div class="popup-actions my-food-actions">
+                <button class="popup-action-btn checkout-btn" id="my-food-checkout-button" disabled>ชำระเงิน</button>
             </div>
         </div>
     </div>
 
-    <!-- Cart Popup -->
-    <div id="cart-popup">
-        <div class="cart-header">
-            <h3>ตระกร้าสินค้า</h3>
-            <button class="cart-close-btn" title="ปิดตระกร้า">&times;</button>
+    <div id="cart-popup" class="popup-container" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+        <div class="popup-header cart-header">
+            <h3 id="cart-title">ตระกร้าสินค้า</h3>
+            <button class="popup-close-btn cart-close-btn" title="ปิดตระกร้า" aria-label="ปิดหน้าต่างตระกร้าสินค้า">&times;</button>
         </div>
-        <div id="cart-items-list">
-            <p class="cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>
-        </div>
-        <div class="cart-footer">
+        <div id="cart-items-list" class="popup-items-list">
+            <p class="popup-empty-message cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>
+            </div>
+        <div class="popup-footer cart-footer">
             <div class="cart-total">
                 <span>รวมทั้งหมด:</span>
                 <span id="cart-total-price">฿0</span>
             </div>
-            <div class="cart-actions">
-                <button class="cart-action-btn order-btn" id="order-button">สั่งรายการอาหาร</button>
+            <div class="popup-actions cart-actions">
+                <button class="popup-action-btn order-btn" id="order-button" disabled>สั่งรายการอาหาร</button>
             </div>
         </div>
     </div>
 
-    <script>
-        // ========================================================================
-        // START: Configuration
-        // ========================================================================
-        const TABLE_NUMBER_PREFIX = "โต๊ะ "; // ข้อความนำหน้าหมายเลขโต๊ะ (Thai)
-        const MAX_TABLE_NUMBER = 30;       // จำนวนโต๊ะสูงสุดที่ให้เลือก
-        const TABLE_SELECT_PROMPT_MESSAGE = "กรุณาเลือกหมายเลขโต๊ะของท่านค่ะ";
-        const TABLE_STORAGE_KEY = 'selectedTableData'; // Key for localStorage
-        const TABLE_EXPIRY_HOURS = 6;          // Hours to remember table selection
+<script>
+    // ========================================================================
+    // CONFIGURATION
+    // ========================================================================
+    const CONFIG = {
+        // *** สำคัญ: ใส่ URL ที่ได้จากการ Deploy Google Apps Script ของคุณที่นี่ ***
+        GOOGLE_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbw0WKQF9hSuKa26YSHE4zpbJRXTIHVu4ITaKzS3LYlB3m1Y_oAPpyLvt7y1PYN2hAQ/exec", // <--- ใส่ URL ที่ถูกต้องที่นี่
+        TABLE_NUMBER_PREFIX: "โต๊ะ ",
+        MAX_TABLE_NUMBER: 30,
+        TABLE_SELECT_PROMPT_MESSAGE: "กรุณาเลือกหมายเลขโต๊ะของท่านค่ะ",
+        PLACEHOLDER_IMAGE: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', // Simple transparent pixel
+        STORAGE_KEYS: {
+            TABLE: 'selectedTableData_v116', // Updated version maybe?
+            CART: 'menuCartData_v116_db',    // Updated version maybe?
+            ORDERED: 'menuOrderedItemsData_v116_db' // Updated version maybe?
+        },
+        EXPIRY_HOURS: {
+            TABLE: 6
+        },
+        ANIMATION_SPEED_MS: 300, // Corresponds to --transition-speed-medium
+        SWIPE_THRESHOLD_PX: 50,
+        CATEGORY_ICONS: { // ไอคอนสำหรับหมวดหมู่ (ปรับแก้ตามชื่อหมวดหมู่ใน Sheet)
+             "จานหลัก": "fas fa-utensils",
+             "เฮลท์ตี้ โบวล์": "fas fa-seedling",
+             "ทานเล่น": "fas fa-cookie-bite",
+             "สลัด": "fas fa-leaf",
+             "ทะเล": "fas fa-fish",
+             "ของหวาน": "fas fa-ice-cream",
+             "เครื่องดื่ม": "fas fa-coffee",
+             "ซุป": "fas fa-mug-hot",
+             "default": "fas fa-question-circle" // ไอคอนเริ่มต้น ถ้าไม่พบ mapping
+         }
+    };
 
-        // Local storage keys for cart and ordered items
-        const CART_LOCAL_STORAGE_KEY = 'menuCartData_v111'; // Unique key per version/table if needed
-        const ORDERED_ITEMS_LOCAL_STORAGE_KEY = 'menuOrderedItemsData_v111';
+    // ========================================================================
+    // GLOBAL STATE VARIABLES
+    // ========================================================================
+    let menuData = [];
+    let allCategories = [];
+    let cartItems = [];
+    let orderedItems = [];
+    let selectedTableNumber = null;
+    let currentDisplayedItemId = null;
+    let currentCategory = null;
+    let currentFilteredItems = [];
+    let currentDisplayIndex = -1;
+    let isApiLoading = { // Track loading states for different actions
+        menu: false,
+        order: false,
+        callStaff: false,
+        checkout: false
+    };
 
-        // ========================================================================
-        // START: Telegram Configuration (Obfuscated - Still INSECURE CLIENT-SIDE)
-        // คำเตือน: การเก็บ Token ในโค้ดฝั่ง Client ไม่ปลอดภัย ควรใช้ Backend จัดการ
-        // ========================================================================
-        const tPart1 = 'NzA0ODk5NzkxODpB';       // Base64 encoded part 1
-        const tPart2 = 'QUhZdDVqQk9HM1E2';       // Base64 encoded part 2
-        const tPart3 = 'N2JwenRJbl9SR3BE';       // Base64 encoded part 3
-        const tPart4 = 'Q2NYMHlBVVlWQQ==';       // Base64 encoded part 4
-        const CHAT_ID = '-1002634956608';        // Telegram Chat ID
-        // ========================================================================
-        // END: Telegram Configuration
-        // ========================================================================
+    // ========================================================================
+    // DOM ELEMENT CACHING
+    // ========================================================================
+    // Cache elements used frequently to avoid repeated lookups
+    const DOMElements = {
+        tableNumberDisplay: document.getElementById('table-number-display'),
+        tableNumberText: document.getElementById('table-number-text'),
+        tableSelectModal: document.getElementById('table-select-modal'),
+        tableListContainer: document.getElementById('table-list'),
+        tableSelectCloseBtn: document.querySelector('#table-select-modal .table-select-close-btn'),
+        tablePromptNotification: document.getElementById('table-prompt-notification'),
+        mainFoodImage: document.getElementById('main-food-image'),
+        imageContainer: document.getElementById('image-swipe-area'),
+        bottomMenuContainer: document.querySelector('.bottom-menu'),
+        categoryBarContainer: document.querySelector('.category-bar'),
+        menuDetailsContainer: document.getElementById('menu-details'),
+        menuNameElement: document.getElementById('menu-name'),
+        menuDescriptionElement: document.getElementById('menu-description'),
+        menuPriceContainer: document.getElementById('menu-price'),
+        cartIcon: document.getElementById('cart-icon-container'),
+        cartItemCountBadge: document.getElementById('cart-item-count'),
+        cartPopup: document.getElementById('cart-popup'),
+        cartItemsList: document.getElementById('cart-items-list'),
+        cartTotalPriceElement: document.getElementById('cart-total-price'),
+        cartCloseBtn: document.querySelector('#cart-popup .cart-close-btn'),
+        orderButton: document.getElementById('order-button'),
+        myFoodIcon: document.getElementById('my-food-icon-container'),
+        myFoodItemCountBadge: document.getElementById('my-food-item-count'),
+        myFoodPopup: document.getElementById('my-food-popup'),
+        myFoodItemsList: document.getElementById('my-food-items-list'),
+        myFoodCloseBtn: document.querySelector('#my-food-popup .my-food-close-btn'),
+        myFoodCheckoutButton: document.getElementById('my-food-checkout-button'),
+        callStaffIcon: document.getElementById('call-staff-icon-container'),
+        orderedGrandTotal: document.getElementById('ordered-grand-total'),
+        // Cache for price elements (populated later in setup)
+        priceElementsCache: {}
+    };
 
-        /**
-         * Menu Data Structure (Refactored for Flexibility)
-         */
-        const menuData = [
-             // == จานหลัก (Main Course) ==
-            { id: 'main1', name: 'พิซซ่าชีสคลาสสิก', description: 'พิซซ่าหน้าชีสล้วน อบร้อนๆ จากเตา', prices: {'Small' : 129,'Normal': 250, 'Extra': 350 , 'Family' : 690}, src: 'https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Classic Cheese Pizza', category: ['จานหลัก'] },
-            { id: 'main2', name: 'สปาเก็ตตี้มะเขือเทศ', description: 'เส้นสปาเก็ตตี้เหนียวนุ่ม คลุกเคล้าซอสมะเขือเทศเข้มข้น', prices: {'Normal': 180, 'Extra': 240}, src: 'https://images.pexels.com/photos/128408/pexels-photo-128408.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/128408/pexels-photo-128408.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Spaghetti with Tomatoes', category: ['จานหลัก'] },
-            { id: 'main3', name: 'เบอร์เกอร์เนื้อฉ่ำ', description: 'เบอร์เกอร์เนื้อบดคุณภาพดี พร้อมผักสดและซอสสูตรพิเศษ', prices: {'Normal': 220, 'Extra': 290}, src: 'https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Delicious Burger', category: ['จานหลัก'] },
-            { id: 'main4', name: 'ไก่ย่างสมุนไพร', description: 'เนื้อไก่หมักสมุนไพร ย่างจนหนังกรอบ เนื้อนุ่ม', prices: {'Normal': 190, 'Extra': 260}, src: 'https://images.pexels.com/photos/2673353/pexels-photo-2673353.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2673353/pexels-photo-2673353.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grilled Chicken', category: ['จานหลัก'] },
-            { id: 'main5', name: 'ฟิชแอนด์ชิปส์', description: 'ปลาชุบแป้งทอดกรอบ เสิร์ฟพร้อมเฟรนช์ฟรายส์และทาร์ทาร์ซอส', prices: {'Normal': 240, 'Extra': 310}, src: 'https://images.pexels.com/photos/397913/pexels-photo-397913.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/397913/pexels-photo-397913.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fish and Chips', category: ['จานหลัก', 'ทะเล'] },
-            { id: 'main6', name: 'แกงกะหรี่ไก่', description: 'แกงกะหรี่สไตล์อินเดีย รสชาติกลมกล่อม ทานพร้อมข้าวสวยร้อนๆ', prices: {'Normal': 170, 'Extra': 220}, src: 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Curry Dish', category: ['จานหลัก'] },
-            { id: 'main7', name: 'ผัดผักรวมมิตร', description: 'รวมมิตรผักสดนานาชนิด ผัดกับซอสหอยนางรม', prices: {'Normal': 120, 'Extra': 160}, src: 'https://images.pexels.com/photos/406152/pexels-photo-406152.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/406152/pexels-photo-406152.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Stir-fried Vegetables', category: ['จานหลัก', 'เฮลท์ตี้ โบวล์'] },
-            { id: 'main8', name: 'ข้าวหน้าเนื้อ', description: 'ข้าวสวยร้อนๆ โปะด้วยเนื้อผัดซอสรสเด็ด', prices: {'Normal': 160, 'Extra': 210}, src: 'https://images.pexels.com/photos/1624487/pexels-photo-1624487.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1624487/pexels-photo-1624487.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Rice with Meat', category: ['จานหลัก'] },
-            { id: 'main9', name: 'ปลาย่างเกลือ', description: 'เนื้อปลาสด ย่างกับเกลือหอมๆ บีบมะนาวเล็กน้อย', prices: {'Normal': 210, 'Extra': 280}, src: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grilled Fish', category: ['จานหลัก', 'ทะเล'] },
-            { id: 'main10', name: 'เบอร์ริโต้ไก่', description: 'แป้งตอร์ติญ่าห่อไส้ไก่ ผัก และซัลซ่า', prices: {'Normal': 175, 'Extra': 230}, src: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chicken Burrito', category: ['จานหลัก'] },
-            { id: 'main11', name: 'ไก่ทอดกรอบ', description: 'ไก่ทอดสูตรพิเศษ กรอบนอกนุ่มใน', prices: {'Normal': 150, 'Extra': 200}, src: 'https://images.pexels.com/photos/60616/fried-chicken-chicken-fried-crunchy-60616.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/60616/fried-chicken-chicken-fried-crunchy-60616.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fried Chicken', category: ['จานหลัก', 'ทานเล่น'] },
-            { id: 'main12', name: 'สเต็กเนื้อริบอาย', description: 'เนื้อริบอายนำเข้า ย่างระดับความสุกตามต้องการ เสิร์ฟพร้อมผักย่าง', prices: {'Normal': 450, 'Extra': 600}, src: 'https://images.pexels.com/photos/3186654/pexels-photo-3186654.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/3186654/pexels-photo-3186654.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Steak with Vegetables', category: ['จานหลัก'] },
-            // == เฮลท์ตี้ โบวล์ (Healthy Bowl) ==
-            { id: 'healthy1', name: 'ฟรุตโบวล์', description: 'รวมผลไม้สดหลากหลายชนิด ราดด้วยโยเกิร์ตธรรมชาติ', prices: {'Normal': 120}, src: 'https://images.pexels.com/photos/1099680/pexels-photo-1099680.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1099680/pexels-photo-1099680.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fruit Bowl', category: ['เฮลท์ตี้ โบวล์', 'สลัด', 'ของหวาน'] },
-            { id: 'healthy2', name: 'สลัดผักรวม', description: 'ผักสดกรอบนานาชนิด พร้อมน้ำสลัดไขมันต่ำ', prices: {'Normal': 150}, src: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Colorful Salad Bowl', category: ['เฮลท์ตี้ โบวล์', 'สลัด'] },
-            { id: 'healthy3', name: 'ควินัวโบวล์', description: 'ควินัว ธัญพืชซุปเปอร์ฟู้ด ท็อปปิ้งด้วยผักและโปรตีน', prices: {'Normal': 180}, src: 'https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?auto=compress&cs=tinysrgb&w=1260', alt: 'Quinoa Bowl', category: ['เฮลท์ตี้ โบวล์'] },
-            { id: 'healthy4', name: 'โบวล์อาหารเช้า', description: 'เริ่มต้นวันใหม่ด้วยโบวล์สุขภาพดี อุดมด้วยธัญพืชและผลไม้', prices: {'Normal': 160}, src: 'https://images.pexels.com/photos/1092730/pexels-photo-1092730.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1092730/pexels-photo-1092730.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Breakfast Bowl', category: ['เฮลท์ตี้ โบวล์'] },
-            { id: 'healthy5', name: 'กรีนสลัดโบวล์', description: 'เน้นผักใบเขียวสดกรอบ เพื่อสุขภาพที่ดี', prices: {'Normal': 140}, src: 'https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Green Salad Bowl', category: ['เฮลท์ตี้ โบวล์', 'สลัด'] },
-            { id: 'healthy6', name: 'โยเกิร์ตผลไม้', description: 'โยเกิร์ตรสธรรมชาติ ท็อปปิ้งด้วยผลไม้สดและกราโนล่า', prices: {'Normal': 130}, src: 'https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fruit and Yogurt Bowl', category: ['เฮลท์ตี้ โบวล์', 'ของหวาน'] },
-            { id: 'healthy7', name: 'เวจจี้โบวล์', description: 'รวมผักหลากหลายสีสัน ปรุงรสง่ายๆ เพื่อสุขภาพ', prices: {'Normal': 155}, src: 'https://images.pexels.com/photos/1893555/pexels-photo-1893555.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1893555/pexels-photo-1893555.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Vegetable Bowl', category: ['เฮลท์ตี้ โบวล์'] },
-            { id: 'healthy8', name: 'เกรนโบวล์', description: 'อิ่มอร่อยกับธัญพืชไม่ขัดสีและถั่วต่างๆ', prices: {'Normal': 170}, src: 'https://images.pexels.com/photos/718742/pexels-photo-718742.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/718742/pexels-photo-718742.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grain Bowl', category: ['เฮลท์ตี้ โบวล์'] },
-            { id: 'healthy9', name: 'สมูทตี้โบวล์', description: 'สมูทตี้เนื้อเนียน ท็อปปิ้งด้วยผลไม้และเมล็ดเจีย', prices: {'Normal': 145}, src: 'https://images.pexels.com/photos/1346345/pexels-photo-1346345.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1346345/pexels-photo-1346345.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Smoothie Bowl', category: ['เฮลท์ตี้ โบวล์', 'ของหวาน', 'เครื่องดื่ม'] },
-            { id: 'healthy10', name: 'สลัดอโวคาโด', description: 'อโวคาโดสดใหม่ พร้อมผักสลัดและน้ำสลัดบัลซามิก', prices: {'Normal': 190}, src: 'https://images.pexels.com/photos/1152237/pexels-photo-1152237.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1152237/pexels-photo-1152237.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Avocado Salad Bowl', category: ['เฮลท์ตี้ โบวล์', 'สลัด'] },
-            { id: 'healthy11', name: 'เบอร์รี่โบวล์', description: 'รวมเบอร์รี่สดๆ มากคุณประโยชน์', prices: {'Normal': 165}, src: 'https://images.pexels.com/photos/1209029/pexels-photo-1209029.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1209029/pexels-photo-1209029.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Berry Bowl', category: ['เฮลท์ตี้ โบวล์', 'ของหวาน'] },
-            { id: 'healthy12', name: 'พาวเวอร์โบวล์', description: 'เพิ่มพลังด้วยโบวล์ที่อัดแน่นด้วยสารอาหาร', prices: {'Normal': 200}, src: 'https://images.pexels.com/photos/128865/pexels-photo-128865.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/128865/pexels-photo-128865.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Power Bowl', category: ['เฮลท์ตี้ โบวล์'] },
-            // == ทานเล่น (Snacks) ==
-            { id: 'snack1', name: 'เฟรนช์ฟรายส์', description: 'มันฝรั่งทอดเหลืองกรอบ โรยเกลือเล็กน้อย', prices: {'Normal': 80, 'Extra': 120}, src: 'https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'French Fries', category: ['ทานเล่น'] },
-            { id: 'snack2', name: 'ป๊อปคอร์น', description: 'ข้าวโพดคั่วหอมกรุ่น มีให้เลือกหลายรส', prices: {'Normal': 60, 'Extra': 100}, src: 'https://images.pexels.com/photos/33129/popcorn-movie-party-entertainment.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/33129/popcorn-movie-party-entertainment.jpg?auto=compress&cs=tinysrgb&w=1260', alt: 'Popcorn', category: ['ทานเล่น'] },
-            { id: 'snack3', name: 'นาโชส์ชีส', description: 'แผ่นข้าวโพดกรอบ ราดด้วยชีสและซอสซัลซ่า', prices: {'Normal': 120, 'Extra': 180}, src: 'https://images.pexels.com/photos/209406/pexels-photo-209406.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/209406/pexels-photo-209406.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Nachos', category: ['ทานเล่น'] },
-            { id: 'snack4', name: 'ปีกไก่ทอด', description: 'ปีกไก่ทอดคลุกเคล้าซอสบาร์บีคิว', prices: {'Normal': 130, 'Extra': 190}, src:
-            'https://www.africanbites.com/wp-content/uploads/2022/08/IMG_1804-scaled-e1729473138638.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://www.africanbites.com/wp-content/uploads/2022/08/IMG_1804-scaled-e1729473138638.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chicken Wings', category: ['ทานเล่น', 'จานหลัก'] },
-            { id: 'snack5', name: 'หอมทอด', description: 'หอมใหญ่ชุบแป้งทอดกรอบ ทานคู่กับซอสมะเขือเทศ', prices: {'Normal': 90, 'Extra': 130}, src: 'https://images.pexels.com/photos/3220617/pexels-photo-3220617.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/3220617/pexels-photo-3220617.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Onion Rings', category: ['ทานเล่น'] },
-            { id: 'snack6', name: 'ปอเปี๊ยะทอด', description: 'ปอเปี๊ยะไส้ผักและวุ้นเส้น ทอดจนกรอบ', prices: {'Normal': 70, 'Extra': 100}, src: 'https://images.pexels.com/photos/4057760/pexels-photo-4057760.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/4057760/pexels-photo-4057760.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Spring Rolls', category: ['ทานเล่น'] },
-            { id: 'snack7', name: 'ชิปส์และดิป', description: 'มันฝรั่งแผ่นทอดกรอบ เสิร์ฟพร้อมดิปซอสรสเด็ด', prices: {'Normal': 100}, src: 'https://images.pexels.com/photos/5848491/pexels-photo-5848491.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/5848491/pexels-photo-5848491.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chips and Dip', category: ['ทานเล่น'] },
-            { id: 'snack8', name: 'พิซซ่าสไลซ์', description: 'พิซซ่าขนาดพอดีคำ เลือกหน้าได้ตามชอบ', prices: {'Normal': 90}, src: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Pizza Slice', category: ['ทานเล่น', 'จานหลัก'] },
-            { id: 'snack9', name: 'เพรทเซล', description: 'ขนมปังเพรทเซลอบใหม่ โรยเกลือหอมๆ', prices: {'Normal': 65}, src:
-            'https://www.marketsatshrewsbury.com/wp-content/uploads/2023/06/pretzel-1.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://www.marketsatshrewsbury.com/wp-content/uploads/2023/06/pretzel-1.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Pretzels', category: ['ทานเล่น'] },
-            { id: 'snack10', name: 'คัพเค้ก', description: 'คัพเค้กเนื้อนุ่ม แต่งหน้าครีมสวยงาม', prices: {'Normal': 50}, src: 'https://images.pexels.com/photos/808941/pexels-photo-808941.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/808941/pexels-photo-808941.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cupcakes', category: ['ทานเล่น', 'ของหวาน'] },
-            { id: 'snack11', name: 'โดนัท', description: 'โดนัทหลากหลายรสชาติ ทั้งแบบเคลือบน้ำตาลและสอดไส้', prices: {'Normal': 40}, src: 'https://img.salehere.co.th/p/1200x0/2022/05/07/ouju1h3kaoql.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://img.salehere.co.th/p/1200x0/2022/05/07/ouju1h3kaoql.jpg?auto=compress&cs=tinysrgb&w=1260', alt: 'Donuts', category: ['ทานเล่น', 'ของหวาน'] },
-            { id: 'snack12', name: 'คุกกี้', description: 'คุกกี้เนยสด หรือ ช็อกโกแลตชิพ (ราคาต่อชิ้น)', prices: {'Normal': 35}, src: 'https://images.pexels.com/photos/209205/pexels-photo-209205.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/209205/pexels-photo-209205.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cookies', category: ['ทานเล่น', 'ของหวาน'] },
-             // == สลัด (Salad) ==
-            { id: 'salad1', name: 'สลัดผักสด', description: 'รวมผักสดกรอบ ราดน้ำสลัดใส', prices: {'Normal': 130}, src: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fresh Green Salad', category: ['สลัด', 'เฮลท์ตี้ โบวล์'] },
-            { id: 'salad2', name: 'สลัดผักรวมสีสัน', description: 'เติมความสดชื่นด้วยผักหลากหลายสี', prices: {'Normal': 140}, src: 'https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Colorful Vegetable Salad', category: ['สลัด', 'เฮลท์ตี้ โบวล์'] },
-            { id: 'salad3', name: 'สลัดไก่', description: 'สลัดผักสดพร้อมเนื้อไก่ฉีกหรือไก่ย่าง', prices: {'Normal': 160, 'Extra': 210}, src: 'https://images.pexels.com/photos/461382/pexels-photo-461382.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/461382/pexels-photo-461382.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chicken Salad', category: ['สลัด', 'จานหลัก'] },
-            { id: 'salad4', name: 'สลัดผลไม้', description: 'รวมผลไม้สดตามฤดูกาล หวานชื่นใจ', prices: {'Normal': 120}, src: 'https://images.pexels.com/photos/109275/pexels-photo-109275.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/109275/pexels-photo-109275.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fruit Salad', category: ['สลัด', 'ของหวาน', 'เฮลท์ตี้ โบวล์'] },
-            { id: 'salad5', name: 'สลัดคาเปรเซ่', description: 'มะเขือเทศสด มอสซาเรลล่าชีส และใบโหระพา ราดบัลซามิก', prices: {'Normal': 170}, src: 'https://images.pexels.com/photos/1437318/pexels-photo-1437318.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1437318/pexels-photo-1437318.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Caprese Salad', category: ['สลัด'] },
-            { id: 'salad6', name: 'กรีกสลัด', description: 'สลัดสไตล์กรีก ใส่เฟต้าชีสและมะกอกดำ', prices: {'Normal': 165}, src: 'https://images.pexels.com/photos/1109197/pexels-photo-1109197.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1109197/pexels-photo-1109197.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Greek Salad', category: ['สลัด'] },
-            { id: 'salad7', name: 'คอบบ์สลัด', description: 'สลัดรวมมิตรเครื่องแน่น ทั้งไก่ เบคอน ไข่ อโวคาโด', prices: {'Normal': 190, 'Extra': 250}, src: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cobb Salad', category: ['สลัด', 'จานหลัก'] },
-            { id: 'salad8', name: 'ซีซาร์สลัด', description: 'ผักคอสสดกรอบ คลุกเคล้าน้ำสลัดซีซาร์และขนมปังกรอบ', prices: {'Normal': 150, 'Extra': 200}, src: 'https://images.pexels.com/photos/2862154/pexels-photo-2862154.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2862154/pexels-photo-2862154.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Caesar Salad', category: ['สลัด'] },
-            { id: 'salad9', name: 'สลัดทูน่า', description: 'เนื้อทูน่าในน้ำสลัดมายองเนส ทานกับผักสด', prices: {'Normal': 155, 'Extra': 205}, src: 'https://images.pexels.com/photos/806361/pexels-photo-806361.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/806361/pexels-photo-806361.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Tuna Salad', category: ['สลัด', 'ทะเล'] },
-            { id: 'salad10', name: 'สลัดพาสต้า', description: 'เส้นพาสต้าลวก คลุกกับผักและน้ำสลัด', prices: {'Normal': 145, 'Extra': 195}, src: 'https://images.pexels.com/photos/1435903/pexels-photo-1435903.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1435903/pexels-photo-1435903.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Pasta Salad', category: ['สลัด', 'จานหลัก'] },
-            { id: 'salad11', name: 'สลัดควินัว', description: 'ควินัวผสมกับผักสดและสมุนไพร', prices: {'Normal': 175}, src: 'https://images.pexels.com/photos/1199960/pexels-photo-1199960.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1199960/pexels-photo-1199960.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Quinoa Salad', category: ['สลัด', 'เฮลท์ตี้ โบวล์'] },
-            { id: 'salad12', name: 'สลัดถั่วรวม', description: 'รวมถั่วหลากหลายชนิด ให้โปรตีนสูง', prices: {'Normal': 160}, src: 'https://images.pexels.com/photos/4057737/pexels-photo-4057737.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/4057737/pexels-photo-4057737.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Bean Salad', category: ['สลัด', 'เฮลท์ตี้ โบวล์'] },
-             // == ทะเล (Seafood) ==
-            { id: 'seafood1', name: 'ปลาแซลมอนย่าง', description: 'เนื้อปลาแซลมอนสด ย่างกำลังดี เสิร์ฟพร้อมเลมอน', prices: {'Normal': 350}, src: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grilled Salmon', category: ['ทะเล', 'จานหลัก'] },
-            { id: 'seafood2', name: 'สปาเก็ตตี้กุ้ง', description: 'เส้นสปาเก็ตตี้ผัดกับกุ้งสดและซอสกระเทียม', prices: {'Normal': 280, 'Extra': 360}, src: 'https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Shrimp Scampi Pasta', category: ['ทะเล', 'จานหลัก'] },
-            { id: 'seafood3', name: 'ล็อบสเตอร์อบชีส', description: 'เนื้อล็อบสเตอร์สด อบกับชีสหอมมัน', prices: {'Normal': 990}, src: 'https://images.pexels.com/photos/775871/pexels-photo-775871.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/775871/pexels-photo-775871.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Lobster Thermidor', category: ['ทะเล', 'จานหลัก'] },
-            { id: 'seafood4', name: 'ปลาย่างมะนาว', description: 'เนื้อปลาย่างหอมๆ ราดซอสมะนาวรสจัดจ้าน', prices: {'Normal': 260}, src: 'https://images.pexels.com/photos/725991/pexels-photo-725991.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/725991/pexels-photo-725991.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grilled Fish with Lemon', category: ['ทะเล', 'จานหลัก'] },
-            { id: 'seafood5', name: 'ซูชิรวม', description: 'ข้าวปั้นหน้าปลาดิบและอาหารทะเลสดๆ', prices: {'Normal': 320, 'Extra': 450}, src: 'https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Sushi Rolls', category: ['ทะเล', 'ทานเล่น'] },
-            { id: 'seafood6', name: 'สเต็กปลาทูน่า', description: 'เนื้อปลาทูน่าสด ย่างแบบมีเดียมแรร์', prices: {'Normal': 380}, src: 'https://images.pexels.com/photos/842142/pexels-photo-842142.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/842142/pexels-photo-842142.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Tuna Steak', category: ['ทะเล', 'จานหลัก'] },
-            { id: 'seafood7', name: 'หอยแมลงภู่อบไวน์ขาว', description: 'หอยแมลงภู่สดอบกับไวน์ขาวและสมุนไพร', prices: {'Normal': 290}, src: 'https://images.pexels.com/photos/2871757/pexels-photo-2871757.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2871757/pexels-photo-2871757.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Mussels in White Wine', category: ['ทะเล', 'ทานเล่น'] },
-            { id: 'seafood8', name: 'หอยนางรมสด', description: 'หอยนางรมสดจากทะเล เสิร์ฟพร้อมเครื่องเคียง (ราคาต่อตัว)', prices: {'Normal': 80}, src: 'https://images.pexels.com/photos/566344/pexels-photo-566344.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/566344/pexels-photo-566344.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Oysters', category: ['ทะเล', 'ทานเล่น'] },
-            { id: 'seafood9', name: 'ซุปหอยลาย', description: 'ซุปครีมข้นใส่เนื้อหอยลายและมันฝรั่ง', prices: {'Normal': 180}, src: 'https://images.pexels.com/photos/128399/pexels-photo-128399.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/128399/pexels-photo-128399.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Clam Chowder', category: ['ทะเล', 'ซุป'] },
-            { id: 'seafood10', name: 'ปูอบ', description: 'เนื้อปูสดๆ อบ เสิร์ฟพร้อมน้ำจิ้มซีฟู้ด (ราคาตามน้ำหนัก)', prices: {'Normal': 550}, src: 'https://static.wixstatic.com/media/414281_683a5caf56b348d4bbbde11769f02572~mv2.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://static.wixstatic.com/media/414281_683a5caf56b348d4bbbde11769f02572~mv2.jpg?auto=compress&cs=tinysrgb&w=1260', alt: 'Steamed Crab', category: ['ทะเล', 'จานหลัก'] },
-            { id: 'seafood11', name: 'ซาชิมิรวม', description: 'ปลาดิบสด แล่บางๆ จัดจานสวยงาม', prices: {'Normal': 420, 'Extra': 650}, src: 'https://images.pexels.com/photos/2098085/pexels-photo-2098085.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2098085/pexels-photo-2098085.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Sashimi Platter', category: ['ทะเล', 'ทานเล่น'] },
-            { id: 'seafood12', name: 'ปลาหมึกทอดคาลามารี', description: 'ปลาหมึกชุบแป้งทอดกรอบ จิ้มกับซอสทาร์ทาร์', prices: {'Normal': 190, 'Extra': 260}, src: 'https://images.pexels.com/photos/62609/pexels-photo-62609.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/62609/pexels-photo-62609.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fried Calamari', category: ['ทะเล', 'ทานเล่น'] },
-             // == ของหวาน (Dessert) ==
-            { id: 'dessert1', name: 'เค้กช็อกโกแลต', description: 'เค้กช็อกโกแลตเนื้อนุ่ม ราดซอสช็อกโกแลตเข้มข้น', prices: {'Normal': 120}, src: 'https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Slice of Chocolate Cake', category: ['ของหวาน', 'ทานเล่น'] },
-            { id: 'dessert2', name: 'คัพเค้กแฟนซี', description: 'คัพเค้กแต่งหน้าครีมหลากสีสัน', prices: {'Normal': 80}, src: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cupcakes with Frosting', category: ['ของหวาน', 'ทานเล่น'] },
-            { id: 'dessert3', name: 'โดนัทรวมรส', description: 'โดนัทเนื้อนุ่ม มีให้เลือกหลายหน้า', prices: {'Normal': 60}, src: 'https://images.pexels.com/photos/14093120/pexels-photo-14093120.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/14093120/pexels-photo-14093120.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Assorted Donuts', category: ['ของหวาน', 'ทานเล่น'] },
-            { id: 'dessert4', name: 'คุกกี้ช็อกโกแลตชิพ', description: 'คุกกี้กรอบ หอมเนย สอดไส้ช็อกโกแลตชิพ', prices: {'Normal': 50}, src: 'https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chocolate Chip Cookies', category: ['ของหวาน', 'ทานเล่น'] },
-            { id: 'dessert5', name: 'ทาร์ตผลไม้รวม', description: 'แป้งทาร์ตกรอบ ใส่ครีมคัสตาร์ดและผลไม้สด', prices: {'Normal': 140}, src: 'https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fruit Tart', category: ['ของหวาน'] },
-            { id: 'dessert6', name: 'ไอศกรีมซันเดย์', description: 'ไอศกรีมรสโปรด ท็อปปิ้งด้วยวิปครีมและเชอร์รี่', prices: {'Normal': 110}, src: 'https://images.pexels.com/photos/1362534/pexels-photo-1362534.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1362534/pexels-photo-1362534.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Ice Cream Sundae', category: ['ของหวาน'] },
-            { id: 'dessert7', name: 'ชีสเค้ก', description: 'ชีสเค้กเนื้อเนียน รสชาติเข้มข้น', prices: {'Normal': 130}, src: 'https://images.pexels.com/photos/1126384/pexels-photo-1126384.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1126384/pexels-photo-1126384.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cheesecake', category: ['ของหวาน'] },
-            { id: 'dessert8', name: 'บราวนี่', description: 'บราวนี่ช็อกโกแลตเข้มข้น เนื้อหนึบ', prices: {'Normal': 90}, src: 'https://images.pexels.com/photos/2067396/pexels-photo-2067396.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2067396/pexels-photo-2067396.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Brownies', category: ['ของหวาน', 'ทานเล่น'] },
-            { id: 'dessert9', name: 'หมูปิ้ง', description: 'หมูปิ้ง ฉ่ำเยิ้ม หมักเครื่องเทศ 12ชม. ย่างถ่านไม้ลิ้นจี่', prices: {'Normal': 70}, src: 'https://www.smethailandclub.com/upload/startup/image/1685522169.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://www.smethailandclub.com/upload/startup/image/1685522169.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'หมูปิ้ง', category: ['ของหวาน', 'ทานเล่น'] },
-            { id: 'dessert10', name: 'แพนเค้ก', description: 'แพนเค้กนุ่มๆ ราดน้ำผึ้งหรือเมเปิ้ลไซรัป', prices: {'Normal': 150}, src: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Pancakes', category: ['ของหวาน', 'จานหลัก'] },
-            { id: 'dessert11', name: 'วาฟเฟิล', description: 'วาฟเฟิลอบร้อนๆ ทานคู่กับไอศกรีมหรือผลไม้', prices: {'Normal': 160}, src: 'https://images.pexels.com/photos/574111/pexels-photo-574111.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/574111/pexels-photo-574111.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Waffles', category: ['ของหวาน', 'จานหลัก'] },
-            { id: 'dessert12', name: 'ทีรามิสุ', description: 'ขนมหวานสไตล์อิตาเลียน รสกาแฟเข้มข้น', prices: {'Normal': 140}, src: 'https://images.pexels.com/photos/588776/pexels-photo-588776.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/588776/pexels-photo-588776.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Tiramisu', category: ['ของหวาน'] },
-             // == เครื่องดื่ม (Drinks) ==
-            { id: 'drink1', name: 'กาแฟ', description: 'กาแฟสดร้อน หรือ กาแฟเย็น ชงสดใหม่ทุกแก้ว', prices: {'Normal': 70, 'Extra': 90}, src: 'https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Coffee', category: ['เครื่องดื่ม'] },
-            { id: 'drink2', name: 'น้ำผลไม้สด', description: 'น้ำส้มคั้นสด หรือ น้ำผลไม้อื่นๆ ตามฤดูกาล', prices: {'Normal': 80, 'Extra': 110}, src: 'https://images.pexels.com/photos/1458867/pexels-photo-1458867.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1458867/pexels-photo-1458867.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fresh Juice', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์'] },
-            { id: 'drink3', name: 'สมูทตี้ผลไม้', description: 'ผลไม้ปั่นเนื้อเนียน เย็นชื่นใจ', prices: {'Normal': 90, 'Extra': 120}, src: 'https://images.pexels.com/photos/103566/pexels-photo-103566.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/103566/pexels-photo-103566.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Smoothie', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์', 'ของหวาน'] },
-            { id: 'drink4', name: 'ค็อกเทล', description: 'เครื่องดื่มผสมแอลกอฮอล์ มีให้เลือกหลากหลาย', prices: {'Normal': 150}, src: 'https://images.pexels.com/photos/616838/pexels-photo-616838.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/616838/pexels-photo-616838.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cocktail', category: ['เครื่องดื่ม'] },
-            { id: 'drink5', name: 'ชา', description: 'ชาร้อน หรือ ชาเย็น (ชาดำ, ชาเขียว, ชาสมุนไพร)', prices: {'Normal': 60, 'Extra': 80}, src: 'https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Tea', category: ['เครื่องดื่ม'] },
-            { id: 'drink6', name: 'น้ำมะนาว', description: 'น้ำมะนาวคั้นสด เปรี้ยวหวานลงตัว', prices: {'Normal': 50, 'Extra': 70}, src: 'https://images.pexels.com/photos/1187766/pexels-photo-1187766.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1187766/pexels-photo-1187766.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Lemonade', category: ['เครื่องดื่ม'] },
-            { id: 'drink7', name: 'มิลค์เชค', description: 'นมปั่นกับไอศกรีมรสต่างๆ', prices: {'Normal': 100, 'Extra': 130}, src: 'https://images.pexels.com/photos/349610/pexels-photo-349610.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/349610/pexels-photo-349610.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Milkshake', category: ['เครื่องดื่ม', 'ของหวาน'] },
-            { id: 'drink8', name: 'Bloody Mary', description: 'favourite mixes vodka, tomato juice and all the best seasonings and spice to create the perfect balance', prices: {'Normal': 40}, src:
-            'https://onedishkitchen.com/wp-content/uploads/2022/12/bloody-mary-one-dish-kitchen-1.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://onedishkitchen.com/wp-content/uploads/2022/12/bloody-mary-one-dish-kitchen-1.jpg', alt: 'Bloody Mary', category: ['เครื่องดื่ม'] },
-            { id: 'drink9', name: 'ช็อกโกแลตร้อน', description: 'ช็อกโกแลตเข้มข้น ชงร้อนๆ', prices: {'Normal': 80, 'Extra': 100}, src: 'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Hot Chocolate', category: ['เครื่องดื่ม', 'ของหวาน'] },
-            { id: 'drink10', name: 'น้ำเปล่า', description: 'น้ำดื่มสะอาด', prices: {'Normal': 20}, src: 'https://images.pexels.com/photos/416528/pexels-photo-416528.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/416528/pexels-photo-416528.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Water', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์'] },
-            { id: 'drink11', name: 'น้ำส้มกล่อง', description: 'น้ำส้มสำเร็จรูป', prices: {'Normal': 30}, src: 'https://images.pexels.com/photos/1304540/pexels-photo-1304540.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1304540/pexels-photo-1304540.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Orange Juice Box', category: ['เครื่องดื่ม'] },
-            { id: 'drink12', name: 'น้ำแร่โซดา', description: 'น้ำแร่ธรรมชาติชนิดมีฟอง', prices: {'Normal': 45}, src: 'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Sparkling Water', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์'] },
-        ];
+    function setupPriceElementCache() {
+         const sizes = ['Small', 'Normal', 'Extra', 'Family'];
+         sizes.forEach(size => {
+             const lowerSize = size.toLowerCase();
+             const button = DOMElements.menuPriceContainer?.querySelector(`button[data-size="${size}"]`);
+             DOMElements.priceElementsCache[size] = {
+                 label: document.getElementById(`label-${lowerSize}`),
+                 value: document.getElementById(`price-${lowerSize}`),
+                 button: button,
+                 separator: document.getElementById(`price-sep-${lowerSize}`) || (size === 'Extra' ? document.getElementById('price-sep') : null), // Handle specific IDs
+                 parentSpan: button?.closest('.price-item')
+             };
+         });
+    }
 
-        // --- State Variables ---
-        let cartItems = [];
-        let orderedItems = [];
-        let selectedTableNumber = null; // Holds the currently selected table number
-        let currentDisplayedItemId = null;
-        let currentCategory = null;
-        let currentFilteredItems = [];
-        let currentIndex = -1;
 
-        // --- Swipe Detection Variables ---
+    // ========================================================================
+    // UTILITY FUNCTIONS
+    // ========================================================================
+    function getCurrentDateString() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function getExpiryTimestamp(hours) {
+        return Date.now() + hours * 60 * 60 * 1000;
+    }
+
+    function formatPrice(price) {
+        // Handle potential null/undefined price before formatting
+        if (price === null || price === undefined || isNaN(price)) {
+            return 'N/A'; // Or '฿-' or similar representation for missing price
+        }
+        return `฿${Number(price).toLocaleString()}`;
+    }
+
+    // Function to set loading state for buttons/icons
+    function setLoadingState(elementType, action, isLoading) {
+        isApiLoading[action] = isLoading;
+        let element;
+        let originalContent;
+
+        switch (elementType) {
+            case 'button':
+                if (action === 'order') element = DOMElements.orderButton;
+                else if (action === 'checkout') element = DOMElements.myFoodCheckoutButton;
+                break;
+            case 'icon':
+                 if (action === 'callStaff') element = DOMElements.callStaffIcon;
+                break;
+        }
+
+        if (!element) return;
+
+        if (isLoading) {
+            element.disabled = true;
+            // Store original content if not already stored
+            if (!element.dataset.originalContent) {
+                element.dataset.originalContent = element.innerHTML;
+            }
+            element.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            // Add loading text for non-icon buttons
+            if (elementType === 'button') {
+                 if (action === 'order') element.innerHTML += ' กำลังสั่ง...';
+                 else if (action === 'checkout') element.innerHTML += ' กำลังเรียก...';
+            }
+        } else {
+            // Re-enable based on conditions, not just unconditionally
+            // element.disabled = false; // Moved to specific update functions like updateOrderButtonState
+
+             // Restore original content only if it was stored
+            if (element.dataset.originalContent) {
+                element.innerHTML = element.dataset.originalContent;
+                delete element.dataset.originalContent; // Clean up
+            }
+            // Re-evaluate disabled state after loading finishes
+             if (action === 'order') updateOrderButtonState();
+             if (action === 'checkout') updateCheckoutButtonState();
+             if (action === 'callStaff') updateCallStaffButtonState(); // Added for completeness
+        }
+    }
+
+     // Function to update call staff button state (mainly for disabling while loading)
+     function updateCallStaffButtonState() {
+         if (DOMElements.callStaffIcon) {
+             DOMElements.callStaffIcon.disabled = isApiLoading.callStaff;
+             // Optional: Add a title if needed when disabled, e.g., "กำลังเรียกพนักงาน..."
+         }
+     }
+
+    // ========================================================================
+    // API SERVICE FUNCTIONS (Interaction with Google Apps Script)
+    // ========================================================================
+    async function callBackendApi(action, payload = {}, method = 'POST') {
+        if (!CONFIG.GOOGLE_SCRIPT_URL || CONFIG.GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_SCRIPT_URL_HERE") {
+            console.error("Google Script URL is not set in CONFIG.");
+            alert("🚨 ข้อผิดพลาด: การตั้งค่าสคริปต์ไม่ถูกต้อง โปรดติดต่อผู้ดูแล (URL Missing)");
+            return { success: false, message: "Script URL not configured" };
+        }
+
+        const url = `${CONFIG.GOOGLE_SCRIPT_URL}?action=${action}`;
+        const options = {
+            method: method,
+            headers: {}, // Initialize headers
+            // redirect: 'follow', // Usually default, but can be explicit if needed
+        };
+
+        // Only add Content-Type and body for POST requests with payload
+        if (method === 'POST' && payload && Object.keys(payload).length > 0) {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(payload);
+        }
+
+        try {
+            console.log(`Calling backend: ${method} ${url}`, method === 'POST' ? payload : '');
+            const response = await fetch(url, options);
+
+            // Check for non-JSON responses or failed fetch
+            if (!response.ok) {
+                 let errorText = `HTTP error ${response.status}: ${response.statusText}`;
+                 let serverResponseMessage = '';
+                 try {
+                     // Attempt to read the response body for more details
+                     serverResponseMessage = await response.text();
+                     errorText += `\nServer Response: ${serverResponseMessage.substring(0, 200)}...`;
+                 } catch (e) {
+                    console.warn("Could not read error response body:", e);
+                 }
+                // Log the detailed error for debugging
+                 console.error(`Backend API Error (${action}): ${errorText}`);
+                 // Provide a user-friendly message
+                 alert(`🚨 เกิดข้อผิดพลาด (${response.status}) ในการติดต่อเซิร์ฟเวอร์ (${action}). โปรดลองใหม่อีกครั้ง หรือแจ้งพนักงาน.\n${serverResponseMessage.substring(0,100)}`);
+                 return { success: false, message: `HTTP error ${response.status}` }; // Return structured error
+            }
+
+             // Attempt to parse JSON, handle potential errors
+             let result;
+             try {
+                 const contentType = response.headers.get("content-type");
+                 if (!contentType || !contentType.includes("application/json")) {
+                     const textResponse = await response.text();
+                     console.warn(`Non-JSON response received from action '${action}'. Status: ${response.status}. Body:`, textResponse);
+                     // Handle based on status or content if needed, otherwise treat as unexpected
+                     throw new Error(`Expected JSON, but got ${contentType || 'unknown'}. Response: ${textResponse.substring(0, 100)}...`);
+                 }
+                 result = await response.json();
+             } catch (parseError) {
+                 console.error(`Error parsing JSON response for action '${action}':`, parseError);
+                 alert(`🚨 เกิดข้อผิดพลาดในการประมวลผลข้อมูลตอบกลับจากเซิร์ฟเวอร์ (${action}).`);
+                 return { success: false, message: `JSON Parse Error: ${parseError.message}` };
+             }
+
+
+            console.log(`Backend response for action '${action}':`, result);
+            // Basic validation of expected success flag
+            if (typeof result.success !== 'boolean') {
+                console.warn(`Backend response for '${action}' missing or invalid 'success' flag.`, result);
+                // Treat as failure unless specific logic dictates otherwise
+                // return { success: false, message: "Invalid response format from server", data: result };
+            }
+
+            return result; // Assuming GAS returns { success: boolean, message?: string, ...data }
+
+        } catch (networkError) {
+            // Handle fetch-related errors (network down, DNS issues, CORS if misconfigured server-side)
+            console.error(`Network or fetch error calling backend API for action '${action}':`, networkError);
+             alert(`🚨 เกิดข้อผิดพลาดในการเชื่อมต่อ (${action}). โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต หรือติดต่อพนักงาน.`);
+            return { success: false, message: `Network Error: ${networkError.message}` };
+        }
+    }
+
+    async function fetchMenuData() {
+        console.log("Fetching menu data from Google Sheet...");
+        setLoadingState(null, 'menu', true); // Use a generic loading state for menu data
+        // Display loading indicators
+        if (DOMElements.categoryBarContainer) DOMElements.categoryBarContainer.innerHTML = '<p>กำลังโหลดหมวดหมู่...</p>';
+        if (DOMElements.bottomMenuContainer) DOMElements.bottomMenuContainer.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">กำลังโหลดรายการอาหาร...</p>';
+
+
+        // Use 'getMenu' action name matching the Apps Script doGet/doPost logic
+        const result = await callBackendApi('getMenu', null, 'GET');
+
+        setLoadingState(null, 'menu', false);
+
+        // Check specifically for success and expected data arrays
+        if (result && result.success && Array.isArray(result.menuData) && Array.isArray(result.categories)) {
+            console.log("Menu data fetched successfully:", result.menuData.length, "items,", result.categories.length, "categories.");
+            menuData = result.menuData;
+            allCategories = result.categories;
+            return true;
+        } else {
+            // Log the actual result for debugging if it exists but wasn't successful/valid
+            console.error('Error fetching or processing menu data:', result?.message || 'Invalid data structure or failed request.', result);
+            // Display error message using the message from the backend if available
+            const errorMsg = `❌ เกิดข้อผิดพลาดในการโหลดข้อมูลเมนู: ${result?.message || 'ไม่สามารถเชื่อมต่อหรือข้อมูลไม่ถูกต้อง'}. โปรดลองรีเฟรชหน้า หรือติดต่อพนักงาน`;
+            if (DOMElements.categoryBarContainer) DOMElements.categoryBarContainer.innerHTML = `<p style="color: red; padding: 10px;">${errorMsg}</p>`;
+            if (DOMElements.bottomMenuContainer) DOMElements.bottomMenuContainer.innerHTML = ''; // Clear loading message
+            menuData = [];
+            allCategories = [];
+            return false;
+        }
+    }
+
+    // ========================================================================
+    // TABLE SELECTION LOGIC
+    // ========================================================================
+    function openTableSelectModal() {
+        if (DOMElements.tableSelectModal) {
+            const listItems = DOMElements.tableListContainer?.querySelectorAll('.table-list-item');
+            listItems?.forEach(item => {
+                item.classList.toggle('selected', item.dataset.table === selectedTableNumber);
+            });
+            DOMElements.tableSelectModal.classList.add('open');
+             // Focus the container or the close button for accessibility
+             DOMElements.tableSelectCloseBtn?.focus();
+        }
+    }
+
+    function closeTableSelectModal() {
+        if (DOMElements.tableSelectModal) {
+            DOMElements.tableSelectModal.classList.remove('open');
+            DOMElements.tableNumberDisplay?.focus(); // Return focus
+        }
+    }
+
+    function populateTableList(maxTables) {
+        if (!DOMElements.tableListContainer) return;
+        DOMElements.tableListContainer.innerHTML = ''; // Clear loading message
+        const fragment = document.createDocumentFragment();
+        for (let i = 1; i <= maxTables; i++) {
+            const tableNum = String(i);
+            const listItem = document.createElement('div');
+            listItem.classList.add('table-list-item');
+            listItem.textContent = tableNum;
+            listItem.dataset.table = tableNum;
+            listItem.setAttribute('role', 'button');
+            listItem.setAttribute('tabindex', '0'); // Make it focusable
+            listItem.addEventListener('click', () => selectTable(tableNum));
+            listItem.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') selectTable(tableNum); });
+            fragment.appendChild(listItem);
+        }
+        DOMElements.tableListContainer.appendChild(fragment);
+    }
+
+    function selectTable(tableNum) {
+        selectedTableNumber = tableNum;
+        updateTableDisplay(tableNum);
+        saveSelectedTable(tableNum);
+        closeTableSelectModal();
+        document.title = `เมนูอาหาร - ${CONFIG.TABLE_NUMBER_PREFIX}${tableNum}`;
+        hideTablePromptNotification();
+         updateOrderButtonState(); // Update buttons that depend on table selection
+         updateCheckoutButtonState();
+    }
+
+    function updateTableDisplay(tableNum) {
+        if (DOMElements.tableNumberText) {
+            if (tableNum) {
+                DOMElements.tableNumberText.innerHTML = `<i class="fas fa-chair table-icon"></i>${CONFIG.TABLE_NUMBER_PREFIX}${tableNum}`;
+                DOMElements.tableNumberText.classList.remove('placeholder-text');
+            } else {
+                DOMElements.tableNumberText.innerHTML = `<span class="placeholder-text">เลือกโต๊ะ</span>`;
+                DOMElements.tableNumberText.classList.add('placeholder-text');
+                document.title = 'เมนูอาหาร - เลือกโต๊ะ';
+            }
+        }
+    }
+
+    function saveSelectedTable(tableNum) {
+        const expiry = getExpiryTimestamp(CONFIG.EXPIRY_HOURS.TABLE);
+        const data = { tableNumber: tableNum, expiry: expiry };
+        try {
+            localStorage.setItem(CONFIG.STORAGE_KEYS.TABLE, JSON.stringify(data));
+        } catch (error) { console.error("LS Error (Save Table):", error); }
+    }
+
+    function loadSelectedTable() {
+        try {
+            const storedData = localStorage.getItem(CONFIG.STORAGE_KEYS.TABLE);
+            if (storedData) {
+                const parsedData = JSON.parse(storedData);
+                if (parsedData?.tableNumber && parsedData.expiry && Date.now() < parsedData.expiry) {
+                    return parsedData.tableNumber;
+                } else { localStorage.removeItem(CONFIG.STORAGE_KEYS.TABLE); }
+            }
+        } catch (error) { console.error("LS Error (Load Table):", error); localStorage.removeItem(CONFIG.STORAGE_KEYS.TABLE); }
+        return null;
+    }
+
+    function showTablePromptNotification() { if (DOMElements.tablePromptNotification) DOMElements.tablePromptNotification.classList.add('show'); }
+    function hideTablePromptNotification() { if (DOMElements.tablePromptNotification) DOMElements.tablePromptNotification.classList.remove('show'); }
+
+    // ========================================================================
+    // LOCAL STORAGE (Cart & Ordered Items)
+    // ========================================================================
+    function saveCartToLocalStorage() {
+        const cartData = { date: getCurrentDateString(), items: cartItems };
+        try { localStorage.setItem(CONFIG.STORAGE_KEYS.CART, JSON.stringify(cartData)); }
+        catch (error) { console.error("LS Error (Save Cart):", error); }
+    }
+
+    function loadCartFromLocalStorage() {
+        cartItems = [];
+        try {
+            const storedData = localStorage.getItem(CONFIG.STORAGE_KEYS.CART);
+            if (storedData) {
+                const parsedData = JSON.parse(storedData);
+                // Basic validation: check if it's an object with an items array
+                if (parsedData && typeof parsedData === 'object' && Array.isArray(parsedData.items)) {
+                     // Further validation on items if needed (e.g., check required properties)
+                     cartItems = parsedData.items.filter(item => item && item.cartId && item.id && item.name && item.size && typeof item.quantity === 'number' && typeof item.price === 'number');
+                     if (cartItems.length !== parsedData.items.length) {
+                         console.warn("Some invalid items removed from loaded cart data.");
+                     }
+                 } else {
+                     console.warn("Invalid cart data structure found in local storage. Clearing.");
+                     localStorage.removeItem(CONFIG.STORAGE_KEYS.CART);
+                 }
+            }
+        } catch (error) {
+            console.error("LS Error (Load Cart):", error);
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.CART);
+        }
+    }
+
+    function saveOrderedItemsToLocalStorage() {
+        const orderedData = { date: getCurrentDateString(), items: orderedItems };
+        try { localStorage.setItem(CONFIG.STORAGE_KEYS.ORDERED, JSON.stringify(orderedData)); }
+        catch (error) { console.error("LS Error (Save Ordered):", error); }
+    }
+
+    function loadOrderedItemsFromLocalStorage() {
+        orderedItems = [];
+        try {
+            const storedData = localStorage.getItem(CONFIG.STORAGE_KEYS.ORDERED);
+            if (storedData) {
+                const parsedData = JSON.parse(storedData);
+                 if (parsedData && typeof parsedData === 'object' && Array.isArray(parsedData.items)) {
+                    // Validation similar to cart loading
+                     orderedItems = parsedData.items.filter(item => item && item.cartId && item.id && item.name && item.size && typeof item.quantity === 'number' && typeof item.price === 'number');
+                     if (orderedItems.length !== parsedData.items.length) {
+                         console.warn("Some invalid items removed from loaded ordered items data.");
+                     }
+                 } else {
+                     console.warn("Invalid ordered items data structure found in local storage. Clearing.");
+                     localStorage.removeItem(CONFIG.STORAGE_KEYS.ORDERED);
+                 }
+            }
+        } catch (error) {
+            console.error("LS Error (Load Ordered):", error);
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.ORDERED);
+        }
+    }
+
+    // ========================================================================
+    // CART LOGIC
+    // ========================================================================
+    function addToCart(itemId, size) {
+        const product = menuData.find(item => item.id === itemId);
+        // Ensure product and prices exist
+        if (!product?.prices || typeof product.prices !== 'object') {
+            console.error("Product or prices object not found for ID:", itemId);
+            alert("ขออภัย ไม่พบข้อมูลราคาสินค้านี้");
+            return;
+        }
+        const price = product.prices[size];
+        // Ensure price for the specific size is valid
+        if (price === null || price === undefined || isNaN(price)) {
+            console.error(`Invalid or missing price for item ${itemId}, size ${size}:`, price);
+            alert(`ขออภัย ไม่พบราคาสำหรับขนาด ${size} ของสินค้านี้`);
+            return;
+        }
+
+        const cartItemId = `${itemId}-${size}`; // Unique ID for item+size combination
+        const existingItemIndex = cartItems.findIndex(item => item.cartId === cartItemId);
+
+        if (existingItemIndex > -1) {
+            cartItems[existingItemIndex].quantity++;
+        } else {
+            // Ensure all necessary properties are added
+            cartItems.push({
+                 cartId: cartItemId,
+                 id: product.id,
+                 name: product.name,
+                 price: price,
+                 size: size,
+                 quantity: 1
+             });
+        }
+
+        saveCartToLocalStorage();
+        renderCart();
+        updateCartIcon();
+        // Visual feedback on icon
+        DOMElements.cartIcon?.classList.add('updated');
+        setTimeout(() => { DOMElements.cartIcon?.classList.remove('updated'); }, CONFIG.ANIMATION_SPEED_MS + 50);
+    }
+
+    function updateQuantity(cartId, change) {
+        const itemIndex = cartItems.findIndex(item => item.cartId === cartId);
+        if (itemIndex > -1) {
+            const newQuantity = cartItems[itemIndex].quantity + change;
+            if (newQuantity <= 0) {
+                // Remove item if quantity is zero or less
+                cartItems.splice(itemIndex, 1);
+            } else {
+                cartItems[itemIndex].quantity = newQuantity;
+            }
+            saveCartToLocalStorage();
+            renderCart(); // Re-render the entire cart
+            updateCartIcon();
+        } else {
+            console.warn("Attempted to update quantity for non-existent cart item ID:", cartId);
+        }
+    }
+
+    function removeFromCart(cartId) {
+         const itemIndex = cartItems.findIndex(item => item.cartId === cartId);
+         if (itemIndex > -1) {
+             cartItems.splice(itemIndex, 1);
+             saveCartToLocalStorage();
+             renderCart();
+             updateCartIcon();
+         } else {
+             console.warn("Attempted to remove non-existent cart item ID:", cartId);
+         }
+    }
+
+    // ========================================================================
+    // RENDERING FUNCTIONS
+    // ========================================================================
+
+     // --- Rendering: Cart ---
+    function renderCart() {
+        if (!DOMElements.cartItemsList || !DOMElements.cartTotalPriceElement) return;
+
+        DOMElements.cartItemsList.innerHTML = ''; // Clear previous items
+        let totalPrice = 0;
+
+        if (cartItems.length === 0) {
+            DOMElements.cartItemsList.innerHTML = '<p class="popup-empty-message cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>';
+        } else {
+            const fragment = document.createDocumentFragment();
+            cartItems.forEach(item => {
+                // Basic check for item validity before rendering
+                if (!item || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
+                     console.warn("Skipping invalid cart item:", item);
+                     return; // Skip this item
+                 }
+
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('cart-item');
+                const itemPrice = item.price;
+                const itemQuantity = item.quantity;
+                const itemTotalPrice = itemPrice * itemQuantity;
+                totalPrice += itemTotalPrice;
+
+                // Sanitize names before inserting into HTML
+                const safeItemName = item.name?.replace(/</g, "&lt;")?.replace(/>/g, "&gt;") || 'N/A';
+                const safeItemSize = item.size?.replace(/</g, "&lt;")?.replace(/>/g, "&gt;") || 'N/A';
+
+                itemElement.innerHTML = `
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${safeItemName} (${safeItemSize})</div>
+                        <div class="cart-item-price">${formatPrice(itemPrice)} x ${itemQuantity} = ${formatPrice(itemTotalPrice)}</div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="cart-quantity-btn decrease-qty" data-cartid="${item.cartId}" aria-label="ลดจำนวน ${safeItemName} (${safeItemSize})">-</button>
+                        <span class="cart-item-quantity" aria-live="polite">${itemQuantity}</span>
+                        <button class="cart-quantity-btn increase-qty" data-cartid="${item.cartId}" aria-label="เพิ่มจำนวน ${safeItemName} (${safeItemSize})">+</button>
+                        <button class="cart-remove-btn" data-cartid="${item.cartId}" title="ลบรายการนี้" aria-label="ลบ ${safeItemName} (${safeItemSize}) ออกจากตระกร้า"><i class="fas fa-trash-alt" aria-hidden="true"></i></button>
+                    </div>`;
+
+                // Add event listeners directly (more reliable than delegation for items created dynamically here)
+                itemElement.querySelector('.decrease-qty')?.addEventListener('click', () => updateQuantity(item.cartId, -1));
+                itemElement.querySelector('.increase-qty')?.addEventListener('click', () => updateQuantity(item.cartId, 1));
+                itemElement.querySelector('.cart-remove-btn')?.addEventListener('click', () => removeFromCart(item.cartId));
+
+                fragment.appendChild(itemElement);
+            });
+            DOMElements.cartItemsList.appendChild(fragment);
+        }
+
+        DOMElements.cartTotalPriceElement.textContent = formatPrice(totalPrice);
+        updateOrderButtonState(); // Update button state based on cart content and other conditions
+    }
+
+    function updateOrderButtonState() {
+         if (DOMElements.orderButton) {
+             // Can order if cart is not empty, a table is selected, AND the order API is not currently loading
+             const canOrder = cartItems.length > 0 && selectedTableNumber && !isApiLoading.order;
+             DOMElements.orderButton.disabled = !canOrder;
+
+             // Set appropriate title based on state
+             let title = "";
+             if (isApiLoading.order) {
+                 title = "กำลังดำเนินการ...";
+             } else if (cartItems.length === 0) {
+                 title = "ตระกร้าว่างเปล่า";
+             } else if (!selectedTableNumber) {
+                 title = "กรุณาเลือกโต๊ะก่อน";
+             } else {
+                 title = "สั่งรายการอาหาร";
+             }
+             DOMElements.orderButton.title = title;
+         }
+     }
+
+    function updateCartIcon() {
+        if (!DOMElements.cartItemCountBadge || !DOMElements.cartIcon) return;
+        const totalQuantity = cartItems.reduce((sum, item) => sum + (item?.quantity || 0), 0); // Add safety check for item
+        DOMElements.cartItemCountBadge.textContent = totalQuantity;
+        DOMElements.cartItemCountBadge.classList.toggle('hidden', totalQuantity === 0);
+        DOMElements.cartIcon.setAttribute('aria-label', `เปิด/ปิด ตระกร้าสินค้า (${totalQuantity} รายการ)`);
+    }
+
+
+    // --- Rendering: Ordered Items ---
+    function renderOrderedItems() {
+         if (!DOMElements.myFoodItemsList || !DOMElements.myFoodCheckoutButton || !DOMElements.orderedGrandTotal) return;
+         DOMElements.myFoodItemsList.innerHTML = ''; // Clear previous items
+         let hasOrderedItems = orderedItems.length > 0;
+         let grandOrderedTotal = 0;
+
+         if (!hasOrderedItems) {
+             DOMElements.myFoodItemsList.innerHTML = '<p class="popup-empty-message my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>';
+             DOMElements.orderedGrandTotal.classList.add('hidden');
+         } else {
+             const fragment = document.createDocumentFragment();
+             orderedItems.forEach(item => {
+                  // Basic check for item validity before rendering
+                 if (!item || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
+                     console.warn("Skipping invalid ordered item:", item);
+                     return; // Skip this item
+                 }
+
+                 const itemElement = document.createElement('div');
+                 itemElement.classList.add('ordered-item');
+                 const itemPrice = item.price;
+                 const itemQuantity = item.quantity;
+                 const itemTotalPrice = itemPrice * itemQuantity;
+                 grandOrderedTotal += itemTotalPrice;
+
+                 const safeItemName = item.name?.replace(/</g, "&lt;")?.replace(/>/g, "&gt;") || 'N/A';
+                 const safeItemSize = item.size?.replace(/</g, "&lt;")?.replace(/>/g, "&gt;") || 'N/A';
+
+                 itemElement.innerHTML = `
+                     <div class="ordered-item-details">
+                         <div class="ordered-item-name">${safeItemName} (${safeItemSize})</div>
+                         <div class="ordered-item-info">จำนวน: ${itemQuantity} (${formatPrice(itemPrice)}/ชิ้น)</div>
+                     </div>
+                     <div class="ordered-item-total">
+                        ${formatPrice(itemTotalPrice)}
+                     </div>`;
+                 fragment.appendChild(itemElement);
+             });
+             DOMElements.myFoodItemsList.appendChild(fragment);
+
+             // Display total ordered amount
+             DOMElements.orderedGrandTotal.textContent = `ยอดรวมที่สั่งแล้ว: ${formatPrice(grandOrderedTotal)}`;
+             DOMElements.orderedGrandTotal.classList.remove('hidden');
+         }
+
+         updateCheckoutButtonState();
+    }
+
+    function updateCheckoutButtonState() {
+        if (DOMElements.myFoodCheckoutButton) {
+             // Can checkout if there are ordered items, a table is selected, AND the checkout API is not loading
+             const canCheckout = orderedItems.length > 0 && selectedTableNumber && !isApiLoading.checkout;
+             DOMElements.myFoodCheckoutButton.disabled = !canCheckout;
+
+             let title = "";
+              if (isApiLoading.checkout) {
+                  title = "กำลังดำเนินการ...";
+              } else if (orderedItems.length === 0) {
+                  title = "ไม่มีรายการที่สั่ง";
+              } else if (!selectedTableNumber) {
+                  title = "กรุณาเลือกโต๊ะก่อน";
+              } else {
+                  title = "เรียกชำระเงิน";
+              }
+             DOMElements.myFoodCheckoutButton.title = title;
+         }
+     }
+
+    function updateMyFoodIcon() {
+         if (!DOMElements.myFoodItemCountBadge || !DOMElements.myFoodIcon) return;
+         const totalQuantity = orderedItems.reduce((sum, item) => sum + (item?.quantity || 0), 0); // Add safety check
+         DOMElements.myFoodItemCountBadge.textContent = totalQuantity;
+         DOMElements.myFoodItemCountBadge.classList.toggle('hidden', totalQuantity === 0);
+         DOMElements.myFoodIcon.setAttribute('aria-label', `เปิด/ปิด รายการอาหารของฉัน (${totalQuantity} รายการ)`);
+     }
+
+    // --- Rendering: Main Menu Item Details (Decomposed) ---
+    function updateImageWithAnimation(newSrc, alt, direction = 'none') {
+        if (!DOMElements.mainFoodImage || !DOMElements.imageContainer) return;
+
+        const currentImageSrc = DOMElements.mainFoodImage.getAttribute('src');
+        const placeholderSrc = CONFIG.PLACEHOLDER_IMAGE;
+        const safeAlt = alt?.replace(/"/g, '&quot;') || 'รูปภาพเมนู'; // Sanitize alt text
+
+        const updateImageElement = (src) => {
+            DOMElements.mainFoodImage.src = src || placeholderSrc;
+            DOMElements.mainFoodImage.alt = src ? safeAlt : 'ไม่มีรูปภาพ';
+            // Clear previous error handlers before setting a new one
+             DOMElements.mainFoodImage.onerror = null;
+             DOMElements.mainFoodImage.onerror = () => {
+                console.warn(`Image failed to load: ${src}. Using placeholder.`);
+                // Prevent infinite loop if placeholder itself fails
+                 if (DOMElements.mainFoodImage.src !== placeholderSrc) {
+                     DOMElements.mainFoodImage.src = placeholderSrc;
+                 }
+                 DOMElements.mainFoodImage.alt = `${safeAlt} (Image unavailable)`;
+            };
+        };
+
+        // Reset ongoing animations immediately
+        DOMElements.imageContainer.classList.remove('slide-out-left', 'slide-in-right', 'slide-out-right', 'slide-in-left');
+        DOMElements.mainFoodImage.getAnimations().forEach(anim => anim.cancel()); // Force cancel JS animations if any
+
+        // Determine if animation is needed
+        const needsAnimation = direction !== 'none' && currentImageSrc && currentImageSrc !== newSrc && currentImageSrc !== placeholderSrc;
+
+        if (needsAnimation) {
+            let outClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right';
+            let inClass = direction === 'next' ? 'slide-in-right' : 'slide-in-left';
+
+            // --- Animation using CSS classes ---
+            const handleOutAnimationEnd = (event) => {
+                 // Ensure the event is for the correct animation
+                 if (event.animationName !== outClass.split(' ')[0]) return;
+                 // event.target.removeEventListener('animationend', handleOutAnimationEnd); // No need to remove with {once: true}
+                 event.target.classList.remove(outClass);
+                 updateImageElement(newSrc); // Update the image source *after* old one slides out
+
+                 // Trigger the slide-in animation
+                 requestAnimationFrame(() => { // Use rAF for timing
+                      event.target.classList.add(inClass);
+                      event.target.addEventListener('animationend', function handleInAnimationEnd(eventInner) {
+                           if (eventInner.animationName !== inClass.split(' ')[0]) return;
+                          // eventInner.target.removeEventListener('animationend', handleInAnimationEnd);
+                           eventInner.target.classList.remove(inClass);
+                      }, { once: true });
+                 });
+            };
+
+            // Add the listener before adding the class
+             DOMElements.imageContainer.addEventListener('animationend', handleOutAnimationEnd, { once: true });
+             // Use rAF to ensure the class is added in the next frame, allowing transition setup
+             requestAnimationFrame(() => {
+                 DOMElements.imageContainer.classList.add(outClass);
+             });
+
+        } else {
+            // No animation needed or first load, just update the image directly
+            updateImageElement(newSrc);
+        }
+    }
+
+    function updateTextDetails(itemData) {
+        if (!DOMElements.menuNameElement || !DOMElements.menuDescriptionElement) return;
+        DOMElements.menuNameElement.textContent = itemData?.name || 'ชื่อเมนู';
+        DOMElements.menuDescriptionElement.textContent = itemData?.description || 'ไม่มีคำอธิบาย';
+    }
+
+    function updatePriceDetails(prices) {
+         if (!DOMElements.menuPriceContainer || !DOMElements.priceElementsCache) return;
+         const displayOrder = ['Small', 'Normal', 'Extra', 'Family'];
+         let firstVisibleFound = false;
+
+          // Hide all price items and their preceding separators initially
+          displayOrder.forEach(size => {
+              const cache = DOMElements.priceElementsCache[size];
+              cache?.parentSpan?.classList.add('hidden');
+              if(cache?.separator) cache.separator.classList.add('hidden');
+          });
+
+          // Show items with valid prices and update their content
+         displayOrder.forEach((size) => {
+             const cache = DOMElements.priceElementsCache[size];
+             const priceValue = prices?.[size]; // Use optional chaining
+
+             if (cache?.parentSpan && priceValue !== null && priceValue !== undefined && !isNaN(priceValue)) {
+                 cache.value.textContent = formatPrice(priceValue);
+                 cache.parentSpan.classList.remove('hidden');
+                 // Update aria-label for accessibility
+                 const labelText = cache.label?.textContent || size; // Get text label or use size name
+                  const itemName = DOMElements.menuNameElement?.textContent || ''; // Get current item name
+                 cache.button?.setAttribute('aria-label', `เพิ่ม ${itemName} ${labelText} ${formatPrice(priceValue)} ลงตระกร้า`);
+
+                 // Show separator *before* this item if it's not the first one visible
+                 if (firstVisibleFound && cache.separator) {
+                    cache.separator.classList.remove('hidden');
+                 }
+                 firstVisibleFound = true; // Mark that at least one visible item has been found
+             }
+         });
+     }
+
+    function showItemDetails(index, direction = 'none') {
+        if (!DOMElements.menuDetailsContainer) { console.error("Missing menu details container."); return; }
+
+        const isValidIndex = index >= 0 && index < currentFilteredItems.length;
+
+        if (!isValidIndex || currentFilteredItems.length === 0) {
+            // Hide details and clear image if no valid item to show
+            DOMElements.menuDetailsContainer.style.display = 'none';
+            updateImageWithAnimation(null, ''); // Clear image using the function
+            updateTextDetails({}); // Clear text
+            updatePriceDetails({}); // Clear prices
+            currentDisplayedItemId = null;
+            currentDisplayIndex = -1;
+            console.log("Hiding details: No item to display or index out of bounds.");
+            return;
+        }
+
+        currentDisplayIndex = index;
+        const itemData = currentFilteredItems[currentDisplayIndex];
+         if (!itemData) { // Double-check, though isValidIndex should prevent this
+             console.error("Item data unexpectedly missing at index:", index);
+              DOMElements.menuDetailsContainer.style.display = 'none';
+             return;
+         }
+        currentDisplayedItemId = itemData.id;
+
+        // Determine the image source, prefer dataImageSrc, fallback to src, then null
+        const newImageSrc = itemData.dataImageSrc || itemData.src || null;
+
+        // --- เพิ่ม Log ตรงนี้ ---
+        console.log('Showing Item:', itemData.id, itemData.name); // แสดง ID และชื่อรายการปัจจุบัน
+        console.log('Main Image URL for Item:', newImageSrc);     // แสดง URL รูปใหญ่ที่พยายามจะโหลด
+        console.log('Item Prices:', itemData.prices);             // แสดง Object ราคาที่ได้รับ
+        // ----------------------
+
+        // Call decomposed update functions
+        updateImageWithAnimation(newImageSrc, itemData.alt || itemData.name, direction);
+        updateTextDetails(itemData);
+        updatePriceDetails(itemData.prices);
+
+        // Ensure the details container is visible
+        DOMElements.menuDetailsContainer.style.display = 'block';
+    }
+
+
+    // --- Rendering: Menu Grid Items ---
+    function displayMenuItems(category) {
+        if (!DOMElements.bottomMenuContainer) { console.error("Bottom menu container not found."); return; }
+        DOMElements.bottomMenuContainer.innerHTML = ''; // Clear previous items
+        currentCategory = category;
+
+        if (!menuData || menuData.length === 0) {
+            // Handle case where menu data hasn't loaded or is empty
+            console.warn("menuData is empty, cannot display items for category:", category);
+            DOMElements.bottomMenuContainer.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีข้อมูลเมนูในขณะนี้</p>';
+            // Ensure details of previous category are hidden
+            showItemDetails(-1); // Call with invalid index to hide details
+            currentFilteredItems = []; // Reset filtered items
+            return;
+        }
+
+        // Filter items for the selected category
+        currentFilteredItems = menuData.filter(item => Array.isArray(item.category) && item.category.includes(category));
+
+        if (currentFilteredItems.length === 0) {
+             // Handle case where category has no items
+             const safeCategoryName = category?.replace(/</g, "&lt;") || 'นี้';
+             DOMElements.bottomMenuContainer.innerHTML = `<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีเมนูในหมวดหมู่ "${safeCategoryName}"</p>`;
+             showItemDetails(-1); // Hide details area
+             return;
+        }
+
+        // Build menu items using a DocumentFragment for performance
+        const fragment = document.createDocumentFragment();
+        currentFilteredItems.forEach((item, index) => {
+            const menuItemDiv = document.createElement('div');
+            menuItemDiv.classList.add('menu-item');
+            menuItemDiv.dataset.itemId = item.id;
+            menuItemDiv.dataset.index = index; // Store index for click handler
+            menuItemDiv.setAttribute('role', 'button');
+            menuItemDiv.setAttribute('tabindex', '0'); // Make focusable
+
+            const img = document.createElement('img');
+            const imgSrc = item.src || CONFIG.PLACEHOLDER_IMAGE; // Use placeholder if src is missing
+            img.src = imgSrc;
+            img.alt = item.alt || item.name || 'รูปภาพเมนู'; // Provide meaningful alt text
+            img.loading = 'lazy'; // Defer loading off-screen images
+             // Add error handler for thumbnail images
+             img.onerror = function() {
+                 console.warn("Thumbnail image failed to load:", imgSrc);
+                 this.onerror = null; // Prevent potential infinite loop if placeholder fails
+                 this.src = CONFIG.PLACEHOLDER_IMAGE;
+                 this.alt = `${item.name || 'Menu item'} (Image unavailable)`;
+            };
+
+            menuItemDiv.appendChild(img);
+            // Add event listeners for click and keyboard interaction
+            menuItemDiv.addEventListener('click', handleMenuItemClick);
+            menuItemDiv.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') handleMenuItemClick(e); });
+
+            fragment.appendChild(menuItemDiv);
+        });
+        // Append all items at once to the DOM
+        DOMElements.bottomMenuContainer.appendChild(fragment);
+
+        // Show details of the first item in the filtered list
+        showItemDetails(0);
+    }
+
+    function handleMenuItemClick(event) {
+        // Ensure the click/keydown happened on the intended target element
+        const menuItemDiv = event.currentTarget;
+        if (!menuItemDiv || !menuItemDiv.dataset.index) return;
+
+        const clickedIndex = parseInt(menuItemDiv.dataset.index, 10);
+
+        // Check if the index is valid within the currently filtered items
+        if (!isNaN(clickedIndex) && clickedIndex >= 0 && clickedIndex < currentFilteredItems.length) {
+            showItemDetails(clickedIndex);
+            // Scroll smoothly to the top after a short delay
+            // This allows the browser time to render the details before scrolling
+            setTimeout(() => {
+                // Check if menuDetailsContainer exists and is visible before scrolling
+                 if (DOMElements.menuDetailsContainer && DOMElements.menuDetailsContainer.style.display !== 'none') {
+                     // Option 1: Scroll container into view (if details are below fold)
+                     // DOMElements.menuDetailsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                     // Option 2: Scroll window to top (if details are always near top)
+                     window.scrollTo({ top: 0, behavior: 'smooth' });
+                 }
+            }, 100); // Adjust delay if needed (e.g., 50-150ms)
+        } else {
+            console.error("Invalid index on menu item click:", menuItemDiv.dataset.index, "Current Filtered Length:", currentFilteredItems.length);
+        }
+    }
+
+    // --- Rendering: Category Bar ---
+    function populateCategoryBar() {
+        const container = DOMElements.categoryBarContainer;
+        if (!container) { console.warn("Category bar container not found."); return; }
+
+        if (!allCategories || allCategories.length === 0) {
+             // Handle case where no categories were loaded
+             container.innerHTML = '<p style="color: var(--color-text-secondary); padding: 10px;">ไม่มีหมวดหมู่</p>';
+            return;
+        }
+
+        container.innerHTML = ''; // Clear loading/error message
+        const fragment = document.createDocumentFragment();
+        allCategories.forEach((category, index) => { // Add index for managing tabindex
+            const categoryDiv = document.createElement('div');
+            categoryDiv.classList.add('category-item');
+            categoryDiv.dataset.category = category;
+            categoryDiv.setAttribute('role', 'tab');
+            // Set tabindex: 0 for the first item, -1 for others initially
+            categoryDiv.setAttribute('tabindex', index === 0 ? '0' : '-1');
+             categoryDiv.setAttribute('aria-selected', 'false');
+
+
+            const iconClass = CONFIG.CATEGORY_ICONS[category] || CONFIG.CATEGORY_ICONS["default"];
+            // Sanitize category name for display
+            const safeCategoryName = category?.replace(/</g, "&lt;")?.replace(/>/g, "&gt;") || 'N/A';
+            categoryDiv.innerHTML = `
+                <i class="${iconClass}" aria-hidden="true"></i>
+                <span>${safeCategoryName}</span>
+            `;
+
+            categoryDiv.addEventListener('click', handleCategoryClick);
+            // Add keydown listener for better keyboard navigation (optional but recommended)
+            // categoryDiv.addEventListener('keydown', handleCategoryKeydown);
+            fragment.appendChild(categoryDiv);
+        });
+        container.appendChild(fragment);
+    }
+
+    function handleCategoryClick(event) {
+         const clickedItem = event.currentTarget;
+         // Prevent processing if the item is already selected
+         if (clickedItem.classList.contains('selected')) {
+             return;
+         }
+
+         const selectedCategory = clickedItem.dataset.category;
+
+         // Update visual selection and ARIA states
+         const allCategoryItems = DOMElements.categoryBarContainer.querySelectorAll('.category-item');
+         allCategoryItems.forEach(cat => {
+             cat.classList.remove('selected');
+             cat.setAttribute('aria-selected', 'false');
+             cat.setAttribute('tabindex', '-1'); // Make non-selected items not directly tabbable
+         });
+         clickedItem.classList.add('selected');
+         clickedItem.setAttribute('aria-selected', 'true');
+         clickedItem.setAttribute('tabindex', '0'); // Make selected item tabbable
+         // Optionally move focus, though click usually handles this. For keyboard nav, focus is important.
+         // clickedItem.focus();
+
+         // Update the displayed menu items for the newly selected category
+         displayMenuItems(selectedCategory);
+     }
+
+    // ========================================================================
+    // ACTION HANDLERS (Using Backend API)
+    // ========================================================================
+    async function handleCallStaff() {
+        // Prevent action if already loading or no table selected
+        if (isApiLoading.callStaff) { console.log("Call staff action already in progress."); return; }
+        if (!selectedTableNumber) {
+            alert('⚠️ กรุณาเลือกหมายเลขโต๊ะก่อนค่ะ');
+            openTableSelectModal(); // Prompt user to select table
+            return;
+        }
+
+        setLoadingState('icon', 'callStaff', true); // Set loading state (disables button)
+        const payload = { tableNumber: selectedTableNumber };
+        const result = await callBackendApi('callStaff', payload); // Call backend
+        setLoadingState('icon', 'callStaff', false); // Reset loading state
+
+         if (result.success) {
+             alert('✅ เรียกพนักงานบริการให้เรียบร้อยค่ะ กรุณารอสักครู่ 💁‍♀️');
+         }
+         // Specific error messages (like network error, server error) are handled within callBackendApi
+    }
+
+    async function handleOrderSubmission() {
+         // Prevent action if already loading, cart empty, or no table selected
+         if (isApiLoading.order) { console.log("Order submission already in progress."); return; }
+         if (cartItems.length === 0) { alert('ตระกร้าสินค้าของคุณว่างเปล่า'); return; }
+         if (!selectedTableNumber) { alert('⚠️ กรุณาเลือกหมายเลขโต๊ะก่อนสั่งอาหารค่ะ'); openTableSelectModal(); return; }
+
+         setLoadingState('button', 'order', true); // Set loading state
+
+         // Prepare payload with only necessary data
+         const orderPayload = {
+             tableNumber: selectedTableNumber,
+             items: cartItems.map(item => ({
+                 name: item.name,
+                 size: item.size,
+                 quantity: item.quantity,
+                 price: item.price,
+                 id: item.id // Include ID if needed by backend/logging
+             }))
+         };
+
+         const result = await callBackendApi('submitOrder', orderPayload); // Call backend
+
+         if (result.success) {
+             // Action successful: Provide feedback, update state, UI
+             alert(`ส่งรายการสั่งซื้อจาก ${CONFIG.TABLE_NUMBER_PREFIX}${selectedTableNumber} สำเร็จ!`);
+
+             // Move items from cart to ordered list
+             cartItems.forEach(cartItem => {
+                 const existingIndex = orderedItems.findIndex(orderedItem => orderedItem.cartId === cartItem.cartId);
+                 if (existingIndex > -1) {
+                     // Item already exists in ordered list, increase quantity
+                     orderedItems[existingIndex].quantity += cartItem.quantity;
+                 } else {
+                     // Add new item to ordered list
+                     orderedItems.push({ ...cartItem });
+                 }
+             });
+             cartItems = []; // Clear the cart
+
+             // Update local storage and UI
+             saveCartToLocalStorage();
+             saveOrderedItemsToLocalStorage();
+             renderCart();
+             updateCartIcon();
+             renderOrderedItems();
+             updateMyFoodIcon();
+             if (DOMElements.cartPopup?.classList.contains('open')) {
+                  DOMElements.cartPopup.classList.remove('open'); // Close cart popup
+                  DOMElements.cartIcon.setAttribute('aria-expanded', 'false');
+             }
+
+
+             // Give feedback animation on My Food icon
+             DOMElements.myFoodIcon?.classList.add('updated');
+             setTimeout(() => { DOMElements.myFoodIcon?.classList.remove('updated'); }, CONFIG.ANIMATION_SPEED_MS + 50);
+
+         } else {
+             // Action failed: callBackendApi already showed an alert.
+             // Log the specific failure message from backend if available.
+             console.error("Order submission failed:", result.message);
+         }
+
+         // Reset loading state regardless of success/failure AFTER processing
+         setLoadingState('button', 'order', false);
+    }
+
+    async function handleCheckout() {
+         // Prevent action if already loading, no ordered items, or no table selected
+         if (isApiLoading.checkout) { console.log("Checkout action already in progress."); return; }
+         if (orderedItems.length === 0) { alert('ยังไม่มีรายการอาหารที่สั่งสำหรับชำระเงิน'); return; }
+         if (!selectedTableNumber) { alert('⚠️ กรุณาเลือกหมายเลขโต๊ะก่อนเรียกชำระเงินค่ะ'); openTableSelectModal(); return; }
+
+         setLoadingState('button', 'checkout', true); // Set loading state
+
+          // Prepare payload for checkout call
+         const checkoutPayload = {
+             tableNumber: selectedTableNumber,
+             orderedItems: orderedItems.map(item => ({ // Send ordered items for confirmation/logging
+                 name: item.name,
+                 size: item.size,
+                 quantity: item.quantity,
+                 price: item.price
+             }))
+         };
+
+         const result = await callBackendApi('checkout', checkoutPayload); // Call backend
+
+         // *** THIS IS THE CORRECTED LINE ***
+         if (result.success) { // Check the 'success' property of the result object
+             // Action successful: Provide feedback, potentially update UI
+             alert(`✅ เรียกพนักงานเพื่อชำระเงินสำหรับ ${CONFIG.TABLE_NUMBER_PREFIX}${selectedTableNumber} เรียบร้อยแล้วค่ะ`);
+
+             // Optional: Clear orderedItems locally after successful call? Decide based on workflow.
+             // orderedItems = [];
+             // saveOrderedItemsToLocalStorage();
+             // renderOrderedItems(); // Update UI if cleared
+             // updateMyFoodIcon();   // Update badge if cleared
+
+             // Close the popup
+             if (DOMElements.myFoodPopup?.classList.contains('open')) {
+                  DOMElements.myFoodPopup.classList.remove('open');
+                   DOMElements.myFoodIcon.setAttribute('aria-expanded', 'false');
+             }
+         } else {
+              // Action failed: callBackendApi already showed an alert.
+             console.error("Checkout call failed:", result.message);
+         }
+
+         // Reset loading state regardless of success/failure AFTER processing
+         setLoadingState('button', 'checkout', false);
+    }
+
+    // ========================================================================
+    // EVENT LISTENERS SETUP
+    // ========================================================================
+    function setupEventListeners() {
+        console.log("Setting up event listeners...");
+
+        // --- Table Selection ---
+        DOMElements.tableNumberDisplay?.addEventListener('click', openTableSelectModal);
+        DOMElements.tableSelectCloseBtn?.addEventListener('click', closeTableSelectModal);
+        DOMElements.tableSelectModal?.addEventListener('click', (e) => {
+            // Close modal if backdrop is clicked
+             if (e.target === DOMElements.tableSelectModal) closeTableSelectModal();
+        });
+        // Close modal on Escape key press when modal is open
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && DOMElements.tableSelectModal?.classList.contains('open')) {
+                closeTableSelectModal();
+            }
+         });
+        DOMElements.tablePromptNotification?.addEventListener('click', hideTablePromptNotification);
+        DOMElements.tablePromptNotification?.addEventListener('touchstart', hideTablePromptNotification, { passive: true });
+
+        // --- Add to Cart (Delegated from Price Container) ---
+         DOMElements.menuPriceContainer?.addEventListener('click', (e) => {
+             // Find the closest button element that matches the selector
+             const button = e.target.closest('.add-to-cart-button');
+             if (button) { // If a button was clicked (or its child icon)
+                 const size = button.dataset.size;
+                 // Ensure we have a currently displayed item ID and a valid size from the button
+                 if (currentDisplayedItemId && size) {
+                     addToCart(currentDisplayedItemId, size);
+                 } else { console.warn("Cannot add to cart. Missing item ID or size.", { currentDisplayedItemId, size }); }
+             }
+         });
+
+        // --- Category Bar (Listeners added dynamically in populateCategoryBar/handleCategoryClick) ---
+        // Event listeners for category items are added when they are created in populateCategoryBar
+
+        // --- Cart Popup Toggle ---
+        DOMElements.cartIcon?.addEventListener('click', () => {
+            const isCurrentlyOpen = DOMElements.cartPopup?.classList.contains('open');
+            // Close MyFood if open
+            if (DOMElements.myFoodPopup?.classList.contains('open')) {
+                DOMElements.myFoodPopup.classList.remove('open');
+                 DOMElements.myFoodIcon?.setAttribute('aria-expanded', 'false');
+            }
+            // Toggle Cart
+            const isOpen = DOMElements.cartPopup?.classList.toggle('open');
+            DOMElements.cartIcon?.setAttribute('aria-expanded', String(isOpen)); // Set aria-expanded state
+            if (isOpen) {
+                 renderCart(); // Re-render cart content when opening
+                 // Optional: Focus on the close button or the list inside
+                 DOMElements.cartCloseBtn?.focus();
+            }
+        });
+        // Cart Close Button
+        DOMElements.cartCloseBtn?.addEventListener('click', () => {
+            DOMElements.cartPopup?.classList.remove('open');
+            DOMElements.cartIcon?.setAttribute('aria-expanded', 'false');
+             DOMElements.cartIcon?.focus(); // Return focus to the icon
+        });
+
+        // --- My Food Popup Toggle ---
+        DOMElements.myFoodIcon?.addEventListener('click', () => {
+            const isCurrentlyOpen = DOMElements.myFoodPopup?.classList.contains('open');
+            // Close Cart if open
+            if (DOMElements.cartPopup?.classList.contains('open')) {
+                 DOMElements.cartPopup.classList.remove('open');
+                 DOMElements.cartIcon?.setAttribute('aria-expanded', 'false');
+            }
+            // Toggle MyFood
+            const isOpen = DOMElements.myFoodPopup?.classList.toggle('open');
+             DOMElements.myFoodIcon?.setAttribute('aria-expanded', String(isOpen));
+            if (isOpen) {
+                 renderOrderedItems(); // Re-render ordered items when opening
+                 DOMElements.myFoodCloseBtn?.focus(); // Focus close button
+            }
+        });
+         // My Food Close Button
+        DOMElements.myFoodCloseBtn?.addEventListener('click', () => {
+             DOMElements.myFoodPopup?.classList.remove('open');
+             DOMElements.myFoodIcon?.setAttribute('aria-expanded', 'false');
+             DOMElements.myFoodIcon?.focus(); // Return focus
+        });
+
+        // --- Action Buttons ---
+        DOMElements.callStaffIcon?.addEventListener('click', handleCallStaff);
+        DOMElements.orderButton?.addEventListener('click', handleOrderSubmission);
+        DOMElements.myFoodCheckoutButton?.addEventListener('click', handleCheckout);
+
+        // --- Image Swipe Gestures ---
+        setupSwipeListeners();
+
+        console.log("Event listeners setup complete.");
+    }
+
+    // --- Swipe Logic ---
+    function setupSwipeListeners() {
+        if (!DOMElements.imageContainer) return;
+
         let touchStartX = 0;
         let touchEndX = 0;
         let isSwiping = false;
-        const swipeThreshold = 50;
+        let isDragging = false;
+        let dragStartX = 0;
 
-        // --- DOM Elements ---
-        const tableNumberDisplay = document.getElementById('table-number-display');
-        const tableNumberText = document.getElementById('table-number-text');
-        const tableSelectModal = document.getElementById('table-select-modal');
-        const tableListContainer = document.getElementById('table-list');
-        const tableSelectCloseBtn = tableSelectModal?.querySelector('.table-select-close-btn');
-        const tablePromptNotification = document.getElementById('table-prompt-notification');
-
-        const mainFoodImage = document.getElementById('main-food-image');
-        const imageContainer = document.getElementById('image-swipe-area');
-        const bottomMenu = document.querySelector('.bottom-menu');
-        const categoryItems = document.querySelectorAll('.category-item');
-        const menuDetailsContainer = document.getElementById('menu-details');
-        const menuNameElement = document.getElementById('menu-name');
-        const menuDescriptionElement = document.getElementById('menu-description');
-        const menuPriceContainer = document.getElementById('menu-price');
-        const priceElementsCache = {
-            'Small': { label: document.getElementById('label-small'), value: document.getElementById('price-small'), button: menuPriceContainer?.querySelector('button[data-size="Small"]'), separator: document.getElementById('price-sep-small') },
-            'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null },
-            'Extra': { label: document.getElementById('label-extra'), value: document.getElementById('price-extra'), button: menuPriceContainer?.querySelector('button[data-size="Extra"]'), separator: document.getElementById('price-sep') },
-            'Family': { label: document.getElementById('label-family'), value: document.getElementById('price-family'), button: menuPriceContainer?.querySelector('button[data-size="Family"]'), separator: document.getElementById('price-sep-family') }
-        };
-
-        // Cart UI
-        const cartIconContainer = document.getElementById('cart-icon-container');
-        const cartItemCountBadge = document.getElementById('cart-item-count');
-        const cartPopup = document.getElementById('cart-popup');
-        const cartItemsList = document.getElementById('cart-items-list');
-        const cartTotalPriceElement = document.getElementById('cart-total-price');
-        const cartCloseBtn = cartPopup?.querySelector('.cart-close-btn');
-        const orderButton = document.getElementById('order-button');
-
-        // My Food List UI Elements
-        const myFoodIconContainer = document.getElementById('my-food-icon-container');
-        const myFoodItemCountBadge = document.getElementById('my-food-item-count');
-        const myFoodPopup = document.getElementById('my-food-popup');
-        const myFoodItemsList = document.getElementById('my-food-items-list');
-        const myFoodCloseBtn = myFoodPopup?.querySelector('.my-food-close-btn');
-        const myFoodCheckoutButton = document.getElementById('my-food-checkout-button');
-
-        // --- Utility Functions ---
-        function getCurrentDateString() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function getExpiryTimestamp(hours) {
-            return Date.now() + hours * 60 * 60 * 1000;
-        }
-
-        // --- Table Selection Logic ---
-        function openTableSelectModal() {
-            if (tableSelectModal) {
-                // Highlight the currently selected table in the list
-                const currentTable = selectedTableNumber;
-                const listItems = tableListContainer?.querySelectorAll('.table-list-item');
-                listItems?.forEach(item => {
-                    item.classList.toggle('selected', item.dataset.table === currentTable);
-                });
-                tableSelectModal.classList.add('open');
-            }
-        }
-
-        function closeTableSelectModal() {
-            if (tableSelectModal) {
-                tableSelectModal.classList.remove('open');
-            }
-        }
-
-        function populateTableList(maxTables) {
-            if (!tableListContainer) return;
-            tableListContainer.innerHTML = ''; // Clear previous list
-            for (let i = 1; i <= maxTables; i++) {
-                const tableNum = String(i);
-                const listItem = document.createElement('div');
-                listItem.classList.add('table-list-item');
-                listItem.textContent = tableNum;
-                listItem.dataset.table = tableNum;
-                listItem.addEventListener('click', () => selectTable(tableNum));
-                tableListContainer.appendChild(listItem);
-            }
-        }
-
-        function selectTable(tableNum) {
-            selectedTableNumber = tableNum;
-            updateTableDisplay(tableNum);
-            saveSelectedTable(tableNum);
-            closeTableSelectModal();
-            // Update page title
-            document.title = `เมนูอาหาร - ${TABLE_NUMBER_PREFIX}${tableNum}`;
-            // Optionally hide the prompt notification if it's showing
-            hideTablePromptNotification();
-        }
-
-        function updateTableDisplay(tableNum) {
-            if (tableNumberText) {
-                if (tableNum) {
-                    tableNumberText.innerHTML = `<i class="fas fa-chair table-icon"></i>${TABLE_NUMBER_PREFIX}${tableNum}`; // Added icon
-                     tableNumberText.classList.remove('placeholder-text');
-                } else {
-                    tableNumberText.innerHTML = `<span class="placeholder-text">เลือกโต๊ะ</span>`;
-                    tableNumberText.classList.add('placeholder-text');
-                    document.title = 'เมนูอาหาร - เลือกโต๊ะ';
-                }
-            }
-        }
-
-        function saveSelectedTable(tableNum) {
-            const expiry = getExpiryTimestamp(TABLE_EXPIRY_HOURS);
-            const data = { tableNumber: tableNum, expiry: expiry };
-            try {
-                localStorage.setItem(TABLE_STORAGE_KEY, JSON.stringify(data));
-            } catch (error) {
-                console.error("Error saving table selection to localStorage:", error);
-            }
-        }
-
-        function loadSelectedTable() {
-            try {
-                const storedData = localStorage.getItem(TABLE_STORAGE_KEY);
-                if (storedData) {
-                    const parsedData = JSON.parse(storedData);
-                    if (parsedData && parsedData.tableNumber && parsedData.expiry && Date.now() < parsedData.expiry) {
-                        return parsedData.tableNumber; // Return valid, non-expired table number
-                    } else {
-                        localStorage.removeItem(TABLE_STORAGE_KEY); // Remove expired or invalid data
-                    }
-                }
-            } catch (error) {
-                console.error("Error loading table selection from localStorage:", error);
-                localStorage.removeItem(TABLE_STORAGE_KEY); // Clear corrupted data
-            }
-            return null; // No valid table found
-        }
-
-        function showTablePromptNotification() {
-             if (tablePromptNotification) {
-                tablePromptNotification.classList.add('show');
-                // Optional: Auto-hide after a few seconds
-                // setTimeout(hideTablePromptNotification, 5000);
+        // Touch Events
+        DOMElements.imageContainer.addEventListener('touchstart', (e) => {
+             if (e.touches.length === 1) { // Start swipe only with one finger
+                 touchStartX = e.touches[0].clientX;
+                 isSwiping = true;
              }
-        }
-        function hideTablePromptNotification() {
-            if (tablePromptNotification) {
-                tablePromptNotification.classList.remove('show');
-            }
-        }
+        }, { passive: true }); // Use passive listener if not preventing default scroll
 
-
-        // --- Local Storage Functions (Cart & Ordered Items) ---
-        function saveCartToLocalStorage() {
-            const cartData = { date: getCurrentDateString(), items: cartItems };
-            try {
-                localStorage.setItem(CART_LOCAL_STORAGE_KEY, JSON.stringify(cartData));
-            } catch (error) { console.error("Error saving cart to localStorage:", error); }
-        }
-
-        function loadCartFromLocalStorage() {
-            const storedData = localStorage.getItem(CART_LOCAL_STORAGE_KEY);
-            cartItems = [];
-            if (storedData) {
-                try {
-                    const parsedData = JSON.parse(storedData);
-                    // Optional: Add date check if needed, removed for simplicity as table selection handles expiry
-                    // if (parsedData && parsedData.date === getCurrentDateString() && Array.isArray(parsedData.items)) {
-                    if (parsedData && Array.isArray(parsedData.items)) { // Simplified load
-                        cartItems = parsedData.items;
-                    } else { localStorage.removeItem(CART_LOCAL_STORAGE_KEY); }
-                } catch (error) {
-                    console.error("Error parsing cart data from localStorage:", error);
-                    localStorage.removeItem(CART_LOCAL_STORAGE_KEY);
-                }
-            }
-        }
-
-        function saveOrderedItemsToLocalStorage() {
-            const orderedData = { date: getCurrentDateString(), items: orderedItems };
-            try {
-                localStorage.setItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY, JSON.stringify(orderedData));
-            } catch (error) { console.error("Error saving ordered items to localStorage:", error); }
-        }
-
-        function loadOrderedItemsFromLocalStorage() {
-            const storedData = localStorage.getItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY);
-            orderedItems = [];
-            if (storedData) {
-                try {
-                    const parsedData = JSON.parse(storedData);
-                     // Optional: Add date check if needed
-                    // if (parsedData && parsedData.date === getCurrentDateString() && Array.isArray(parsedData.items)) {
-                    if (parsedData && Array.isArray(parsedData.items)) { // Simplified load
-                        orderedItems = parsedData.items;
-                    } else { localStorage.removeItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY); }
-                } catch (error) {
-                    console.error("Error parsing ordered items data from localStorage:", error);
-                    localStorage.removeItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY);
-                }
-            }
-        }
-
-        // --- Cart Update Functions ---
-        function addToCart(itemId, size) {
-            const product = menuData.find(item => item.id === itemId);
-            if (!product || typeof product.prices !== 'object') { console.error("Product not found:", itemId); return; }
-            const price = product.prices[size];
-            if (price === null || price === undefined || isNaN(price)) { console.error("Invalid price:", itemId, size); return; }
-            const cartItemId = `${itemId}-${size}`;
-            const existingItemIndex = cartItems.findIndex(item => item.cartId === cartItemId);
-            if (existingItemIndex > -1) { cartItems[existingItemIndex].quantity++; }
-            else { cartItems.push({ cartId: cartItemId, id: product.id, name: product.name, price: price, size: size, quantity: 1 }); }
-            saveCartToLocalStorage();
-            renderCart();
-            updateCartIconCount();
-            if (cartIconContainer) { cartIconContainer.classList.add('updated'); setTimeout(() => { cartIconContainer.classList.remove('updated'); }, 300); }
-        }
-
-        function updateQuantity(cartId, change) {
-            const itemIndex = cartItems.findIndex(item => item.cartId === cartId);
-            if (itemIndex > -1) {
-                cartItems[itemIndex].quantity += change;
-                if (cartItems[itemIndex].quantity <= 0) { cartItems.splice(itemIndex, 1); }
-                saveCartToLocalStorage();
-                renderCart();
-                updateCartIconCount();
-            }
-        }
-
-        function removeFromCart(cartId) {
-             const itemIndex = cartItems.findIndex(item => item.cartId === cartId);
-             if (itemIndex > -1) {
-                 cartItems.splice(itemIndex, 1);
-                 saveCartToLocalStorage();
-                 renderCart();
-                 updateCartIconCount();
+        DOMElements.imageContainer.addEventListener('touchmove', (e) => {
+             if (isSwiping && e.touches.length === 1) {
+                 touchEndX = e.touches[0].clientX;
              }
-        }
+        }, { passive: true });
 
-        // --- Rendering Functions ---
-        function renderCart() {
-            if (!cartItemsList || !cartTotalPriceElement) { return; }
-            cartItemsList.innerHTML = '';
-            let totalPrice = 0;
-            if (cartItems.length === 0) {
-                cartItemsList.innerHTML = '<p class="cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>';
-            } else {
-                cartItems.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.classList.add('cart-item');
-                    const itemPrice = item.price || 0;
-                    const itemQuantity = item.quantity || 0;
-                    const itemTotalPrice = itemPrice * itemQuantity;
-                    totalPrice += itemTotalPrice;
-                    itemElement.innerHTML = `
-                        <div class="cart-item-details">
-                            <div class="cart-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</div>
-                            <div class="cart-item-price">฿${itemPrice} x ${itemQuantity} = ฿${itemTotalPrice}</div>
-                        </div>
-                        <div class="cart-item-controls">
-                            <button class="cart-quantity-btn decrease-qty" data-cartid="${item.cartId}" aria-label="ลดจำนวน">-</button>
-                            <span class="cart-item-quantity">${itemQuantity}</span>
-                            <button class="cart-quantity-btn increase-qty" data-cartid="${item.cartId}" aria-label="เพิ่มจำนวน">+</button>
-                            <button class="cart-remove-btn" data-cartid="${item.cartId}" title="ลบรายการนี้" aria-label="ลบรายการนี้"><i class="fas fa-trash-alt"></i></button>
-                        </div>`;
-                    const decreaseBtn = itemElement.querySelector('.decrease-qty');
-                    const increaseBtn = itemElement.querySelector('.increase-qty');
-                    const removeBtn = itemElement.querySelector('.cart-remove-btn');
-                    if(decreaseBtn) decreaseBtn.addEventListener('click', (e) => updateQuantity(e.currentTarget.dataset.cartid, -1));
-                    if(increaseBtn) increaseBtn.addEventListener('click', (e) => updateQuantity(e.currentTarget.dataset.cartid, 1));
-                    if(removeBtn) removeBtn.addEventListener('click', (e) => removeFromCart(e.currentTarget.dataset.cartid));
-                    cartItemsList.appendChild(itemElement);
-                });
-            }
-             cartTotalPriceElement.textContent = `฿${totalPrice}`;
-        }
-
-        function updateCartIconCount() {
-             if (!cartItemCountBadge) return;
-            const totalQuantity = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-            if (totalQuantity > 0) {
-                cartItemCountBadge.textContent = totalQuantity;
-                cartItemCountBadge.classList.remove('hidden');
-            } else {
-                cartItemCountBadge.classList.add('hidden');
-            }
-        }
-
-        function renderOrderedItems() {
-            if (!myFoodItemsList) { return; }
-            myFoodItemsList.innerHTML = '';
-
-            if (orderedItems.length === 0) {
-                myFoodItemsList.innerHTML = '<p class="my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>';
-                 if (myFoodCheckoutButton) myFoodCheckoutButton.style.display = 'none';
-            } else {
-                 if (myFoodCheckoutButton) myFoodCheckoutButton.style.display = 'block';
-                 let orderedTotal = 0;
-                orderedItems.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.classList.add('ordered-item');
-                    const itemPrice = item.price || 0;
-                    const itemQuantity = item.quantity || 0;
-                    const itemTotalPrice = itemPrice * itemQuantity;
-                    orderedTotal += itemTotalPrice;
-                    itemElement.innerHTML = `
-                        <div class="ordered-item-details">
-                            <div class="ordered-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</div>
-                            <div class="ordered-item-info">จำนวน: ${itemQuantity} (฿${itemPrice}/ชิ้น)</div>
-                        </div>
-                        <div class="ordered-item-total">
-                           ฿${itemTotalPrice}
-                        </div>`;
-                    myFoodItemsList.appendChild(itemElement);
-                });
-            }
-        }
-
-        function updateMyFoodIconCount() {
-             if (!myFoodItemCountBadge) return;
-             const totalQuantity = orderedItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-             if (totalQuantity > 0) {
-                 myFoodItemCountBadge.textContent = totalQuantity;
-                 myFoodItemCountBadge.classList.remove('hidden');
-                 if (myFoodIconContainer) myFoodIconContainer.classList.add('updated');
-                 setTimeout(() => { if (myFoodIconContainer) myFoodIconContainer.classList.remove('updated'); }, 300);
-             } else {
-                 myFoodItemCountBadge.classList.add('hidden');
-             }
-         }
-
-        function showItemDetails(index, direction = 'none') {
-            if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer) { return; }
-            if (index < 0 || index >= currentFilteredItems.length) { menuDetailsContainer.style.display = 'none'; currentDisplayedItemId = null; currentIndex = -1; return; }
-
-            currentIndex = index;
-            const itemData = currentFilteredItems[currentIndex];
-            currentDisplayedItemId = itemData.id;
-
-            const newImageSrc = itemData.dataImageSrc || itemData.src;
-            const currentImageSrc = mainFoodImage.getAttribute('src');
-
-            const updateImageElement = (src, alt) => {
-                mainFoodImage.setAttribute('src', src);
-                mainFoodImage.alt = alt;
-            };
-
-            imageContainer.classList.remove('slide-out-left', 'slide-in-right', 'slide-out-right', 'slide-in-left');
-
-            if (direction !== 'none' && currentImageSrc !== newImageSrc) {
-                let outClass = ''; let inClass = '';
-                if (direction === 'next') { outClass = 'slide-out-left'; inClass = 'slide-in-right'; }
-                else if (direction === 'prev') { outClass = 'slide-out-right'; inClass = 'slide-in-left'; }
-
-                requestAnimationFrame(() => {
-                    imageContainer.classList.add(outClass);
-                    const handleOutAnimationEnd = () => {
-                        imageContainer.removeEventListener('animationend', handleOutAnimationEnd);
-                        imageContainer.classList.remove(outClass);
-                        updateImageElement(newImageSrc, itemData.alt);
-                        requestAnimationFrame(() => {
-                            imageContainer.classList.add(inClass);
-                            const handleInAnimationEnd = () => {
-                                imageContainer.removeEventListener('animationend', handleInAnimationEnd);
-                                imageContainer.classList.remove(inClass);
-                            };
-                            imageContainer.addEventListener('animationend', handleInAnimationEnd);
-                        });
-                    };
-                    imageContainer.addEventListener('animationend', handleOutAnimationEnd);
-                });
-            } else {
-                updateImageElement(newImageSrc, itemData.alt);
-            }
-
-            menuNameElement.textContent = itemData.name || 'ชื่อเมนู';
-            menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
-
-            const prices = itemData.prices || {};
-            const displayOrder = ['Small', 'Normal', 'Extra', 'Family'];
-            let visiblePriceCount = 0;
-
-            displayOrder.forEach(size => {
-                const cache = priceElementsCache[size];
-                if (cache) {
-                    const parentSpan = cache.label?.closest('.price-item');
-                    if (parentSpan) parentSpan.classList.add('hidden');
-                    if (cache.separator) cache.separator.classList.add('hidden');
-                }
-            });
-
-            displayOrder.forEach(size => {
-                const cache = priceElementsCache[size];
-                 if (cache && cache.label && cache.value && cache.button) {
-                     const priceValue = prices[size];
-                     const parentSpan = cache.label.closest('.price-item');
-                     if (parentSpan) {
-                         if (priceValue !== null && priceValue !== undefined && !isNaN(priceValue)) {
-                             cache.value.textContent = `฿${priceValue}`;
-                             parentSpan.classList.remove('hidden');
-                             visiblePriceCount++;
-                         }
-                     }
-                 }
-            });
-
-            let firstVisibleFound = false;
-            let lastVisibleSize = null;
-            displayOrder.forEach(size => {
-                 const cache = priceElementsCache[size];
-                 const parentSpan = cache?.label?.closest('.price-item');
-                 if (parentSpan && !parentSpan.classList.contains('hidden')) {
-                     if (firstVisibleFound && lastVisibleSize) {
-                         const separatorCache = priceElementsCache[lastVisibleSize];
-                         const currentSeparatorCache = priceElementsCache[size];
-                         // Logic to show separator *before* the current item if it's not the first visible one
-                         if(currentSeparatorCache && currentSeparatorCache.separator) {
-                            currentSeparatorCache.separator.classList.remove('hidden');
-                         } else if (size === 'Normal' && priceElementsCache['Small']?.separator) { // Separator between S and N
-                             priceElementsCache['Small']?.separator.classList.remove('hidden');
-                         } else if (size === 'Extra' && priceElementsCache['Extra']?.separator) { // Separator between N and E
-                             priceElementsCache['Extra']?.separator.classList.remove('hidden');
-                         } else if (size === 'Family' && priceElementsCache['Family']?.separator) { // Separator between E and F
-                             priceElementsCache['Family']?.separator.classList.remove('hidden');
-                         }
-                     }
-                     firstVisibleFound = true;
-                     lastVisibleSize = size; // Keep track of the last size *shown*
-                 }
-            });
-
-            menuDetailsContainer.style.display = 'block';
-        }
-
-        function displayMenuItems(category) {
-            if (!bottomMenu) return;
-            bottomMenu.innerHTML = '';
-            currentCategory = category;
-            currentFilteredItems = menuData.filter(item => Array.isArray(item.category) && item.category.includes(category));
-
-            if (currentFilteredItems.length === 0) {
-                 bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีเมนูในหมวดหมู่นี้</p>';
-                 if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-                 currentDisplayedItemId = null; currentIndex = -1; return;
-            }
-
-            currentFilteredItems.forEach((item, index) => {
-                const menuItemDiv = document.createElement('div');
-                menuItemDiv.classList.add('menu-item');
-                menuItemDiv.dataset.itemId = item.id;
-                menuItemDiv.dataset.index = index; // Store index within filtered list
-
-                const img = document.createElement('img');
-                img.src = item.src; img.alt = item.alt; img.loading = 'lazy';
-                img.onerror = function() { this.src='placeholder.jpg'; }; // Basic placeholder
-
-                menuItemDiv.appendChild(img);
-                bottomMenu.appendChild(menuItemDiv);
-
-                menuItemDiv.addEventListener('click', () => {
-                    const itemIndex = parseInt(menuItemDiv.dataset.index, 10);
-                    if (!isNaN(itemIndex) && itemIndex >= 0 && itemIndex < currentFilteredItems.length) {
-                         showItemDetails(itemIndex);
-                         requestAnimationFrame(() => {
-                             window.scrollTo({ top: 0, behavior: 'smooth' });
-                         });
-                    } else {
-                         console.error("Invalid index clicked or filtered items mismatch.");
-                    }
-                });
-            });
-
-            // Show details of the first item in the filtered list
-            if (currentFilteredItems.length > 0) {
-                showItemDetails(0);
-            } else {
-                if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-                currentDisplayedItemId = null; currentIndex = -1;
-            }
-        }
-
-        function showPreviousItem() {
-            if (currentFilteredItems.length <= 1 || currentIndex < 0) return;
-            let newIndex = (currentIndex - 1 + currentFilteredItems.length) % currentFilteredItems.length;
-            showItemDetails(newIndex, 'prev');
-        }
-
-        function showNextItem() {
-            if (currentFilteredItems.length <= 1 || currentIndex < 0) return;
-            let newIndex = (currentIndex + 1) % currentFilteredItems.length;
-            showItemDetails(newIndex, 'next');
-        }
-
-
-        // --- Event Listeners Setup ---
-        function setupEventListeners() {
-            // Table Selection Trigger
-            if (tableNumberDisplay) {
-                tableNumberDisplay.addEventListener('click', openTableSelectModal);
-            }
-            // Modal Close Button
-            if (tableSelectCloseBtn) {
-                tableSelectCloseBtn.addEventListener('click', closeTableSelectModal);
-            }
-            // Close modal on overlay click
-            if (tableSelectModal) {
-                tableSelectModal.addEventListener('click', (e) => {
-                    if (e.target === tableSelectModal) { // Check if click is on the background overlay
-                        closeTableSelectModal();
-                    }
-                });
-            }
-            // Hide prompt on click/touch
-            if(tablePromptNotification) {
-                 tablePromptNotification.addEventListener('click', hideTablePromptNotification);
-                 tablePromptNotification.addEventListener('touchstart', hideTablePromptNotification, {passive: true});
-             }
-
-
-            // Add to Cart Buttons (in Menu Details)
-            if(menuPriceContainer) {
-                menuPriceContainer.addEventListener('click', (e) => {
-                    if (e.target && e.target.classList.contains('add-to-cart-button')) {
-                        const size = e.target.dataset.size;
-                        if (currentDisplayedItemId && size) {
-                            addToCart(currentDisplayedItemId, size);
-                        } else {
-                            console.warn("Cannot add to cart. Missing item ID or size.");
-                        }
-                    }
-                });
-            }
-
-            // Category Selection
-            categoryItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const selectedCategory = item.getAttribute('data-category');
-                    categoryItems.forEach(cat => cat.classList.remove('selected'));
-                    item.classList.add('selected');
-                    displayMenuItems(selectedCategory);
-                    // Ensure details display is reset/shown for the new category's first item
-                    if (currentFilteredItems.length > 0) {
-                        showItemDetails(0);
-                    } else {
-                         if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-                         currentDisplayedItemId = null; currentIndex = -1;
-                    }
-                });
-            });
-
-            // Cart Icon & Popup
-            if (cartIconContainer) {
-                cartIconContainer.addEventListener('click', () => {
-                    if (myFoodPopup && myFoodPopup.classList.contains('open')) {
-                        myFoodPopup.classList.remove('open');
-                    }
-                    if(cartPopup) cartPopup.classList.toggle('open');
-                    if (cartPopup && cartPopup.classList.contains('open')) {
-                        renderCart(); // Render cart only when opening
-                    }
-                });
-            }
-            if (cartCloseBtn) {
-                cartCloseBtn.addEventListener('click', () => {
-                    if(cartPopup) cartPopup.classList.remove('open');
-                });
-            }
-
-             // My Food Icon & Popup
-            if (myFoodIconContainer) {
-                myFoodIconContainer.addEventListener('click', () => {
-                     if (cartPopup && cartPopup.classList.contains('open')) {
-                         cartPopup.classList.remove('open');
-                     }
-                    if(myFoodPopup) myFoodPopup.classList.toggle('open');
-                    if (myFoodPopup && myFoodPopup.classList.contains('open')) {
-                        renderOrderedItems(); // Render ordered items only when opening
-                    }
-                });
-            }
-            if (myFoodCloseBtn) {
-                 myFoodCloseBtn.addEventListener('click', () => {
-                     if(myFoodPopup) myFoodPopup.classList.remove('open');
-                 });
-             }
-
-            // Image Swipe Listeners
-            if (imageContainer) {
-                imageContainer.addEventListener('touchstart', (e) => {
-                    if (e.touches.length === 1) { touchStartX = e.touches[0].clientX; isSwiping = true; }
-                }, { passive: true });
-                imageContainer.addEventListener('touchmove', (e) => {
-                    if (!isSwiping || e.touches.length !== 1) return; touchEndX = e.touches[0].clientX;
-                }, { passive: true });
-                imageContainer.addEventListener('touchend', (e) => {
-                    if (!isSwiping || e.changedTouches.length !== 1) { isSwiping = false; return; }
-                    touchEndX = e.changedTouches[0].clientX; const deltaX = touchEndX - touchStartX;
-                    if (Math.abs(deltaX) > swipeThreshold) { if (deltaX > 0) showPreviousItem(); else showNextItem(); }
-                    isSwiping = false; touchStartX = 0; touchEndX = 0;
-                });
-            }
-
-            // Order Button (in Cart)
-            if (orderButton) {
-                orderButton.addEventListener('click', handleOrderSubmission);
-            }
-
-             // Checkout Button (in My Food)
-            if (myFoodCheckoutButton) {
-                 myFoodCheckoutButton.addEventListener('click', handleCheckout);
-             }
-        }
-
-        // --- Action Handlers ---
-        async function handleOrderSubmission() {
-            if (!selectedTableNumber) {
-                alert('กรุณาเลือกหมายเลขโต๊ะก่อนสั่งอาหารค่ะ');
-                openTableSelectModal(); // Prompt user to select table
+        DOMElements.imageContainer.addEventListener('touchend', (e) => {
+            // Check if swipe was actually in progress and ended with one finger
+            if (!isSwiping || e.changedTouches.length !== 1) {
+                isSwiping = false; // Reset flag if touch cancel or multiple fingers
                 return;
             }
-            if (cartItems.length === 0) {
-                alert('ตระกร้าสินค้าของคุณว่างเปล่า');
-                return;
-            }
-
-            let reconstructedToken = '';
-            try {
-                reconstructedToken = atob(tPart1) + atob(tPart2) + atob(tPart3) + atob(tPart4);
-            } catch (e) {
-                console.error("Error decoding token:", e); alert("ข้อผิดพลาด: ไม่สามารถเตรียมข้อมูล Token"); return;
-            }
-            if (!reconstructedToken) {
-                console.error("Token empty after decoding"); alert("ข้อผิดพลาด: Token ไม่ถูกต้อง"); return;
-            }
-
-            // --- Improved Telegram Message Formatting ---
-            let orderMessage = `*โต๊ะ ${selectedTableNumber} - รายการสั่งซื้อใหม่* ✨\n`;
-            orderMessage += `------------------------------------\n`;
-            let total = 0;
-
-            cartItems.forEach((item, index) => {
-                const itemPrice = item.price || 0;
-                const itemQuantity = item.quantity || 0;
-                const lineTotal = itemPrice * itemQuantity;
-                // Add extra newline BEFORE each item (except the first) for spacing
-                // if (index > 0) {
-                //      orderMessage += "\n";
-                // }
-                orderMessage += `*${index + 1}. ${item.name || 'N/A'}* (${item.size || 'N/A'})\n`; // Bold item name
-                orderMessage += `   (จำนวน: ${itemQuantity} x ฿${itemPrice} = *฿${lineTotal}*)\n\n`; // Indent details, bold line total, extra newline after
-                total += lineTotal;
-            });
-
-            orderMessage += `------------------------------------\n`;
-            orderMessage += `*ยอดรวมทั้งหมด: ฿${total}*\n`;
-            orderMessage += `_(สั่งเมื่อ: ${new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'medium' })})_`; // Italic timestamp
-
-            const telegramApiUrl = `https://api.telegram.org/bot${reconstructedToken}/sendMessage`;
-            const payload = {
-                chat_id: CHAT_ID,
-                text: orderMessage,
-                parse_mode: 'Markdown' // Use Markdown for bold/italic
-            };
-
-            orderButton.disabled = true;
-            orderButton.textContent = 'กำลังส่ง...';
-
-            try {
-                const response = await fetch(telegramApiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (result.ok) {
-                    alert(`ส่งรายการสั่งซื้อจาก ${TABLE_NUMBER_PREFIX}${selectedTableNumber} สำเร็จ!`);
-
-                    // Move items from cart to ordered list
-                    cartItems.forEach(cartItem => {
-                        const existingIndex = orderedItems.findIndex(orderedItem => orderedItem.cartId === cartItem.cartId);
-                        if (existingIndex > -1) {
-                            orderedItems[existingIndex].quantity += cartItem.quantity;
-                        } else {
-                            orderedItems.push({ ...cartItem }); // Add as new ordered item
-                        }
-                    });
-                    cartItems = []; // Clear the cart
-
-                    saveCartToLocalStorage();       // Save empty cart
-                    saveOrderedItemsToLocalStorage(); // Save updated ordered items
-
-                    renderCart();                   // Update cart UI (should be empty)
-                    updateCartIconCount();          // Update cart badge
-                    updateMyFoodIconCount();        // Update ordered items badge
-
-                    if(cartPopup) cartPopup.classList.remove('open'); // Close cart popup
-
-                } else {
-                    console.error('Telegram API error:', result.description);
-                    alert(`เกิดข้อผิดพลาดในการส่งจาก ${TABLE_NUMBER_PREFIX}${selectedTableNumber}: ${result.description}`);
-                }
-            } catch (error) {
-                console.error('Error sending order via fetch:', error);
-                alert(`เกิดข้อผิดพลาดในการเชื่อมต่อ (${TABLE_NUMBER_PREFIX}${selectedTableNumber}) กรุณาลองใหม่อีกครั้ง`);
-            } finally {
-                 orderButton.disabled = false;
-                 orderButton.textContent = 'สั่งรายการอาหาร';
-            }
-        }
-
-        function handleCheckout() {
-            if (!selectedTableNumber) {
-                 alert('เกิดข้อผิดพลาด: ไม่พบหมายเลขโต๊ะที่บันทึกไว้');
-                 return;
-             }
-             if (orderedItems.length === 0) {
-                 alert('ยังไม่มีรายการอาหารที่สั่งสำหรับชำระเงิน');
-                 return;
-             }
-             alert(`[จำลอง] ดำเนินการเรียกพนักงานเพื่อชำระเงินสำหรับ ${TABLE_NUMBER_PREFIX}${selectedTableNumber}`);
-             // In a real scenario, this might send another Telegram message or call a different API
-             // Example: Send a checkout request message
-             // sendCheckoutRequestToTelegram(selectedTableNumber, orderedItems);
-         }
-
-        // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Load table number or prompt if needed
-            selectedTableNumber = loadSelectedTable();
-            updateTableDisplay(selectedTableNumber); // Update UI with loaded or default text
-            populateTableList(MAX_TABLE_NUMBER);   // Prepare the selection modal
-
-            if (!selectedTableNumber) {
-                showTablePromptNotification(); // Show prompt only if no valid table loaded
-            } else {
-                // Set initial page title if table is loaded
-                 document.title = `เมนูอาหาร - ${TABLE_NUMBER_PREFIX}${selectedTableNumber}`;
-            }
-
-            // 2. Load cart and ordered items from storage
-            loadCartFromLocalStorage();
-            loadOrderedItemsFromLocalStorage();
-
-            // 3. Render initial UI state
-            renderCart();
-            updateCartIconCount();
-            renderOrderedItems(); // Render to correctly set display of checkout button
-            updateMyFoodIconCount();
-
-            // 4. Display initial category and menu item
-            if (categoryItems.length > 0) {
-                const initialCategoryElement = categoryItems[0];
-                const initialCategory = initialCategoryElement.getAttribute('data-category');
-                categoryItems.forEach(cat => cat.classList.remove('selected'));
-                initialCategoryElement.classList.add('selected');
-                displayMenuItems(initialCategory); // This will also call showItemDetails for the first item
-            } else {
-                 // Handle case with no categories
-                 if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-                 if(bottomMenu) bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary);">ไม่มีหมวดหมู่เมนู</p>';
-                 currentDisplayedItemId = null; currentIndex = -1;
-            }
-
-            // 5. Setup all event listeners
-            setupEventListeners();
+            // Use the final position from changedTouches
+            touchEndX = e.changedTouches[0].clientX;
+            handleSwipeAction(touchStartX, touchEndX); // Process the swipe
+            // Reset swipe state
+            isSwiping = false;
+            touchStartX = 0;
+            touchEndX = 0;
         });
 
-    </script>
+        // Mouse Drag Events (for Desktop)
+        DOMElements.imageContainer.addEventListener('mousedown', (e) => {
+            // Prevent starting drag if it's not the primary mouse button
+            if (e.button !== 0) return;
+            isDragging = true;
+            dragStartX = e.clientX;
+            DOMElements.imageContainer.style.cursor = 'grabbing'; // Visual feedback
+            e.preventDefault(); // Prevent text selection/image dragging default behavior
+        });
+
+        // Listen on the document to catch mouse movements and mouse up events
+        // even if the cursor leaves the image container during the drag.
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            // Optional: Add visual feedback during drag (e.g., move image slightly)
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (!isDragging || e.button !== 0) return; // Ensure it's the primary button release
+            isDragging = false;
+            const dragEndX = e.clientX;
+            DOMElements.imageContainer.style.cursor = 'grab'; // Restore cursor
+            handleSwipeAction(dragStartX, dragEndX); // Process the drag as a swipe
+            dragStartX = 0;
+        });
+
+         // Handle case where mouse leaves the window while dragging (less common, but good practice)
+         document.addEventListener('mouseleave', (e) => {
+             // Check if mouse leaves the viewport while dragging
+             if (isDragging && !e.relatedTarget && !e.toElement) {
+                 isDragging = false;
+                 DOMElements.imageContainer.style.cursor = 'grab';
+                 // Optional: Decide whether to complete or cancel swipe on mouseleave
+                 // handleSwipeAction(dragStartX, e.clientX); // Or just reset dragStartX = 0;
+                 dragStartX = 0;
+             }
+         });
+    }
+
+    // Processes the swipe/drag action based on distance moved
+    function handleSwipeAction(startX, endX) {
+        const deltaX = endX - startX;
+        // Only trigger action if swipe distance exceeds threshold
+        if (Math.abs(deltaX) > CONFIG.SWIPE_THRESHOLD_PX) {
+            if (deltaX > 0) { // Swipe Right (Show Previous Item)
+                showPreviousItem();
+            } else { // Swipe Left (Show Next Item)
+                showNextItem();
+            }
+        }
+    }
+
+    // Navigate to the previous item in the current filtered list
+    function showPreviousItem() {
+        // Ensure there are items to navigate and the index is valid
+        if (currentFilteredItems.length <= 1 || currentDisplayIndex < 0) return;
+        // Calculate the new index, wrapping around to the end if at the beginning
+        let newIndex = (currentDisplayIndex - 1 + currentFilteredItems.length) % currentFilteredItems.length;
+        showItemDetails(newIndex, 'prev'); // Show details with 'prev' direction for animation
+    }
+
+    // Navigate to the next item in the current filtered list
+    function showNextItem() {
+        // Ensure there are items to navigate and the index is valid
+        if (currentFilteredItems.length <= 1 || currentDisplayIndex < 0) return;
+         // Calculate the new index, wrapping around to the beginning if at the end
+        let newIndex = (currentDisplayIndex + 1) % currentFilteredItems.length;
+        showItemDetails(newIndex, 'next'); // Show details with 'next' direction for animation
+    }
+
+
+    // ========================================================================
+    // INITIALIZATION
+    // ========================================================================
+    async function initializeApp() {
+        console.log("DOM Content Loaded. Initializing App...");
+
+         // 0. Cache essential DOM elements & Setup Price Element Cache
+         // Ensure this runs after the DOM is fully available
+         setupPriceElementCache();
+
+        // 1. Load table number preference from local storage
+        selectedTableNumber = loadSelectedTable();
+        updateTableDisplay(selectedTableNumber); // Update UI with loaded or default state
+        populateTableList(CONFIG.MAX_TABLE_NUMBER); // Create the table selection list
+        // Show prompt only if no table number is loaded/valid
+        if (!selectedTableNumber) {
+            showTablePromptNotification();
+        } else {
+            document.title = `เมนูอาหาร - ${CONFIG.TABLE_NUMBER_PREFIX}${selectedTableNumber}`; // Set title if table known
+        }
+
+        // 2. Load cart and ordered items state from local storage
+        loadCartFromLocalStorage();
+        loadOrderedItemsFromLocalStorage();
+        // Render initial UI based on loaded state *before* fetching new data
+        renderCart();
+        updateCartIcon();
+        renderOrderedItems();
+        updateMyFoodIcon();
+
+        // 3. Fetch menu data from the backend (Google Apps Script)
+        const dataLoaded = await fetchMenuData(); // This function now handles loading indicators and errors
+        
+        // 4. Populate dynamic content (categories, initial menu) only if data fetch was successful
+        if (dataLoaded) {
+            console.log('Categories Received:', allCategories);
+            populateCategoryBar(); // สร้าง category buttons
+
+             // Select and display the first category's items automatically
+             const firstCategoryElement = DOMElements.categoryBarContainer?.querySelector('.category-item');
+             if (firstCategoryElement) {
+                 // Simulate a click on the first category to trigger selection and display
+                  handleCategoryClick({ currentTarget: firstCategoryElement });
+             } else if (allCategories.length === 0) {
+                  // Handle case where data loaded but no categories were returned
+                  console.warn("Data loaded, but no categories found.");
+                  if(DOMElements.bottomMenuContainer) DOMElements.bottomMenuContainer.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีเมนูให้แสดง</p>';
+                  showItemDetails(-1); // Hide details section
+             }
+        } else {
+            // fetchMenuData already displayed an error message in the category/menu area
+            // Ensure details section is also hidden if data fetch failed
+            showItemDetails(-1); // Hide details section
+        }
+
+        // 5. Setup all general event listeners (for popups, action buttons, etc.)
+        // This should run regardless of data fetch success to ensure basic UI interaction works
+        setupEventListeners();
+
+        console.log("App Initialization complete.");
+    }
+
+    // --- Start the application once the DOM is fully loaded ---
+    // Using DOMContentLoaded is generally preferred and safer than load
+    if (document.readyState === 'loading') { // Handle cases where script runs before DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    } else { // Handle cases where script runs after DOMContentLoaded
+        initializeApp();
+    }
+
+</script>
 </body>
 </html>
- 
