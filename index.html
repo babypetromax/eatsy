@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เมนูอาหาร - โต๊ะ 1</title> <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Dynamically set title later -->
+    <title>เมนูอาหาร</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- Base Styles --- */
         :root {
@@ -27,6 +29,8 @@
             --color-footer-transparent: rgba(248, 249, 250, 0.9); /* Cart footer background */
             --color-border: #dee2e6;
             --color-danger: #dc3545; /* Red for remove/delete actions */
+            --color-info: #17a2b8; /* Info color for prompts */
+            --color-modal-bg: rgba(0, 0, 0, 0.6);
             /* Transitions */
             --transition-speed-fast: 0.2s;
             --transition-speed-medium: 0.3s;
@@ -34,43 +38,29 @@
         }
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'Inter', sans-serif; margin: 0; padding: 0;
+            font-family: 'Sarabun', 'Inter', sans-serif; /* Added Sarabun for Thai */
+            margin: 0; padding: 0;
             background-color: var(--color-background); color: var(--color-text-primary);
             overscroll-behavior-y: contain;
-            padding-bottom: 160px; /* เพิ่ม padding ด้านล่างเผื่อไอคอนลอย */
-            /* --- ลบ padding-top ออก --- */
-            /* padding-top: 40px; */
+            padding-bottom: 160px; /* Space for floating icons */
         }
         body::-webkit-scrollbar { display: none; }
         body { -ms-overflow-style: none; scrollbar-width: none; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 10px; }
 
-        /* --- Top Section (ปรับปรุง) --- */
+        /* --- Top Section --- */
         .top-section {
-            width: calc(100% + 20px); /* เพิ่มความกว้างชดเชย negative margin */
-            margin-bottom: 15px;
-            position: relative;
-            /* --- เพิ่ม negative margin ชดเชย padding ของ .container --- */
-            margin-left: -10px;
-            margin-right: -10px;
+            width: calc(100% + 20px); margin-bottom: 15px; position: relative;
+            margin-left: -10px; margin-right: -10px;
         }
         .image-container {
-            width: 100%;
-            /* --- เปลี่ยน aspect-ratio เป็น 5:4 --- */
-            aspect-ratio: 5 / 4;
-            overflow: hidden;
-            /* --- ลบ border-radius ออก --- */
-            /* border-radius: 0 0 15px 15px; */
-            background-color: #e0e0e0;
-            position: relative;
-            cursor: grab;
+            width: 100%; aspect-ratio: 5 / 4; overflow: hidden;
+            background-color: #e0e0e0; position: relative; cursor: grab;
         }
         .image-container:active { cursor: grabbing; }
         .main-food-image {
             width: 100%; height: 100%; object-fit: cover; object-position: center;
             display: block;
-            /* --- ลบ box-shadow ออก (ถ้าไม่ต้องการเงา) หรือปรับแก้ตามต้องการ --- */
-            /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
         }
 
         /* --- Swipe Animation Classes --- */
@@ -86,20 +76,14 @@
         /* --- Menu Details --- */
         #menu-details {
             padding: 15px 10px; background-color: var(--color-white);
-            /* --- ปรับ margin-top เนื่องจากไม่มี border-radius ด้านบน --- */
-            /* margin-top: -5px; */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); display: none;
-            /* --- ทำให้ detail อยู่ภายใต้ container padding --- */
-             margin-left: 10px;
-             margin-right: 10px;
-             width: calc(100% - 20px); /* ปรับความกว้างให้พอดี container */
-             border-radius: 0 0 10px 10px; /* เพิ่ม radius กลับมาที่นี่ */
-
+             margin-left: 10px; margin-right: 10px;
+             width: calc(100% - 20px); border-radius: 0 0 10px 10px;
         }
         .menu-name-container { margin-bottom: 5px; }
-        #menu-name { font-size: 32px; font-weight: bold; text-transform: uppercase; margin: 0; color: var(--color-darkest); line-height: 1.2; }
+        #menu-name { font-size: 28px; font-weight: bold; /* Adjusted size */ text-transform: uppercase; margin: 0; color: var(--color-darkest); line-height: 1.2; }
         #menu-description { font-size: 14px; margin: 0 0 10px 0; color: var(--color-medium-green); line-height: 1.5; }
-        #menu-price { font-size: 20px; font-weight: bold; margin: 0; color: var(--color-medium-beige); display: flex; align-items: center; flex-wrap: wrap; gap: 5px 0; }
+        #menu-price { font-size: 18px; /* Adjusted size */ font-weight: bold; margin: 0; color: var(--color-medium-beige); display: flex; align-items: center; flex-wrap: wrap; gap: 5px 0; }
         .price-item { display: inline-flex; align-items: center; margin-right: 10px; }
         .price-label { font-size: 0.8em; font-weight: normal; color: var(--color-text-secondary); margin-right: 4px; }
         .price-value { margin-right: 5px; }
@@ -135,11 +119,8 @@
 
         /* --- Pinterest-Style Menu Grid --- */
         .bottom-menu {
-            width: 100%;
-            padding-top: 10px;
-            column-count: 2;
-            column-gap: 10px;
-            contain: layout paint;
+            width: 100%; padding-top: 10px; column-count: 2;
+            column-gap: 10px; contain: layout paint;
         }
         .menu-item {
             display: inline-block; width: 100%; margin-bottom: 10px; border-radius: 10px; overflow: hidden;
@@ -169,22 +150,17 @@
         /* --- Cart Popup --- */
         #cart-popup {
             position: fixed;
-            bottom: 85px; /* Position relative to My Food Icon */
-            right: 20px; width: 90%; max-width: 380px;
+            bottom: 85px; right: 20px; width: 90%; max-width: 380px;
             background-color: var(--color-white-transparent); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
             border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 998; /* Ensure it's below my-food-popup */
-            display: none; /* Start hidden */
-            flex-direction: column;
-            max-height: 45vh; /* Adjust max height if needed */
-            overflow: hidden;
+            z-index: 998; display: none; flex-direction: column;
+            max-height: 45vh; overflow: hidden;
             opacity: 0; transform: translateY(20px) scale(0.95);
             transition: opacity var(--transition-speed-medium) ease-out, transform var(--transition-speed-medium) ease-out;
             pointer-events: none;
         }
         #cart-popup.open {
-            display: flex; /* Show when open */
-            opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+            display: flex; opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
         }
         .cart-header {
             display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;
@@ -214,192 +190,189 @@
             backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 0 10px 10px; flex-shrink: 0;
         }
         .cart-total { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 1.1em; }
-        .cart-actions { display: flex; justify-content: center; /* Center the single order button */ gap: 10px; }
+        .cart-actions { display: flex; justify-content: center; gap: 10px; }
         .cart-action-btn {
             padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
             font-size: 0.9em; transition: opacity 0.2s ease; flex-grow: 1; margin: 0;
         }
         .cart-action-btn:hover { opacity: 0.85; }
         .order-btn { background-color: var(--color-light-green); color: var(--color-darkest); }
-        .checkout-btn { background-color: var(--color-medium-beige); color: var(--color-white); } /* Keep style for reuse */
+        .checkout-btn { background-color: var(--color-medium-beige); color: var(--color-white); }
         .cart-empty-message { text-align: center; color: var(--color-text-secondary); padding: 20px; }
 
         /* --- Floating My Food Icon --- */
         #my-food-icon-container {
-            position: fixed;
-            bottom: 85px; /* Above cart icon (20px + 55px + 10px margin) */
-            right: 20px;
-            background-color: var(--color-medium-green); /* Same theme */
-            color: var(--color-white);
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 22px; /* Adjust icon size if needed */
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            z-index: 1001; /* Above cart icon */
+            position: fixed; bottom: 85px; right: 20px;
+            background-color: var(--color-medium-green); color: var(--color-white);
+            width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 22px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); z-index: 1001;
             transition: background-color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
         }
-        #my-food-icon-container:hover {
-            background-color: var(--color-dark-green);
-            transform: scale(1.1);
-        }
+        #my-food-icon-container:hover { background-color: var(--color-dark-green); transform: scale(1.1); }
         #my-food-item-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--color-danger); /* Same badge color */
-            color: white;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            font-size: 12px;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            line-height: 22px;
-            border: 1px solid white;
+            position: absolute; top: -5px; right: -5px; background-color: var(--color-danger); color: white;
+            border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold;
+            display: flex; justify-content: center; align-items: center; line-height: 22px; border: 1px solid white;
             transition: transform var(--transition-speed-fast) ease;
         }
-        #my-food-icon-container.updated #my-food-item-count {
-            transform: scale(1.3);
-        }
+        #my-food-icon-container.updated #my-food-item-count { transform: scale(1.3); }
 
         /* --- My Food Popup --- */
         #my-food-popup {
-            position: fixed;
-            bottom: 150px; /* Above my-food icon (85px + 55px + 10px margin) */
-            right: 20px;
-            width: 90%;
-            max-width: 380px;
-            background-color: var(--color-white-transparent);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 999; /* Below its icon but above page content */
-            display: none; /* Start hidden */
-            flex-direction: column;
-            max-height: 50vh; /* Adjust height as needed */
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
+            position: fixed; bottom: 150px; right: 20px; width: 90%; max-width: 380px;
+            background-color: var(--color-white-transparent); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 999; display: none; flex-direction: column;
+            max-height: 50vh; overflow: hidden;
+            opacity: 0; transform: translateY(20px) scale(0.95);
             transition: opacity var(--transition-speed-medium) ease-out, transform var(--transition-speed-medium) ease-out;
             pointer-events: none;
         }
         #my-food-popup.open {
-            display: flex; /* Show when open */
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
+            display: flex; opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
         }
-        .my-food-header { /* Can reuse .cart-header if identical */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background-color: rgba(164, 172, 134, 0.8); /* Slightly different color maybe? */
-            border-bottom: 1px solid var(--color-border);
-            border-radius: 10px 10px 0 0;
-            flex-shrink: 0;
+        .my-food-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;
+            background-color: rgba(164, 172, 134, 0.8); border-bottom: 1px solid var(--color-border);
+            border-radius: 10px 10px 0 0; flex-shrink: 0;
         }
         .my-food-header h3 { margin: 0; font-size: 1.1em; color: var(--color-darkest); }
         .my-food-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-text-secondary); }
         #my-food-items-list { padding: 5px 15px; overflow-y: auto; flex-grow: 1; }
-        /* Style for ordered items */
         .ordered-item {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-            font-size: 0.9em;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9em;
+            display: flex; justify-content: space-between; align-items: center;
         }
         .ordered-item:last-child { border-bottom: none; }
         .ordered-item-details { flex-grow: 1; margin-right: 10px; }
         .ordered-item-name { font-weight: bold; color: var(--color-dark-green); }
         .ordered-item-info { color: var(--color-medium-beige); font-size: 0.9em; }
-        .ordered-item-total { font-weight: bold; color: var(--color-medium-beige); flex-shrink: 0;} /* Added style for total */
+        .ordered-item-total { font-weight: bold; color: var(--color-medium-beige); flex-shrink: 0;}
 
-        .my-food-footer { /* Can reuse .cart-footer if identical */
-            padding: 15px;
-            border-top: 1px solid var(--color-border);
-            background-color: var(--color-footer-transparent);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border-radius: 0 0 10px 10px;
-            flex-shrink: 0;
+        .my-food-footer {
+            padding: 15px; border-top: 1px solid var(--color-border); background-color: var(--color-footer-transparent);
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 0 10px 10px; flex-shrink: 0;
         }
-        .my-food-actions { /* Can reuse .cart-actions if identical */
-            display: flex;
-            justify-content: center; /* Center the single checkout button */
-            gap: 10px;
-        }
-        /* Use existing .checkout-btn style */
+        .my-food-actions { display: flex; justify-content: center; gap: 10px; }
         .my-food-empty-message { text-align: center; color: var(--color-text-secondary); padding: 20px; }
 
-        /* +++ สไตล์สำหรับแสดงหมายเลขโต๊ะ (ปรับปรุงใหม่) +++ */
+        /* --- Table Number Display (Interactive) --- */
         #table-number-display {
-            position: fixed;   /* ทำให้ลอยอยู่เหนือเนื้อหาและอยู่กับที่ */
-            /* --- ย้ายไปมุมล่างซ้าย --- */
-            bottom: 10px;      /* ระยะห่างจากขอบล่าง */
-            left: 10px;       /* ระยะห่างจากขอบซ้าย */
-            z-index: 1002;     /* ค่า z-index สูงกว่าไอคอนลอยอื่นๆ */
-            /* --- เปลี่ยนสีให้เข้ากับ Theme ตะกร้า --- */
-            background-color: var(--color-medium-green); /* สีพื้นหลังเหมือนตะกร้า */
-            color: var(--color-white);                 /* สีตัวอักษร */
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            font-weight: bold;
-            /* --- ปรับ padding และ border-radius ให้เป็นทรงแคปซูล --- */
-            padding: 8px 15px;
-            border-radius: 9999px; /* ทำให้เป็นทรงแคปซูล */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* เงาเล็กน้อย */
-            /* --- ลบ pointer-events ออก เพื่อให้คลิกได้ (ถ้าจำเป็น) --- */
-            /* pointer-events: none; */
+            position: fixed; bottom: 10px; left: 10px; z-index: 1002;
+            background-color: var(--color-medium-green); color: var(--color-white);
+            font-family: 'Sarabun', 'Inter', sans-serif; font-size: 0.9rem; font-weight: bold;
+            padding: 8px 15px; border-radius: 9999px; /* Capsule shape */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer; /* Make it clickable */
+            transition: background-color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
+            user-select: none; /* Prevent text selection */
         }
-        /* --- End Table Number Display Style --- */
+        #table-number-display:hover {
+            background-color: var(--color-dark-green);
+            transform: scale(1.05);
+        }
+        #table-number-display .table-icon { /* Optional icon */
+             margin-right: 5px;
+        }
+        #table-number-display .placeholder-text {
+             font-style: italic;
+             opacity: 0.8;
+         }
+
+
+        /* --- Table Selection Modal --- */
+        #table-select-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--color-modal-bg);
+            display: none; /* Hidden by default */
+            justify-content: center; align-items: center; z-index: 1050;
+            opacity: 0; transition: opacity var(--transition-speed-medium) ease;
+        }
+        #table-select-modal.open {
+            display: flex; opacity: 1;
+        }
+        .table-select-content {
+            background-color: var(--color-white); border-radius: 10px;
+            padding: 20px; max-width: 90%; width: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: scale(0.95); transition: transform var(--transition-speed-medium) ease;
+        }
+        #table-select-modal.open .table-select-content {
+            transform: scale(1);
+        }
+        .table-select-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px;
+        }
+        .table-select-header h4 { margin: 0; font-size: 1.2em; color: var(--color-darkest); }
+        .table-select-close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-secondary); line-height: 1; }
+        #table-list {
+            max-height: 60vh; overflow-y: auto;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px; padding: 5px;
+        }
+        .table-list-item {
+            padding: 10px; border: 1px solid var(--color-border); border-radius: 5px;
+            text-align: center; font-weight: bold; cursor: pointer;
+            background-color: var(--color-background);
+            transition: background-color var(--transition-speed-fast) ease, color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
+        }
+        .table-list-item:hover {
+            background-color: var(--color-lightest-green);
+            color: var(--color-darkest);
+            transform: scale(1.05);
+        }
+        .table-list-item.selected {
+             background-color: var(--color-medium-green);
+             color: var(--color-white);
+             border-color: var(--color-dark-green);
+         }
+
+        /* --- First Load Prompt Notification --- */
+        #table-prompt-notification {
+            position: fixed;
+            top: -100px; /* Start hidden above */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--color-info);
+            color: var(--color-white);
+            padding: 10px 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            z-index: 1100;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            transition: top var(--transition-speed-medium) ease-out, opacity var(--transition-speed-medium) ease-out;
+        }
+        #table-prompt-notification.show {
+            top: 0;
+            opacity: 1;
+        }
+
 
         /* --- Responsive Adjustments --- */
         @media (min-width: 640px) {
              .bottom-menu { column-count: 3; }
-             .container { padding: 0 20px; } /* Container padding เปลี่ยนที่นี่ */
-             #menu-name { font-size: 36px; }
-             #menu-price { font-size: 22px; }
-             .price-label { font-size: 0.75em; }
+             .container { padding: 0 20px; }
+             #menu-name { font-size: 32px; }
+             #menu-price { font-size: 20px; }
+             .price-label { font-size: 0.8em; }
              .add-to-cart-button { width: 28px; height: 28px; line-height: 28px; font-size: 18px; }
 
-             /* --- ปรับ negative margin ของ top-section ให้สอดคล้องกับ container padding ใหม่ --- */
              .top-section {
-                 width: calc(100% + 40px); /* 20px * 2 sides */
-                 margin-left: -20px;
-                 margin-right: -20px;
+                 width: calc(100% + 40px);
+                 margin-left: -20px; margin-right: -20px;
              }
-             /* --- ปรับ detail margin --- */
              #menu-details {
-                 margin-left: 20px;
-                 margin-right: 20px;
+                 margin-left: 20px; margin-right: 20px;
                  width: calc(100% - 40px);
              }
-
-             /* +++ ปรับ style เลขโต๊ะสำหรับจอใหญ่ขึ้น +++ */
-             /* --- ลบ padding-top ของ body ที่นี่ด้วย --- */
-             /* body {
-                 padding-top: 50px;
-             } */
              #table-number-display {
-                 font-size: 1rem;
-                 /* --- ปรับตำแหน่งสำหรับจอใหญ่ --- */
-                 bottom: 15px;
-                 left: 15px;
-                 padding: 10px 20px;
+                 font-size: 1rem; bottom: 15px; left: 15px; padding: 10px 20px;
              }
-             /* --- จบการปรับ --- */
+             #table-prompt-notification { font-size: 1em; }
         }
         @media (min-width: 768px) { .bottom-menu { column-count: 4; } }
         @media (min-width: 1024px) { .bottom-menu { column-count: 5; } }
@@ -408,10 +381,31 @@
     </style>
 </head>
 <body>
-    <div id="table-number-display"></div>
+    <!-- Table Number Display (Clickable Trigger) -->
+    <div id="table-number-display" title="เลือกหมายเลขโต๊ะ">
+        <span id="table-number-text"><span class="placeholder-text">เลือกโต๊ะ</span></span>
+    </div>
+
+    <!-- Table Selection Modal -->
+    <div id="table-select-modal">
+        <div class="table-select-content">
+            <div class="table-select-header">
+                <h4>เลือกหมายเลขโต๊ะ</h4>
+                <button class="table-select-close-btn" title="ปิด">&times;</button>
+            </div>
+            <div id="table-list">
+                <!-- Table numbers will be populated here by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- First Load Table Prompt Notification -->
+    <div id="table-prompt-notification">
+        <i class="fas fa-info-circle"></i> กรุณาเลือกหมายเลขโต๊ะของท่านค่ะ
+    </div>
 
     <div class="container">
-
+        <!-- Top Section: Image and Details -->
         <div class="top-section">
              <div class="image-container" id="image-swipe-area">
                  <img id="main-food-image" class="main-food-image" src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Salad Bowl">
@@ -449,6 +443,7 @@
              </div>
         </div>
 
+        <!-- Category Bar -->
         <div class="category-bar">
             <div class="category-item" data-category="จานหลัก"> <i class="fas fa-utensils"></i> <span>จานหลัก</span> </div>
             <div class="category-item" data-category="เฮลท์ตี้ โบวล์"> <i class="fas fa-seedling"></i> <span>เฮลท์ตี้ โบวล์</span> </div>
@@ -457,20 +452,27 @@
             <div class="category-item" data-category="ทะเล"> <i class="fas fa-fish"></i> <span>ทะเล</span> </div>
             <div class="category-item" data-category="ของหวาน"> <i class="fas fa-ice-cream"></i> <span>ของหวาน</span> </div>
             <div class="category-item" data-category="เครื่องดื่ม"> <i class="fas fa-coffee"></i> <span>เครื่องดื่ม</span> </div>
-            </div>
+         </div>
 
+        <!-- Menu Grid -->
         <div class="bottom-menu">
-            </div>
+            <!-- Menu items will be populated here by JS -->
+        </div>
 
-    </div> <div id="my-food-icon-container" title="เปิด/ปิด รายการอาหารของฉัน">
+    </div> <!-- End .container -->
+
+    <!-- Floating My Food Icon -->
+    <div id="my-food-icon-container" title="เปิด/ปิด รายการอาหารของฉัน">
         <i class="fas fa-receipt"></i>
         <span id="my-food-item-count" class="hidden">0</span>
     </div>
+    <!-- Floating Cart Icon -->
     <div id="cart-icon-container" title="เปิด/ปิด ตระกร้า">
         <i class="fas fa-shopping-cart"></i>
         <span id="cart-item-count" class="hidden">0</span>
     </div>
 
+    <!-- My Food Popup -->
     <div id="my-food-popup">
         <div class="my-food-header">
             <h3>รายการอาหารที่สั่งแล้ว</h3>
@@ -486,6 +488,7 @@
         </div>
     </div>
 
+    <!-- Cart Popup -->
     <div id="cart-popup">
         <div class="cart-header">
             <h3>ตระกร้าสินค้า</h3>
@@ -507,17 +510,33 @@
 
     <script>
         // ========================================================================
-        // START: Table Configuration
+        // START: Configuration
         // ========================================================================
-        const TABLE_NUMBER_PREFIX = "Table No. "; // ข้อความนำหน้า (แก้ไขตรงนี้ได้)
-        const TABLE_NUMBER = "1";                // *** แก้ไขเลขโต๊ะนี้สำหรับแต่ละไฟล์ HTML ***
+        const TABLE_NUMBER_PREFIX = "โต๊ะ "; // ข้อความนำหน้าหมายเลขโต๊ะ (Thai)
+        const MAX_TABLE_NUMBER = 30;       // จำนวนโต๊ะสูงสุดที่ให้เลือก
+        const TABLE_SELECT_PROMPT_MESSAGE = "กรุณาเลือกหมายเลขโต๊ะของท่านค่ะ";
+        const TABLE_STORAGE_KEY = 'selectedTableData'; // Key for localStorage
+        const TABLE_EXPIRY_HOURS = 6;          // Hours to remember table selection
+
+        // Local storage keys for cart and ordered items
+        const CART_LOCAL_STORAGE_KEY = 'menuCartData_v111'; // Unique key per version/table if needed
+        const ORDERED_ITEMS_LOCAL_STORAGE_KEY = 'menuOrderedItemsData_v111';
+
         // ========================================================================
-        // END: Table Configuration
+        // START: Telegram Configuration (Obfuscated - Still INSECURE CLIENT-SIDE)
+        // คำเตือน: การเก็บ Token ในโค้ดฝั่ง Client ไม่ปลอดภัย ควรใช้ Backend จัดการ
+        // ========================================================================
+        const tPart1 = 'NzA0ODk5NzkxODpB';       // Base64 encoded part 1
+        const tPart2 = 'QUhZdDVqQk9HM1E2';       // Base64 encoded part 2
+        const tPart3 = 'N2JwenRJbl9SR3BE';       // Base64 encoded part 3
+        const tPart4 = 'Q2NYMHlBVVlWQQ==';       // Base64 encoded part 4
+        const CHAT_ID = '-1002634956608';        // Telegram Chat ID
+        // ========================================================================
+        // END: Telegram Configuration
         // ========================================================================
 
         /**
          * Menu Data Structure (Refactored for Flexibility)
-         * Allows easy addition/modification of sizes and prices.
          */
         const menuData = [
              // == จานหลัก (Main Course) ==
@@ -616,11 +635,10 @@
             { id: 'drink12', name: 'น้ำแร่โซดา', description: 'น้ำแร่ธรรมชาติชนิดมีฟอง', prices: {'Normal': 45}, src: 'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Sparkling Water', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์'] },
         ];
 
-        // --- Shopping Cart & Ordered Items Logic ---
+        // --- State Variables ---
         let cartItems = [];
-        let orderedItems = []; // <-- State สำหรับรายการที่สั่งแล้ว
-        const LOCAL_STORAGE_KEY = 'menuCartData';
-        const ORDERED_ITEMS_LOCAL_STORAGE_KEY = 'menuOrderedItemsData'; // <-- Key ใหม่
+        let orderedItems = [];
+        let selectedTableNumber = null; // Holds the currently selected table number
         let currentDisplayedItemId = null;
         let currentCategory = null;
         let currentFilteredItems = [];
@@ -633,7 +651,13 @@
         const swipeThreshold = 50;
 
         // --- DOM Elements ---
-        const tableNumberDisplayElement = document.getElementById('table-number-display'); // <-- เพิ่ม Element นี้
+        const tableNumberDisplay = document.getElementById('table-number-display');
+        const tableNumberText = document.getElementById('table-number-text');
+        const tableSelectModal = document.getElementById('table-select-modal');
+        const tableListContainer = document.getElementById('table-list');
+        const tableSelectCloseBtn = tableSelectModal?.querySelector('.table-select-close-btn');
+        const tablePromptNotification = document.getElementById('table-prompt-notification');
+
         const mainFoodImage = document.getElementById('main-food-image');
         const imageContainer = document.getElementById('image-swipe-area');
         const bottomMenu = document.querySelector('.bottom-menu');
@@ -644,11 +668,10 @@
         const menuPriceContainer = document.getElementById('menu-price');
         const priceElementsCache = {
             'Small': { label: document.getElementById('label-small'), value: document.getElementById('price-small'), button: menuPriceContainer?.querySelector('button[data-size="Small"]'), separator: document.getElementById('price-sep-small') },
-            'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null }, // Assuming no separator *after* normal by default
-            'Extra': { label: document.getElementById('label-extra'), value: document.getElementById('price-extra'), button: menuPriceContainer?.querySelector('button[data-size="Extra"]'), separator: document.getElementById('price-sep') }, // Assuming this is the sep *before* Extra
-            'Family': { label: document.getElementById('label-family'), value: document.getElementById('price-family'), button: menuPriceContainer?.querySelector('button[data-size="Family"]'), separator: document.getElementById('price-sep-family') } // Assuming this is the sep *before* Family
+            'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null },
+            'Extra': { label: document.getElementById('label-extra'), value: document.getElementById('price-extra'), button: menuPriceContainer?.querySelector('button[data-size="Extra"]'), separator: document.getElementById('price-sep') },
+            'Family': { label: document.getElementById('label-family'), value: document.getElementById('price-family'), button: menuPriceContainer?.querySelector('button[data-size="Family"]'), separator: document.getElementById('price-sep-family') }
         };
-
 
         // Cart UI
         const cartIconContainer = document.getElementById('cart-icon-container');
@@ -657,7 +680,7 @@
         const cartItemsList = document.getElementById('cart-items-list');
         const cartTotalPriceElement = document.getElementById('cart-total-price');
         const cartCloseBtn = cartPopup?.querySelector('.cart-close-btn');
-        const orderButton = document.getElementById('order-button'); // ปุ่มสั่งในตะกร้า
+        const orderButton = document.getElementById('order-button');
 
         // My Food List UI Elements
         const myFoodIconContainer = document.getElementById('my-food-icon-container');
@@ -665,21 +688,7 @@
         const myFoodPopup = document.getElementById('my-food-popup');
         const myFoodItemsList = document.getElementById('my-food-items-list');
         const myFoodCloseBtn = myFoodPopup?.querySelector('.my-food-close-btn');
-        const myFoodCheckoutButton = document.getElementById('my-food-checkout-button'); // ปุ่ม Checkout ใหม่
-
-        // ========================================================================
-        // START: Telegram Configuration (Obfuscated - Still INSECURE CLIENT-SIDE)
-        // คำเตือน: การเก็บ Token ในโค้ดฝั่ง Client ไม่ปลอดภัย ควรใช้ Backend จัดการ
-        // ========================================================================
-        const tPart1 = 'NzA0ODk5NzkxODpB';       // Base64 encoded part 1
-        const tPart2 = 'QUhZdDVqQk9HM1E2';       // Base64 encoded part 2
-        const tPart3 = 'N2JwenRJbl9SR3BE';       // Base64 encoded part 3
-        const tPart4 = 'Q2NYMHlBVVlWQQ==';       // Base64 encoded part 4
-        const CHAT_ID = '-1002634956608';        // Telegram Chat ID
-        // ========================================================================
-        // END: Telegram Configuration
-        // ========================================================================
-
+        const myFoodCheckoutButton = document.getElementById('my-food-checkout-button');
 
         // --- Utility Functions ---
         function getCurrentDateString() {
@@ -690,31 +699,135 @@
             return `${year}-${month}-${day}`;
         }
 
-        // --- Local Storage Functions ---
-        function saveCartToLocalStorage() {
-            const cartData = { date: getCurrentDateString(), items: cartItems };
-            try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cartData));
-            } catch (error) { console.error("Error saving cart to localStorage:", error); }
+        function getExpiryTimestamp(hours) {
+            return Date.now() + hours * 60 * 60 * 1000;
         }
 
-        function loadCartFromLocalStorage() {
-            const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-            cartItems = [];
-            if (storedData) {
-                try {
-                    const parsedData = JSON.parse(storedData);
-                    if (parsedData && parsedData.date === getCurrentDateString() && Array.isArray(parsedData.items)) {
-                        cartItems = parsedData.items;
-                    } else { localStorage.removeItem(LOCAL_STORAGE_KEY); }
-                } catch (error) {
-                    console.error("Error parsing cart data from localStorage:", error);
-                    localStorage.removeItem(LOCAL_STORAGE_KEY);
+        // --- Table Selection Logic ---
+        function openTableSelectModal() {
+            if (tableSelectModal) {
+                // Highlight the currently selected table in the list
+                const currentTable = selectedTableNumber;
+                const listItems = tableListContainer?.querySelectorAll('.table-list-item');
+                listItems?.forEach(item => {
+                    item.classList.toggle('selected', item.dataset.table === currentTable);
+                });
+                tableSelectModal.classList.add('open');
+            }
+        }
+
+        function closeTableSelectModal() {
+            if (tableSelectModal) {
+                tableSelectModal.classList.remove('open');
+            }
+        }
+
+        function populateTableList(maxTables) {
+            if (!tableListContainer) return;
+            tableListContainer.innerHTML = ''; // Clear previous list
+            for (let i = 1; i <= maxTables; i++) {
+                const tableNum = String(i);
+                const listItem = document.createElement('div');
+                listItem.classList.add('table-list-item');
+                listItem.textContent = tableNum;
+                listItem.dataset.table = tableNum;
+                listItem.addEventListener('click', () => selectTable(tableNum));
+                tableListContainer.appendChild(listItem);
+            }
+        }
+
+        function selectTable(tableNum) {
+            selectedTableNumber = tableNum;
+            updateTableDisplay(tableNum);
+            saveSelectedTable(tableNum);
+            closeTableSelectModal();
+            // Update page title
+            document.title = `เมนูอาหาร - ${TABLE_NUMBER_PREFIX}${tableNum}`;
+            // Optionally hide the prompt notification if it's showing
+            hideTablePromptNotification();
+        }
+
+        function updateTableDisplay(tableNum) {
+            if (tableNumberText) {
+                if (tableNum) {
+                    tableNumberText.innerHTML = `<i class="fas fa-chair table-icon"></i>${TABLE_NUMBER_PREFIX}${tableNum}`; // Added icon
+                     tableNumberText.classList.remove('placeholder-text');
+                } else {
+                    tableNumberText.innerHTML = `<span class="placeholder-text">เลือกโต๊ะ</span>`;
+                    tableNumberText.classList.add('placeholder-text');
+                    document.title = 'เมนูอาหาร - เลือกโต๊ะ';
                 }
             }
         }
 
-        // Ordered Items Load/Save
+        function saveSelectedTable(tableNum) {
+            const expiry = getExpiryTimestamp(TABLE_EXPIRY_HOURS);
+            const data = { tableNumber: tableNum, expiry: expiry };
+            try {
+                localStorage.setItem(TABLE_STORAGE_KEY, JSON.stringify(data));
+            } catch (error) {
+                console.error("Error saving table selection to localStorage:", error);
+            }
+        }
+
+        function loadSelectedTable() {
+            try {
+                const storedData = localStorage.getItem(TABLE_STORAGE_KEY);
+                if (storedData) {
+                    const parsedData = JSON.parse(storedData);
+                    if (parsedData && parsedData.tableNumber && parsedData.expiry && Date.now() < parsedData.expiry) {
+                        return parsedData.tableNumber; // Return valid, non-expired table number
+                    } else {
+                        localStorage.removeItem(TABLE_STORAGE_KEY); // Remove expired or invalid data
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading table selection from localStorage:", error);
+                localStorage.removeItem(TABLE_STORAGE_KEY); // Clear corrupted data
+            }
+            return null; // No valid table found
+        }
+
+        function showTablePromptNotification() {
+             if (tablePromptNotification) {
+                tablePromptNotification.classList.add('show');
+                // Optional: Auto-hide after a few seconds
+                // setTimeout(hideTablePromptNotification, 5000);
+             }
+        }
+        function hideTablePromptNotification() {
+            if (tablePromptNotification) {
+                tablePromptNotification.classList.remove('show');
+            }
+        }
+
+
+        // --- Local Storage Functions (Cart & Ordered Items) ---
+        function saveCartToLocalStorage() {
+            const cartData = { date: getCurrentDateString(), items: cartItems };
+            try {
+                localStorage.setItem(CART_LOCAL_STORAGE_KEY, JSON.stringify(cartData));
+            } catch (error) { console.error("Error saving cart to localStorage:", error); }
+        }
+
+        function loadCartFromLocalStorage() {
+            const storedData = localStorage.getItem(CART_LOCAL_STORAGE_KEY);
+            cartItems = [];
+            if (storedData) {
+                try {
+                    const parsedData = JSON.parse(storedData);
+                    // Optional: Add date check if needed, removed for simplicity as table selection handles expiry
+                    // if (parsedData && parsedData.date === getCurrentDateString() && Array.isArray(parsedData.items)) {
+                    if (parsedData && Array.isArray(parsedData.items)) { // Simplified load
+                        cartItems = parsedData.items;
+                    } else { localStorage.removeItem(CART_LOCAL_STORAGE_KEY); }
+                } catch (error) {
+                    console.error("Error parsing cart data from localStorage:", error);
+                    localStorage.removeItem(CART_LOCAL_STORAGE_KEY);
+                }
+            }
+        }
+
         function saveOrderedItemsToLocalStorage() {
             const orderedData = { date: getCurrentDateString(), items: orderedItems };
             try {
@@ -728,7 +841,9 @@
             if (storedData) {
                 try {
                     const parsedData = JSON.parse(storedData);
-                    if (parsedData && parsedData.date === getCurrentDateString() && Array.isArray(parsedData.items)) {
+                     // Optional: Add date check if needed
+                    // if (parsedData && parsedData.date === getCurrentDateString() && Array.isArray(parsedData.items)) {
+                    if (parsedData && Array.isArray(parsedData.items)) { // Simplified load
                         orderedItems = parsedData.items;
                     } else { localStorage.removeItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY); }
                 } catch (error) {
@@ -824,16 +939,15 @@
             }
         }
 
-        // Render/Update Count for Ordered Items
         function renderOrderedItems() {
             if (!myFoodItemsList) { return; }
             myFoodItemsList.innerHTML = '';
 
             if (orderedItems.length === 0) {
                 myFoodItemsList.innerHTML = '<p class="my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>';
-                 if (myFoodCheckoutButton) myFoodCheckoutButton.style.display = 'none'; // Hide checkout if no ordered items
+                 if (myFoodCheckoutButton) myFoodCheckoutButton.style.display = 'none';
             } else {
-                 if (myFoodCheckoutButton) myFoodCheckoutButton.style.display = 'block'; // Show checkout
+                 if (myFoodCheckoutButton) myFoodCheckoutButton.style.display = 'block';
                  let orderedTotal = 0;
                 orderedItems.forEach(item => {
                     const itemElement = document.createElement('div');
@@ -852,9 +966,6 @@
                         </div>`;
                     myFoodItemsList.appendChild(itemElement);
                 });
-                 // Optional: Display total in header or footer
-                 // const headerH3 = myFoodPopup?.querySelector('.my-food-header h3');
-                 // if(headerH3) headerH3.textContent = `รายการที่สั่งแล้ว (รวม ฿${orderedTotal})`;
             }
         }
 
@@ -871,8 +982,6 @@
              }
          }
 
-        // +++ START: REVISED showItemDetails Function +++
-        // --- Show Item Details Function (REVISED for Animation Stability) ---
         function showItemDetails(index, direction = 'none') {
             if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer) { return; }
             if (index < 0 || index >= currentFilteredItems.length) { menuDetailsContainer.style.display = 'none'; currentDisplayedItemId = null; currentIndex = -1; return; }
@@ -884,7 +993,6 @@
             const newImageSrc = itemData.dataImageSrc || itemData.src;
             const currentImageSrc = mainFoodImage.getAttribute('src');
 
-            // --- Animation Logic ---
             const updateImageElement = (src, alt) => {
                 mainFoodImage.setAttribute('src', src);
                 mainFoodImage.alt = alt;
@@ -893,35 +1001,31 @@
             imageContainer.classList.remove('slide-out-left', 'slide-in-right', 'slide-out-right', 'slide-in-left');
 
             if (direction !== 'none' && currentImageSrc !== newImageSrc) {
-                let outClass = '';
-                let inClass = '';
+                let outClass = ''; let inClass = '';
                 if (direction === 'next') { outClass = 'slide-out-left'; inClass = 'slide-in-right'; }
                 else if (direction === 'prev') { outClass = 'slide-out-right'; inClass = 'slide-in-left'; }
 
                 requestAnimationFrame(() => {
                     imageContainer.classList.add(outClass);
-
-                    const handleOutAnimationEnd = (event) => {
+                    const handleOutAnimationEnd = () => {
+                        imageContainer.removeEventListener('animationend', handleOutAnimationEnd);
                         imageContainer.classList.remove(outClass);
                         updateImageElement(newImageSrc, itemData.alt);
-
                         requestAnimationFrame(() => {
                             imageContainer.classList.add(inClass);
-
-                            const handleInAnimationEnd = (eventIn) => {
+                            const handleInAnimationEnd = () => {
+                                imageContainer.removeEventListener('animationend', handleInAnimationEnd);
                                 imageContainer.classList.remove(inClass);
                             };
-                            imageContainer.addEventListener('animationend', handleInAnimationEnd, { once: true });
+                            imageContainer.addEventListener('animationend', handleInAnimationEnd);
                         });
                     };
-                    imageContainer.addEventListener('animationend', handleOutAnimationEnd, { once: true });
+                    imageContainer.addEventListener('animationend', handleOutAnimationEnd);
                 });
-
             } else {
                 updateImageElement(newImageSrc, itemData.alt);
             }
 
-            // --- Update Text and Price Details (Improved Separator Logic) ---
             menuNameElement.textContent = itemData.name || 'ชื่อเมนู';
             menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
 
@@ -960,76 +1064,71 @@
                  const parentSpan = cache?.label?.closest('.price-item');
                  if (parentSpan && !parentSpan.classList.contains('hidden')) {
                      if (firstVisibleFound && lastVisibleSize) {
-                        const separatorCache = priceElementsCache[lastVisibleSize];
-                        if(separatorCache && separatorCache.separator) {
-                            separatorCache.separator.classList.remove('hidden');
-                        }
-                        else if (lastVisibleSize === 'Normal' && size === 'Extra' && priceElementsCache['Extra']?.separator) {
-                             priceElementsCache['Extra'].separator.classList.remove('hidden');
-                         }
-                         else if (lastVisibleSize === 'Extra' && size === 'Family' && priceElementsCache['Family']?.separator) {
-                             priceElementsCache['Family'].separator.classList.remove('hidden');
-                         }
-                         else if (lastVisibleSize === 'Small' && size === 'Normal' && priceElementsCache['Small']?.separator) {
-                            priceElementsCache['Small'].separator.classList.remove('hidden');
+                         const separatorCache = priceElementsCache[lastVisibleSize];
+                         const currentSeparatorCache = priceElementsCache[size];
+                         // Logic to show separator *before* the current item if it's not the first visible one
+                         if(currentSeparatorCache && currentSeparatorCache.separator) {
+                            currentSeparatorCache.separator.classList.remove('hidden');
+                         } else if (size === 'Normal' && priceElementsCache['Small']?.separator) { // Separator between S and N
+                             priceElementsCache['Small']?.separator.classList.remove('hidden');
+                         } else if (size === 'Extra' && priceElementsCache['Extra']?.separator) { // Separator between N and E
+                             priceElementsCache['Extra']?.separator.classList.remove('hidden');
+                         } else if (size === 'Family' && priceElementsCache['Family']?.separator) { // Separator between E and F
+                             priceElementsCache['Family']?.separator.classList.remove('hidden');
                          }
                      }
                      firstVisibleFound = true;
-                     lastVisibleSize = size;
+                     lastVisibleSize = size; // Keep track of the last size *shown*
                  }
             });
 
-
             menuDetailsContainer.style.display = 'block';
         }
-        // +++ END: REVISED showItemDetails Function +++
-
 
         function displayMenuItems(category) {
             if (!bottomMenu) return;
             bottomMenu.innerHTML = '';
             currentCategory = category;
-
             currentFilteredItems = menuData.filter(item => Array.isArray(item.category) && item.category.includes(category));
 
             if (currentFilteredItems.length === 0) {
                  bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีเมนูในหมวดหมู่นี้</p>';
                  if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-                 currentDisplayedItemId = null;
-                 currentIndex = -1;
-                 return;
-             }
+                 currentDisplayedItemId = null; currentIndex = -1; return;
+            }
 
             currentFilteredItems.forEach((item, index) => {
                 const menuItemDiv = document.createElement('div');
                 menuItemDiv.classList.add('menu-item');
                 menuItemDiv.dataset.itemId = item.id;
-                menuItemDiv.dataset.index = index;
+                menuItemDiv.dataset.index = index; // Store index within filtered list
 
                 const img = document.createElement('img');
-                img.src = item.src;
-                img.alt = item.alt;
-                img.loading = 'lazy';
-                img.onerror = function() { this.src='placeholder.jpg'; };
+                img.src = item.src; img.alt = item.alt; img.loading = 'lazy';
+                img.onerror = function() { this.src='placeholder.jpg'; }; // Basic placeholder
 
                 menuItemDiv.appendChild(img);
                 bottomMenu.appendChild(menuItemDiv);
 
                 menuItemDiv.addEventListener('click', () => {
                     const itemIndex = parseInt(menuItemDiv.dataset.index, 10);
-                    if (!isNaN(itemIndex) && itemIndex < currentFilteredItems.length) {
+                    if (!isNaN(itemIndex) && itemIndex >= 0 && itemIndex < currentFilteredItems.length) {
                          showItemDetails(itemIndex);
                          requestAnimationFrame(() => {
                              window.scrollTo({ top: 0, behavior: 'smooth' });
                          });
                     } else {
-                         console.error("Invalid index clicked:", itemIndex, "Filtered items count:", currentFilteredItems.length);
+                         console.error("Invalid index clicked or filtered items mismatch.");
                     }
                 });
             });
 
+            // Show details of the first item in the filtered list
             if (currentFilteredItems.length > 0) {
                 showItemDetails(0);
+            } else {
+                if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+                currentDisplayedItemId = null; currentIndex = -1;
             }
         }
 
@@ -1046,221 +1145,281 @@
         }
 
 
-        // --- Event Listeners ---
-        if(menuPriceContainer) {
-            menuPriceContainer.addEventListener('click', (e) => {
-                if (e.target && e.target.classList.contains('add-to-cart-button')) {
-                    const size = e.target.dataset.size;
-                    if (currentDisplayedItemId && size) {
-                        addToCart(currentDisplayedItemId, size);
-                    } else {
-                        console.warn("Cannot add to cart. Missing item ID or size.");
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            // Table Selection Trigger
+            if (tableNumberDisplay) {
+                tableNumberDisplay.addEventListener('click', openTableSelectModal);
+            }
+            // Modal Close Button
+            if (tableSelectCloseBtn) {
+                tableSelectCloseBtn.addEventListener('click', closeTableSelectModal);
+            }
+            // Close modal on overlay click
+            if (tableSelectModal) {
+                tableSelectModal.addEventListener('click', (e) => {
+                    if (e.target === tableSelectModal) { // Check if click is on the background overlay
+                        closeTableSelectModal();
                     }
-                }
-            });
-        }
-
-        categoryItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const selectedCategory = item.getAttribute('data-category');
-                categoryItems.forEach(cat => cat.classList.remove('selected'));
-                item.classList.add('selected');
-                displayMenuItems(selectedCategory);
-            });
-        });
-
-        if (cartIconContainer) {
-            cartIconContainer.addEventListener('click', () => {
-                if (myFoodPopup && myFoodPopup.classList.contains('open')) {
-                    myFoodPopup.classList.remove('open');
-                }
-                if(cartPopup) cartPopup.classList.toggle('open');
-                if (cartPopup && cartPopup.classList.contains('open')) {
-                    renderCart();
-                }
-            });
-        }
-        if (cartCloseBtn) {
-            cartCloseBtn.addEventListener('click', () => {
-                if(cartPopup) cartPopup.classList.remove('open');
-            });
-        }
-
-        if (myFoodIconContainer) {
-            myFoodIconContainer.addEventListener('click', () => {
-                 if (cartPopup && cartPopup.classList.contains('open')) {
-                     cartPopup.classList.remove('open');
-                 }
-                if(myFoodPopup) myFoodPopup.classList.toggle('open');
-                if (myFoodPopup && myFoodPopup.classList.contains('open')) {
-                    renderOrderedItems();
-                }
-            });
-        }
-        if (myFoodCloseBtn) {
-             myFoodCloseBtn.addEventListener('click', () => {
-                 if(myFoodPopup) myFoodPopup.classList.remove('open');
-             });
-         }
-
-        if (imageContainer) {
-            imageContainer.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 1) {
-                    touchStartX = e.touches[0].clientX;
-                    isSwiping = true;
-                }
-            }, { passive: true });
-
-            imageContainer.addEventListener('touchmove', (e) => {
-                if (!isSwiping || e.touches.length !== 1) return;
-                touchEndX = e.touches[0].clientX;
-            }, { passive: true });
-
-            imageContainer.addEventListener('touchend', (e) => {
-                if (!isSwiping || e.changedTouches.length !== 1) {
-                    isSwiping = false;
-                    return;
-                }
-                touchEndX = e.changedTouches[0].clientX;
-                const deltaX = touchEndX - touchStartX;
-                if (Math.abs(deltaX) > swipeThreshold) {
-                    if (deltaX > 0) { showPreviousItem(); }
-                    else { showNextItem(); }
-                }
-                isSwiping = false;
-                touchStartX = 0;
-                touchEndX = 0;
-            });
-        }
-
-        // --- Cart Action Button Listeners ---
-        if (orderButton) {
-            orderButton.addEventListener('click', async () => {
-                if (cartItems.length === 0) { alert('ตระกร้าสินค้าของคุณว่างเปล่า'); return; }
-
-                let reconstructedToken = '';
-                try {
-                    reconstructedToken = atob(tPart1) + atob(tPart2) + atob(tPart3) + atob(tPart4);
-                } catch (e) {
-                    console.error("Error decoding token:", e);
-                    alert("ข้อผิดพลาด: ไม่สามารถเตรียมข้อมูล Token");
-                    return;
-                }
-                if (!reconstructedToken) {
-                    console.error("Token empty after decoding");
-                    alert("ข้อผิดพลาด: Token ไม่ถูกต้องหลังจากการถอดรหัส");
-                    return;
-                }
-
-                let orderMessage = `โต๊ะ ${TABLE_NUMBER}\n--------------------\n`;
-                orderMessage += "🛒 **รายการสั่งซื้อใหม่** 🛒\n\n";
-                let total = 0;
-
-                cartItems.forEach((item, index) => {
-                    const itemPrice = item.price || 0;
-                    const itemQuantity = item.quantity || 0;
-                    const lineTotal = itemPrice * itemQuantity;
-                    orderMessage += `${index + 1}. โต๊ะ ${TABLE_NUMBER}: ${item.name || 'N/A'} (${item.size || 'N/A'})\n`;
-                    orderMessage += `   จำนวน: ${itemQuantity} x ราคา: ฿${itemPrice} = ฿${lineTotal}\n`;
-                    total += lineTotal;
                 });
+            }
+            // Hide prompt on click/touch
+            if(tablePromptNotification) {
+                 tablePromptNotification.addEventListener('click', hideTablePromptNotification);
+                 tablePromptNotification.addEventListener('touchstart', hideTablePromptNotification, {passive: true});
+             }
 
-                orderMessage += `\n**ยอดรวมทั้งหมด: ฿${total}**`;
-                orderMessage += `\n\nสั่งเมื่อ: ${new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'medium' })}`;
 
-                const telegramApiUrl = `https://api.telegram.org/bot${reconstructedToken}/sendMessage`;
-                const payload = {
-                    chat_id: CHAT_ID,
-                    text: orderMessage,
-                    parse_mode: 'Markdown'
-                };
-
-                orderButton.disabled = true;
-                orderButton.textContent = 'กำลังส่ง...';
-
-                try {
-                    const response = await fetch(telegramApiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-
-                    if (result.ok) {
-                        alert(`ส่งรายการสั่งซื้อจาก โต๊ะ ${TABLE_NUMBER} สำเร็จ! รายการจะถูกย้ายไปที่ "รายการอาหารของฉัน"`);
-
-                        cartItems.forEach(cartItem => {
-                            const existingIndex = orderedItems.findIndex(orderedItem => orderedItem.cartId === cartItem.cartId);
-                            if (existingIndex > -1) {
-                                orderedItems[existingIndex].quantity += cartItem.quantity;
-                            } else {
-                                orderedItems.push({ ...cartItem });
-                            }
-                        });
-                        cartItems = [];
-
-                        saveCartToLocalStorage();
-                        saveOrderedItemsToLocalStorage();
-
-                        renderCart();
-                        updateCartIconCount();
-                        updateMyFoodIconCount();
-
-                        if(cartPopup) cartPopup.classList.remove('open');
-
-                    } else {
-                        console.error('Telegram API error:', result.description);
-                        alert(`เกิดข้อผิดพลาดในการส่งจาก โต๊ะ ${TABLE_NUMBER}: ${result.description}`);
+            // Add to Cart Buttons (in Menu Details)
+            if(menuPriceContainer) {
+                menuPriceContainer.addEventListener('click', (e) => {
+                    if (e.target && e.target.classList.contains('add-to-cart-button')) {
+                        const size = e.target.dataset.size;
+                        if (currentDisplayedItemId && size) {
+                            addToCart(currentDisplayedItemId, size);
+                        } else {
+                            console.warn("Cannot add to cart. Missing item ID or size.");
+                        }
                     }
-                } catch (error) {
-                    console.error('Error sending order via fetch:', error);
-                    alert(`เกิดข้อผิดพลาดในการเชื่อมต่อ (โต๊ะ ${TABLE_NUMBER}) กรุณาลองใหม่อีกครั้ง`);
-                } finally {
-                     orderButton.disabled = false;
-                     orderButton.textContent = 'สั่งรายการอาหาร';
-                }
+                });
+            }
+
+            // Category Selection
+            categoryItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const selectedCategory = item.getAttribute('data-category');
+                    categoryItems.forEach(cat => cat.classList.remove('selected'));
+                    item.classList.add('selected');
+                    displayMenuItems(selectedCategory);
+                    // Ensure details display is reset/shown for the new category's first item
+                    if (currentFilteredItems.length > 0) {
+                        showItemDetails(0);
+                    } else {
+                         if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+                         currentDisplayedItemId = null; currentIndex = -1;
+                    }
+                });
             });
+
+            // Cart Icon & Popup
+            if (cartIconContainer) {
+                cartIconContainer.addEventListener('click', () => {
+                    if (myFoodPopup && myFoodPopup.classList.contains('open')) {
+                        myFoodPopup.classList.remove('open');
+                    }
+                    if(cartPopup) cartPopup.classList.toggle('open');
+                    if (cartPopup && cartPopup.classList.contains('open')) {
+                        renderCart(); // Render cart only when opening
+                    }
+                });
+            }
+            if (cartCloseBtn) {
+                cartCloseBtn.addEventListener('click', () => {
+                    if(cartPopup) cartPopup.classList.remove('open');
+                });
+            }
+
+             // My Food Icon & Popup
+            if (myFoodIconContainer) {
+                myFoodIconContainer.addEventListener('click', () => {
+                     if (cartPopup && cartPopup.classList.contains('open')) {
+                         cartPopup.classList.remove('open');
+                     }
+                    if(myFoodPopup) myFoodPopup.classList.toggle('open');
+                    if (myFoodPopup && myFoodPopup.classList.contains('open')) {
+                        renderOrderedItems(); // Render ordered items only when opening
+                    }
+                });
+            }
+            if (myFoodCloseBtn) {
+                 myFoodCloseBtn.addEventListener('click', () => {
+                     if(myFoodPopup) myFoodPopup.classList.remove('open');
+                 });
+             }
+
+            // Image Swipe Listeners
+            if (imageContainer) {
+                imageContainer.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) { touchStartX = e.touches[0].clientX; isSwiping = true; }
+                }, { passive: true });
+                imageContainer.addEventListener('touchmove', (e) => {
+                    if (!isSwiping || e.touches.length !== 1) return; touchEndX = e.touches[0].clientX;
+                }, { passive: true });
+                imageContainer.addEventListener('touchend', (e) => {
+                    if (!isSwiping || e.changedTouches.length !== 1) { isSwiping = false; return; }
+                    touchEndX = e.changedTouches[0].clientX; const deltaX = touchEndX - touchStartX;
+                    if (Math.abs(deltaX) > swipeThreshold) { if (deltaX > 0) showPreviousItem(); else showNextItem(); }
+                    isSwiping = false; touchStartX = 0; touchEndX = 0;
+                });
+            }
+
+            // Order Button (in Cart)
+            if (orderButton) {
+                orderButton.addEventListener('click', handleOrderSubmission);
+            }
+
+             // Checkout Button (in My Food)
+            if (myFoodCheckoutButton) {
+                 myFoodCheckoutButton.addEventListener('click', handleCheckout);
+             }
         }
 
-        if (myFoodCheckoutButton) {
-             myFoodCheckoutButton.addEventListener('click', () => {
-                 if (orderedItems.length === 0) {
-                     alert('ยังไม่มีรายการอาหารที่สั่งสำหรับชำระเงิน');
-                     return;
-                 }
-                 alert(`ดำเนินการชำระเงินสำหรับรายการที่สั่งแล้วจาก โต๊ะ ${TABLE_NUMBER} (ส่วนนี้ยังไม่พร้อมใช้งาน)`);
-                 // Future checkout logic here
-             });
+        // --- Action Handlers ---
+        async function handleOrderSubmission() {
+            if (!selectedTableNumber) {
+                alert('กรุณาเลือกหมายเลขโต๊ะก่อนสั่งอาหารค่ะ');
+                openTableSelectModal(); // Prompt user to select table
+                return;
+            }
+            if (cartItems.length === 0) {
+                alert('ตระกร้าสินค้าของคุณว่างเปล่า');
+                return;
+            }
+
+            let reconstructedToken = '';
+            try {
+                reconstructedToken = atob(tPart1) + atob(tPart2) + atob(tPart3) + atob(tPart4);
+            } catch (e) {
+                console.error("Error decoding token:", e); alert("ข้อผิดพลาด: ไม่สามารถเตรียมข้อมูล Token"); return;
+            }
+            if (!reconstructedToken) {
+                console.error("Token empty after decoding"); alert("ข้อผิดพลาด: Token ไม่ถูกต้อง"); return;
+            }
+
+            // --- Improved Telegram Message Formatting ---
+            let orderMessage = `*โต๊ะ ${selectedTableNumber} - รายการสั่งซื้อใหม่* ✨\n`;
+            orderMessage += `------------------------------------\n`;
+            let total = 0;
+
+            cartItems.forEach((item, index) => {
+                const itemPrice = item.price || 0;
+                const itemQuantity = item.quantity || 0;
+                const lineTotal = itemPrice * itemQuantity;
+                // Add extra newline BEFORE each item (except the first) for spacing
+                // if (index > 0) {
+                //      orderMessage += "\n";
+                // }
+                orderMessage += `*${index + 1}. ${item.name || 'N/A'}* (${item.size || 'N/A'})\n`; // Bold item name
+                orderMessage += `   (จำนวน: ${itemQuantity} x ฿${itemPrice} = *฿${lineTotal}*)\n\n`; // Indent details, bold line total, extra newline after
+                total += lineTotal;
+            });
+
+            orderMessage += `------------------------------------\n`;
+            orderMessage += `*ยอดรวมทั้งหมด: ฿${total}*\n`;
+            orderMessage += `_(สั่งเมื่อ: ${new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'medium' })})_`; // Italic timestamp
+
+            const telegramApiUrl = `https://api.telegram.org/bot${reconstructedToken}/sendMessage`;
+            const payload = {
+                chat_id: CHAT_ID,
+                text: orderMessage,
+                parse_mode: 'Markdown' // Use Markdown for bold/italic
+            };
+
+            orderButton.disabled = true;
+            orderButton.textContent = 'กำลังส่ง...';
+
+            try {
+                const response = await fetch(telegramApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.ok) {
+                    alert(`ส่งรายการสั่งซื้อจาก ${TABLE_NUMBER_PREFIX}${selectedTableNumber} สำเร็จ!`);
+
+                    // Move items from cart to ordered list
+                    cartItems.forEach(cartItem => {
+                        const existingIndex = orderedItems.findIndex(orderedItem => orderedItem.cartId === cartItem.cartId);
+                        if (existingIndex > -1) {
+                            orderedItems[existingIndex].quantity += cartItem.quantity;
+                        } else {
+                            orderedItems.push({ ...cartItem }); // Add as new ordered item
+                        }
+                    });
+                    cartItems = []; // Clear the cart
+
+                    saveCartToLocalStorage();       // Save empty cart
+                    saveOrderedItemsToLocalStorage(); // Save updated ordered items
+
+                    renderCart();                   // Update cart UI (should be empty)
+                    updateCartIconCount();          // Update cart badge
+                    updateMyFoodIconCount();        // Update ordered items badge
+
+                    if(cartPopup) cartPopup.classList.remove('open'); // Close cart popup
+
+                } else {
+                    console.error('Telegram API error:', result.description);
+                    alert(`เกิดข้อผิดพลาดในการส่งจาก ${TABLE_NUMBER_PREFIX}${selectedTableNumber}: ${result.description}`);
+                }
+            } catch (error) {
+                console.error('Error sending order via fetch:', error);
+                alert(`เกิดข้อผิดพลาดในการเชื่อมต่อ (${TABLE_NUMBER_PREFIX}${selectedTableNumber}) กรุณาลองใหม่อีกครั้ง`);
+            } finally {
+                 orderButton.disabled = false;
+                 orderButton.textContent = 'สั่งรายการอาหาร';
+            }
+        }
+
+        function handleCheckout() {
+            if (!selectedTableNumber) {
+                 alert('เกิดข้อผิดพลาด: ไม่พบหมายเลขโต๊ะที่บันทึกไว้');
+                 return;
+             }
+             if (orderedItems.length === 0) {
+                 alert('ยังไม่มีรายการอาหารที่สั่งสำหรับชำระเงิน');
+                 return;
+             }
+             alert(`[จำลอง] ดำเนินการเรียกพนักงานเพื่อชำระเงินสำหรับ ${TABLE_NUMBER_PREFIX}${selectedTableNumber}`);
+             // In a real scenario, this might send another Telegram message or call a different API
+             // Example: Send a checkout request message
+             // sendCheckoutRequestToTelegram(selectedTableNumber, orderedItems);
          }
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            if (tableNumberDisplayElement) {
-                tableNumberDisplayElement.textContent = TABLE_NUMBER_PREFIX + TABLE_NUMBER;
+            // 1. Load table number or prompt if needed
+            selectedTableNumber = loadSelectedTable();
+            updateTableDisplay(selectedTableNumber); // Update UI with loaded or default text
+            populateTableList(MAX_TABLE_NUMBER);   // Prepare the selection modal
+
+            if (!selectedTableNumber) {
+                showTablePromptNotification(); // Show prompt only if no valid table loaded
+            } else {
+                // Set initial page title if table is loaded
+                 document.title = `เมนูอาหาร - ${TABLE_NUMBER_PREFIX}${selectedTableNumber}`;
             }
 
+            // 2. Load cart and ordered items from storage
             loadCartFromLocalStorage();
             loadOrderedItemsFromLocalStorage();
 
+            // 3. Render initial UI state
             renderCart();
             updateCartIconCount();
-            renderOrderedItems();
+            renderOrderedItems(); // Render to correctly set display of checkout button
             updateMyFoodIconCount();
 
+            // 4. Display initial category and menu item
             if (categoryItems.length > 0) {
                 const initialCategoryElement = categoryItems[0];
                 const initialCategory = initialCategoryElement.getAttribute('data-category');
                 categoryItems.forEach(cat => cat.classList.remove('selected'));
                 initialCategoryElement.classList.add('selected');
-                displayMenuItems(initialCategory);
+                displayMenuItems(initialCategory); // This will also call showItemDetails for the first item
             } else {
+                 // Handle case with no categories
                  if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
                  if(bottomMenu) bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary);">ไม่มีหมวดหมู่เมนู</p>';
-                 currentDisplayedItemId = null;
-                 currentIndex = -1;
+                 currentDisplayedItemId = null; currentIndex = -1;
             }
+
+            // 5. Setup all event listeners
+            setupEventListeners();
         });
 
     </script>
 </body>
 </html>
+ 
