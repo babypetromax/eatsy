@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เมนูอาหาร - โต๊ะ 1</title> <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles --- */
+        :root {
+            /* Theme Colors */
+            --color-darkest: #333D29;
+            --color-dark-green: #414833;
+            --color-medium-green: #656D4A;
+            --color-light-green: #A4AC86; /* Used for Order Button */
+            --color-lightest-green: #C2C5AA;
+            --color-light-beige: #B6AD90; /* Used for Cart Header */
+            --color-medium-beige: #A68A64; /* Color for Price and Checkout Button */
+            --color-text-primary: #343A40;
+            --color-text-secondary: #6C757D;
+            --color-background: #F8F9FA;
+            --color-white: #FFFFFF;
+            --color-white-transparent: rgba(255, 255, 255, 0.9); /* Cart background */
+            --color-footer-transparent: rgba(248, 249, 250, 0.9); /* Cart footer background */
+            --color-border: #dee2e6;
+            --color-danger: #dc3545; /* Red for remove/delete actions */
+            /* Transitions */
+            --transition-speed-fast: 0.2s;
+            --transition-speed-medium: 0.3s;
+            --transition-speed-slow: 0.5s;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0;
+            background-color: var(--color-background); color: var(--color-text-primary);
+            overscroll-behavior-y: contain;
+            padding-bottom: 160px; /* เพิ่ม padding ด้านล่างเผื่อไอคอนลอย */
+            /* --- ลบ padding-top ออก --- */
+            /* padding-top: 40px; */
+        }
+        body::-webkit-scrollbar { display: none; }
+        body { -ms-overflow-style: none; scrollbar-width: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 10px; }
+
+        /* --- Top Section (ปรับปรุง) --- */
+        .top-section {
+            width: calc(100% + 20px); /* เพิ่มความกว้างชดเชย negative margin */
+            margin-bottom: 15px;
+            position: relative;
+            /* --- เพิ่ม negative margin ชดเชย padding ของ .container --- */
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+        .image-container {
+            width: 100%;
+            /* --- เปลี่ยน aspect-ratio เป็น 5:4 --- */
+            aspect-ratio: 5 / 4;
+            overflow: hidden;
+            /* --- ลบ border-radius ออก --- */
+            /* border-radius: 0 0 15px 15px; */
+            background-color: #e0e0e0;
+            position: relative;
+            cursor: grab;
+        }
+        .image-container:active { cursor: grabbing; }
+        .main-food-image {
+            width: 100%; height: 100%; object-fit: cover; object-position: center;
+            display: block;
+            /* --- ลบ box-shadow ออก (ถ้าไม่ต้องการเงา) หรือปรับแก้ตามต้องการ --- */
+            /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+        }
+
+        /* --- Swipe Animation Classes --- */
+        @keyframes slideOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .image-container.slide-out-left .main-food-image { animation: slideOutLeft var(--transition-speed-medium) ease-out forwards; }
+        .image-container.slide-in-right .main-food-image { animation: slideInRight var(--transition-speed-medium) ease-out forwards; }
+        .image-container.slide-out-right .main-food-image { animation: slideOutRight var(--transition-speed-medium) ease-out forwards; }
+        .image-container.slide-in-left .main-food-image { animation: slideInLeft var(--transition-speed-medium) ease-out forwards; }
+
+        /* --- Menu Details --- */
+        #menu-details {
+            padding: 15px 10px; background-color: var(--color-white);
+            /* --- ปรับ margin-top เนื่องจากไม่มี border-radius ด้านบน --- */
+            /* margin-top: -5px; */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); display: none;
+            /* --- ทำให้ detail อยู่ภายใต้ container padding --- */
+             margin-left: 10px;
+             margin-right: 10px;
+             width: calc(100% - 20px); /* ปรับความกว้างให้พอดี container */
+             border-radius: 0 0 10px 10px; /* เพิ่ม radius กลับมาที่นี่ */
+
+        }
+        .menu-name-container { margin-bottom: 5px; }
+        #menu-name { font-size: 32px; font-weight: bold; text-transform: uppercase; margin: 0; color: var(--color-darkest); line-height: 1.2; }
+        #menu-description { font-size: 14px; margin: 0 0 10px 0; color: var(--color-medium-green); line-height: 1.5; }
+        #menu-price { font-size: 20px; font-weight: bold; margin: 0; color: var(--color-medium-beige); display: flex; align-items: center; flex-wrap: wrap; gap: 5px 0; }
+        .price-item { display: inline-flex; align-items: center; margin-right: 10px; }
+        .price-label { font-size: 0.8em; font-weight: normal; color: var(--color-text-secondary); margin-right: 4px; }
+        .price-value { margin-right: 5px; }
+        .add-to-cart-button {
+            background-color: var(--color-medium-green); color: var(--color-white); border: none; border-radius: 50%;
+            width: 24px; height: 24px; font-size: 16px; font-weight: bold; line-height: 24px; text-align: center;
+            cursor: pointer; transition: background-color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
+            padding: 0; flex-shrink: 0;
+        }
+        .add-to-cart-button:hover { background-color: var(--color-dark-green); transform: scale(1.1); }
+        .price-separator { margin: 0 8px; font-weight: normal; color: #adb5bd; }
+        .hidden { display: none !important; }
+
+        /* --- Category Bar --- */
+        .category-bar {
+            width: 100%; overflow-x: auto; overflow-y: hidden; white-space: nowrap; background-color: var(--color-white);
+            padding: 12px 5px; display: flex; align-items: center; flex-shrink: 0; box-sizing: border-box;
+            border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            -ms-overflow-style: none; scrollbar-width: none;
+        }
+        .category-bar::-webkit-scrollbar { display: none; }
+        .category-item {
+            display: flex; flex-direction: column; align-items: center; padding: 8px 15px; margin: 0 5px;
+            background-color: transparent; color: var(--color-text-secondary); border-radius: 8px; cursor: pointer;
+            flex-shrink: 0; font-size: 0.85em; text-align: center;
+            transition: background-color var(--transition-speed-medium) ease, color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
+            border-bottom: 2px solid transparent;
+        }
+        .category-item.selected { color: var(--color-dark-green); font-weight: bold; border-bottom: 2px solid var(--color-medium-green); background-color: #E9ECEF; }
+        .category-item i { font-size: 1.4em; margin-bottom: 4px; }
+        .category-item span { font-size: 0.75em; white-space: normal; line-height: 1.2; }
+        .category-item:hover:not(.selected) { color: #495057; background-color: #F1F3F4; transform: translateY(-2px); }
+
+        /* --- Pinterest-Style Menu Grid --- */
+        .bottom-menu {
+            width: 100%;
+            padding-top: 10px;
+            column-count: 2;
+            column-gap: 10px;
+            contain: layout paint;
+        }
+        .menu-item {
+            display: inline-block; width: 100%; margin-bottom: 10px; border-radius: 10px; overflow: hidden;
+            cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform var(--transition-speed-fast) ease-in-out, box-shadow var(--transition-speed-fast) ease-in-out, filter var(--transition-speed-fast) ease-in-out;
+            break-inside: avoid;
+        }
+        .menu-item:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 4px 8px rgba(0,0,0,0.15); filter: brightness(1.05); }
+        .menu-item img { width: 100%; height: auto; display: block; }
+
+        /* --- Floating Cart Icon --- */
+        #cart-icon-container {
+            position: fixed; bottom: 20px; right: 20px; background-color: var(--color-medium-green); color: var(--color-white);
+            width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); z-index: 1000;
+            transition: background-color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
+        }
+        #cart-icon-container:hover { background-color: var(--color-dark-green); transform: scale(1.1); }
+        #cart-item-count {
+            position: absolute; top: -5px; right: -5px; background-color: var(--color-danger); color: white;
+            border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold;
+            display: flex; justify-content: center; align-items: center; line-height: 22px; border: 1px solid white;
+            transition: transform var(--transition-speed-fast) ease;
+        }
+        #cart-icon-container.updated #cart-item-count { transform: scale(1.3); }
+
+        /* --- Cart Popup --- */
+        #cart-popup {
+            position: fixed;
+            bottom: 85px; /* Position relative to My Food Icon */
+            right: 20px; width: 90%; max-width: 380px;
+            background-color: var(--color-white-transparent); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 998; /* Ensure it's below my-food-popup */
+            display: none; /* Start hidden */
+            flex-direction: column;
+            max-height: 45vh; /* Adjust max height if needed */
+            overflow: hidden;
+            opacity: 0; transform: translateY(20px) scale(0.95);
+            transition: opacity var(--transition-speed-medium) ease-out, transform var(--transition-speed-medium) ease-out;
+            pointer-events: none;
+        }
+        #cart-popup.open {
+            display: flex; /* Show when open */
+            opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+        }
+        .cart-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;
+            background-color: rgba(182, 173, 144, 0.8); border-bottom: 1px solid var(--color-border);
+            border-radius: 10px 10px 0 0; flex-shrink: 0;
+        }
+        .cart-header h3 { margin: 0; font-size: 1.1em; color: var(--color-darkest); }
+        .cart-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-text-secondary); }
+        #cart-items-list { padding: 5px 15px; overflow-y: auto; flex-grow: 1; }
+        .cart-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9em; }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item-details { flex-grow: 1; margin-right: 10px; }
+        .cart-item-name { font-weight: bold; color: var(--color-dark-green); }
+        .cart-item-price { color: var(--color-medium-beige); font-size: 0.9em; }
+        .cart-item-controls { display: flex; align-items: center; flex-shrink: 0; }
+        .cart-quantity-btn {
+            background-color: #e9ecef; color: var(--color-text-secondary); border: 1px solid var(--color-border);
+            border-radius: 4px; width: 25px; height: 25px; font-size: 16px; cursor: pointer;
+            margin: 0 5px; line-height: 23px; text-align: center; transition: background-color var(--transition-speed-fast) ease;
+        }
+        .cart-quantity-btn:hover { background-color: #ced4da; }
+        .cart-item-quantity { min-width: 20px; text-align: center; font-weight: bold; }
+         .cart-remove-btn { background: none; border: none; color: var(--color-danger); font-size: 16px; cursor: pointer; margin-left: 10px; transition: color var(--transition-speed-fast) ease; }
+         .cart-remove-btn:hover { color: #a0232f; }
+        .cart-footer {
+            padding: 15px; border-top: 1px solid var(--color-border); background-color: var(--color-footer-transparent);
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 0 10px 10px; flex-shrink: 0;
+        }
+        .cart-total { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 1.1em; }
+        .cart-actions { display: flex; justify-content: center; /* Center the single order button */ gap: 10px; }
+        .cart-action-btn {
+            padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
+            font-size: 0.9em; transition: opacity 0.2s ease; flex-grow: 1; margin: 0;
+        }
+        .cart-action-btn:hover { opacity: 0.85; }
+        .order-btn { background-color: var(--color-light-green); color: var(--color-darkest); }
+        .checkout-btn { background-color: var(--color-medium-beige); color: var(--color-white); } /* Keep style for reuse */
+        .cart-empty-message { text-align: center; color: var(--color-text-secondary); padding: 20px; }
+
+        /* --- Floating My Food Icon --- */
+        #my-food-icon-container {
+            position: fixed;
+            bottom: 85px; /* Above cart icon (20px + 55px + 10px margin) */
+            right: 20px;
+            background-color: var(--color-medium-green); /* Same theme */
+            color: var(--color-white);
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px; /* Adjust icon size if needed */
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1001; /* Above cart icon */
+            transition: background-color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
+        }
+        #my-food-icon-container:hover {
+            background-color: var(--color-dark-green);
+            transform: scale(1.1);
+        }
+        #my-food-item-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--color-danger); /* Same badge color */
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 22px;
+            border: 1px solid white;
+            transition: transform var(--transition-speed-fast) ease;
+        }
+        #my-food-icon-container.updated #my-food-item-count {
+            transform: scale(1.3);
+        }
+
+        /* --- My Food Popup --- */
+        #my-food-popup {
+            position: fixed;
+            bottom: 150px; /* Above my-food icon (85px + 55px + 10px margin) */
+            right: 20px;
+            width: 90%;
+            max-width: 380px;
+            background-color: var(--color-white-transparent);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 999; /* Below its icon but above page content */
+            display: none; /* Start hidden */
+            flex-direction: column;
+            max-height: 50vh; /* Adjust height as needed */
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: opacity var(--transition-speed-medium) ease-out, transform var(--transition-speed-medium) ease-out;
+            pointer-events: none;
+        }
+        #my-food-popup.open {
+            display: flex; /* Show when open */
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .my-food-header { /* Can reuse .cart-header if identical */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: rgba(164, 172, 134, 0.8); /* Slightly different color maybe? */
+            border-bottom: 1px solid var(--color-border);
+            border-radius: 10px 10px 0 0;
+            flex-shrink: 0;
+        }
+        .my-food-header h3 { margin: 0; font-size: 1.1em; color: var(--color-darkest); }
+        .my-food-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-text-secondary); }
+        #my-food-items-list { padding: 5px 15px; overflow-y: auto; flex-grow: 1; }
+        /* Style for ordered items */
+        .ordered-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ordered-item:last-child { border-bottom: none; }
+        .ordered-item-details { flex-grow: 1; margin-right: 10px; }
+        .ordered-item-name { font-weight: bold; color: var(--color-dark-green); }
+        .ordered-item-info { color: var(--color-medium-beige); font-size: 0.9em; }
+        .ordered-item-total { font-weight: bold; color: var(--color-medium-beige); flex-shrink: 0;} /* Added style for total */
+
+        .my-food-footer { /* Can reuse .cart-footer if identical */
+            padding: 15px;
+            border-top: 1px solid var(--color-border);
+            background-color: var(--color-footer-transparent);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 0 0 10px 10px;
+            flex-shrink: 0;
+        }
+        .my-food-actions { /* Can reuse .cart-actions if identical */
+            display: flex;
+            justify-content: center; /* Center the single checkout button */
+            gap: 10px;
+        }
+        /* Use existing .checkout-btn style */
+        .my-food-empty-message { text-align: center; color: var(--color-text-secondary); padding: 20px; }
+
+        /* +++ สไตล์สำหรับแสดงหมายเลขโต๊ะ (ปรับปรุงใหม่) +++ */
+        #table-number-display {
+            position: fixed;   /* ทำให้ลอยอยู่เหนือเนื้อหาและอยู่กับที่ */
+            /* --- ย้ายไปมุมล่างซ้าย --- */
+            bottom: 10px;      /* ระยะห่างจากขอบล่าง */
+            left: 10px;       /* ระยะห่างจากขอบซ้าย */
+            z-index: 1002;     /* ค่า z-index สูงกว่าไอคอนลอยอื่นๆ */
+            /* --- เปลี่ยนสีให้เข้ากับ Theme ตะกร้า --- */
+            background-color: var(--color-medium-green); /* สีพื้นหลังเหมือนตะกร้า */
+            color: var(--color-white);                 /* สีตัวอักษร */
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: bold;
+            /* --- ปรับ padding และ border-radius ให้เป็นทรงแคปซูล --- */
+            padding: 8px 15px;
+            border-radius: 9999px; /* ทำให้เป็นทรงแคปซูล */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* เงาเล็กน้อย */
+            /* --- ลบ pointer-events ออก เพื่อให้คลิกได้ (ถ้าจำเป็น) --- */
+            /* pointer-events: none; */
+        }
+        /* --- End Table Number Display Style --- */
+
+        /* --- Responsive Adjustments --- */
+        @media (min-width: 640px) {
+             .bottom-menu { column-count: 3; }
+             .container { padding: 0 20px; } /* Container padding เปลี่ยนที่นี่ */
+             #menu-name { font-size: 36px; }
+             #menu-price { font-size: 22px; }
+             .price-label { font-size: 0.75em; }
+             .add-to-cart-button { width: 28px; height: 28px; line-height: 28px; font-size: 18px; }
+
+             /* --- ปรับ negative margin ของ top-section ให้สอดคล้องกับ container padding ใหม่ --- */
+             .top-section {
+                 width: calc(100% + 40px); /* 20px * 2 sides */
+                 margin-left: -20px;
+                 margin-right: -20px;
+             }
+             /* --- ปรับ detail margin --- */
+             #menu-details {
+                 margin-left: 20px;
+                 margin-right: 20px;
+                 width: calc(100% - 40px);
+             }
+
+             /* +++ ปรับ style เลขโต๊ะสำหรับจอใหญ่ขึ้น +++ */
+             /* --- ลบ padding-top ของ body ที่นี่ด้วย --- */
+             /* body {
+                 padding-top: 50px;
+             } */
+             #table-number-display {
+                 font-size: 1rem;
+                 /* --- ปรับตำแหน่งสำหรับจอใหญ่ --- */
+                 bottom: 15px;
+                 left: 15px;
+                 padding: 10px 20px;
+             }
+             /* --- จบการปรับ --- */
+        }
+        @media (min-width: 768px) { .bottom-menu { column-count: 4; } }
+        @media (min-width: 1024px) { .bottom-menu { column-count: 5; } }
+        @media (min-width: 1280px) { .bottom-menu { column-count: 6; } }
+
+    </style>
+</head>
+<body>
+    <div id="table-number-display"></div>
+
+    <div class="container">
+
+        <div class="top-section">
+             <div class="image-container" id="image-swipe-area">
+                 <img id="main-food-image" class="main-food-image" src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Salad Bowl">
+             </div>
+             <div id="menu-details">
+                 <div class="menu-name-container">
+                     <h2 id="menu-name">ชื่อเมนู</h2>
+                 </div>
+                 <p id="menu-description">คำอธิบายเมนูอาหาร</p>
+                 <p id="menu-price">
+                     <span class="price-item hidden">
+                         <span class="price-label" id="label-small">เล็ก:</span>
+                         <span class="price-value" id="price-small">฿0</span>
+                         <button class="add-to-cart-button" data-size="Small" title="เพิ่มขนาดเล็กลงตระกร้า">+</button>
+                     </span>
+                      <span class="price-separator hidden" id="price-sep-small">|</span>
+                     <span class="price-item hidden">
+                         <span class="price-label" id="label-normal">ปกติ:</span>
+                         <span class="price-value" id="price-normal">฿0</span>
+                         <button class="add-to-cart-button" data-size="Normal" title="เพิ่มขนาดปกติลงตระกร้า">+</button>
+                     </span>
+                     <span class="price-separator hidden" id="price-sep">|</span>
+                     <span class="price-item hidden">
+                         <span class="price-label" id="label-extra">พิเศษ:</span>
+                         <span class="price-value" id="price-extra">฿0</span>
+                         <button class="add-to-cart-button" data-size="Extra" title="เพิ่มขนาดพิเศษลงตระกร้า">+</button>
+                     </span>
+                     <span class="price-separator hidden" id="price-sep-family">|</span>
+                     <span class="price-item hidden">
+                         <span class="price-label" id="label-family">ครอบครัว:</span>
+                         <span class="price-value" id="price-family">฿0</span>
+                         <button class="add-to-cart-button" data-size="Family" title="เพิ่มขนาดครอบครัวลงตระกร้า">+</button>
+                     </span>
+                 </p>
+             </div>
+        </div>
+
+        <div class="category-bar">
+            <div class="category-item" data-category="จานหลัก"> <i class="fas fa-utensils"></i> <span>จานหลัก</span> </div>
+            <div class="category-item" data-category="เฮลท์ตี้ โบวล์"> <i class="fas fa-seedling"></i> <span>เฮลท์ตี้ โบวล์</span> </div>
+            <div class="category-item" data-category="ทานเล่น"> <i class="fas fa-cookie-bite"></i> <span>ทานเล่น</span> </div>
+            <div class="category-item" data-category="สลัด"> <i class="fas fa-leaf"></i> <span>สลัด</span> </div>
+            <div class="category-item" data-category="ทะเล"> <i class="fas fa-fish"></i> <span>ทะเล</span> </div>
+            <div class="category-item" data-category="ของหวาน"> <i class="fas fa-ice-cream"></i> <span>ของหวาน</span> </div>
+            <div class="category-item" data-category="เครื่องดื่ม"> <i class="fas fa-coffee"></i> <span>เครื่องดื่ม</span> </div>
+            </div>
+
+        <div class="bottom-menu">
+            </div>
+
+    </div> <div id="my-food-icon-container" title="เปิด/ปิด รายการอาหารของฉัน">
+        <i class="fas fa-receipt"></i>
+        <span id="my-food-item-count" class="hidden">0</span>
+    </div>
+    <div id="cart-icon-container" title="เปิด/ปิด ตระกร้า">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="cart-item-count" class="hidden">0</span>
+    </div>
+
+    <div id="my-food-popup">
+        <div class="my-food-header">
+            <h3>รายการอาหารที่สั่งแล้ว</h3>
+            <button class="my-food-close-btn" title="ปิดรายการ">&times;</button>
+        </div>
+        <div id="my-food-items-list">
+            <p class="my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>
+        </div>
+        <div class="my-food-footer">
+            <div class="my-food-actions">
+                <button class="cart-action-btn checkout-btn" id="my-food-checkout-button">ชำระเงิน</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-popup">
+        <div class="cart-header">
+            <h3>ตระกร้าสินค้า</h3>
+            <button class="cart-close-btn" title="ปิดตระกร้า">&times;</button>
+        </div>
+        <div id="cart-items-list">
+            <p class="cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>รวมทั้งหมด:</span>
+                <span id="cart-total-price">฿0</span>
+            </div>
+            <div class="cart-actions">
+                <button class="cart-action-btn order-btn" id="order-button">สั่งรายการอาหาร</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================================================
+        // START: Table Configuration
+        // ========================================================================
+        const TABLE_NUMBER_PREFIX = "Table No. "; // ข้อความนำหน้า (แก้ไขตรงนี้ได้)
+        const TABLE_NUMBER = "1";                // *** แก้ไขเลขโต๊ะนี้สำหรับแต่ละไฟล์ HTML ***
+        // ========================================================================
+        // END: Table Configuration
+        // ========================================================================
+
+        /**
+         * Menu Data Structure (Refactored for Flexibility)
+         * Allows easy addition/modification of sizes and prices.
+         */
+        const menuData = [
+             // == จานหลัก (Main Course) ==
+            { id: 'main1', name: 'พิซซ่าชีสคลาสสิก', description: 'พิซซ่าหน้าชีสล้วน อบร้อนๆ จากเตา', prices: {'Small' : 129,'Normal': 250, 'Extra': 350 , 'Family' : 690}, src: 'https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Classic Cheese Pizza', category: ['จานหลัก'] },
+            { id: 'main2', name: 'สปาเก็ตตี้มะเขือเทศ', description: 'เส้นสปาเก็ตตี้เหนียวนุ่ม คลุกเคล้าซอสมะเขือเทศเข้มข้น', prices: {'Normal': 180, 'Extra': 240}, src: 'https://images.pexels.com/photos/128408/pexels-photo-128408.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/128408/pexels-photo-128408.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Spaghetti with Tomatoes', category: ['จานหลัก'] },
+            { id: 'main3', name: 'เบอร์เกอร์เนื้อฉ่ำ', description: 'เบอร์เกอร์เนื้อบดคุณภาพดี พร้อมผักสดและซอสสูตรพิเศษ', prices: {'Normal': 220, 'Extra': 290}, src: 'https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Delicious Burger', category: ['จานหลัก'] },
+            { id: 'main4', name: 'ไก่ย่างสมุนไพร', description: 'เนื้อไก่หมักสมุนไพร ย่างจนหนังกรอบ เนื้อนุ่ม', prices: {'Normal': 190, 'Extra': 260}, src: 'https://images.pexels.com/photos/2673353/pexels-photo-2673353.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2673353/pexels-photo-2673353.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grilled Chicken', category: ['จานหลัก'] },
+            { id: 'main5', name: 'ฟิชแอนด์ชิปส์', description: 'ปลาชุบแป้งทอดกรอบ เสิร์ฟพร้อมเฟรนช์ฟรายส์และทาร์ทาร์ซอส', prices: {'Normal': 240, 'Extra': 310}, src: 'https://images.pexels.com/photos/397913/pexels-photo-397913.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/397913/pexels-photo-397913.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fish and Chips', category: ['จานหลัก', 'ทะเล'] },
+            { id: 'main6', name: 'แกงกะหรี่ไก่', description: 'แกงกะหรี่สไตล์อินเดีย รสชาติกลมกล่อม ทานพร้อมข้าวสวยร้อนๆ', prices: {'Normal': 170, 'Extra': 220}, src: 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Curry Dish', category: ['จานหลัก'] },
+            { id: 'main7', name: 'ผัดผักรวมมิตร', description: 'รวมมิตรผักสดนานาชนิด ผัดกับซอสหอยนางรม', prices: {'Normal': 120, 'Extra': 160}, src: 'https://images.pexels.com/photos/406152/pexels-photo-406152.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/406152/pexels-photo-406152.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Stir-fried Vegetables', category: ['จานหลัก', 'เฮลท์ตี้ โบวล์'] },
+            { id: 'main8', name: 'ข้าวหน้าเนื้อ', description: 'ข้าวสวยร้อนๆ โปะด้วยเนื้อผัดซอสรสเด็ด', prices: {'Normal': 160, 'Extra': 210}, src: 'https://images.pexels.com/photos/1624487/pexels-photo-1624487.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1624487/pexels-photo-1624487.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Rice with Meat', category: ['จานหลัก'] },
+            { id: 'main9', name: 'ปลาย่างเกลือ', description: 'เนื้อปลาสด ย่างกับเกลือหอมๆ บีบมะนาวเล็กน้อย', prices: {'Normal': 210, 'Extra': 280}, src: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grilled Fish', category: ['จานหลัก', 'ทะเล'] },
+            { id: 'main10', name: 'เบอร์ริโต้ไก่', description: 'แป้งตอร์ติญ่าห่อไส้ไก่ ผัก และซัลซ่า', prices: {'Normal': 175, 'Extra': 230}, src: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chicken Burrito', category: ['จานหลัก'] },
+            { id: 'main11', name: 'ไก่ทอดกรอบ', description: 'ไก่ทอดสูตรพิเศษ กรอบนอกนุ่มใน', prices: {'Normal': 150, 'Extra': 200}, src: 'https://images.pexels.com/photos/60616/fried-chicken-chicken-fried-crunchy-60616.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/60616/fried-chicken-chicken-fried-crunchy-60616.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fried Chicken', category: ['จานหลัก', 'ทานเล่น'] },
+            { id: 'main12', name: 'สเต็กเนื้อริบอาย', description: 'เนื้อริบอายนำเข้า ย่างระดับความสุกตามต้องการ เสิร์ฟพร้อมผักย่าง', prices: {'Normal': 450, 'Extra': 600}, src: 'https://images.pexels.com/photos/3186654/pexels-photo-3186654.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/3186654/pexels-photo-3186654.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Steak with Vegetables', category: ['จานหลัก'] },
+            // == เฮลท์ตี้ โบวล์ (Healthy Bowl) ==
+            { id: 'healthy1', name: 'ฟรุตโบวล์', description: 'รวมผลไม้สดหลากหลายชนิด ราดด้วยโยเกิร์ตธรรมชาติ', prices: {'Normal': 120}, src: 'https://images.pexels.com/photos/1099680/pexels-photo-1099680.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1099680/pexels-photo-1099680.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fruit Bowl', category: ['เฮลท์ตี้ โบวล์', 'สลัด', 'ของหวาน'] },
+            { id: 'healthy2', name: 'สลัดผักรวม', description: 'ผักสดกรอบนานาชนิด พร้อมน้ำสลัดไขมันต่ำ', prices: {'Normal': 150}, src: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Colorful Salad Bowl', category: ['เฮลท์ตี้ โบวล์', 'สลัด'] },
+            { id: 'healthy3', name: 'ควินัวโบวล์', description: 'ควินัว ธัญพืชซุปเปอร์ฟู้ด ท็อปปิ้งด้วยผักและโปรตีน', prices: {'Normal': 180}, src: 'https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/5938/food-salad-healthy-lunch.jpg?auto=compress&cs=tinysrgb&w=1260', alt: 'Quinoa Bowl', category: ['เฮลท์ตี้ โบวล์'] },
+            { id: 'healthy4', name: 'โบวล์อาหารเช้า', description: 'เริ่มต้นวันใหม่ด้วยโบวล์สุขภาพดี อุดมด้วยธัญพืชและผลไม้', prices: {'Normal': 160}, src: 'https://images.pexels.com/photos/1092730/pexels-photo-1092730.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1092730/pexels-photo-1092730.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Breakfast Bowl', category: ['เฮลท์ตี้ โบวล์'] },
+            { id: 'healthy5', name: 'กรีนสลัดโบวล์', description: 'เน้นผักใบเขียวสดกรอบ เพื่อสุขภาพที่ดี', prices: {'Normal': 140}, src: 'https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Green Salad Bowl', category: ['เฮลท์ตี้ โบวล์', 'สลัด'] },
+            { id: 'healthy6', name: 'โยเกิร์ตผลไม้', description: 'โยเกิร์ตรสธรรมชาติ ท็อปปิ้งด้วยผลไม้สดและกราโนล่า', prices: {'Normal': 130}, src: 'https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fruit and Yogurt Bowl', category: ['เฮลท์ตี้ โบวล์', 'ของหวาน'] },
+            { id: 'healthy7', name: 'เวจจี้โบวล์', description: 'รวมผักหลากหลายสีสัน ปรุงรสง่ายๆ เพื่อสุขภาพ', prices: {'Normal': 155}, src: 'https://images.pexels.com/photos/1893555/pexels-photo-1893555.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1893555/pexels-photo-1893555.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Vegetable Bowl', category: ['เฮลท์ตี้ โบวล์'] },
+            { id: 'healthy8', name: 'เกรนโบวล์', description: 'อิ่มอร่อยกับธัญพืชไม่ขัดสีและถั่วต่างๆ', prices: {'Normal': 170}, src: 'https://images.pexels.com/photos/718742/pexels-photo-718742.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/718742/pexels-photo-718742.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grain Bowl', category: ['เฮลท์ตี้ โบวล์'] },
+            { id: 'healthy9', name: 'สมูทตี้โบวล์', description: 'สมูทตี้เนื้อเนียน ท็อปปิ้งด้วยผลไม้และเมล็ดเจีย', prices: {'Normal': 145}, src: 'https://images.pexels.com/photos/1346345/pexels-photo-1346345.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1346345/pexels-photo-1346345.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Smoothie Bowl', category: ['เฮลท์ตี้ โบวล์', 'ของหวาน', 'เครื่องดื่ม'] },
+            { id: 'healthy10', name: 'สลัดอโวคาโด', description: 'อโวคาโดสดใหม่ พร้อมผักสลัดและน้ำสลัดบัลซามิก', prices: {'Normal': 190}, src: 'https://images.pexels.com/photos/1152237/pexels-photo-1152237.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1152237/pexels-photo-1152237.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Avocado Salad Bowl', category: ['เฮลท์ตี้ โบวล์', 'สลัด'] },
+            { id: 'healthy11', name: 'เบอร์รี่โบวล์', description: 'รวมเบอร์รี่สดๆ มากคุณประโยชน์', prices: {'Normal': 165}, src: 'https://images.pexels.com/photos/1209029/pexels-photo-1209029.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1209029/pexels-photo-1209029.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Berry Bowl', category: ['เฮลท์ตี้ โบวล์', 'ของหวาน'] },
+            { id: 'healthy12', name: 'พาวเวอร์โบวล์', description: 'เพิ่มพลังด้วยโบวล์ที่อัดแน่นด้วยสารอาหาร', prices: {'Normal': 200}, src: 'https://images.pexels.com/photos/128865/pexels-photo-128865.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/128865/pexels-photo-128865.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Power Bowl', category: ['เฮลท์ตี้ โบวล์'] },
+            // == ทานเล่น (Snacks) ==
+            { id: 'snack1', name: 'เฟรนช์ฟรายส์', description: 'มันฝรั่งทอดเหลืองกรอบ โรยเกลือเล็กน้อย', prices: {'Normal': 80, 'Extra': 120}, src: 'https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'French Fries', category: ['ทานเล่น'] },
+            { id: 'snack2', name: 'ป๊อปคอร์น', description: 'ข้าวโพดคั่วหอมกรุ่น มีให้เลือกหลายรส', prices: {'Normal': 60, 'Extra': 100}, src: 'https://images.pexels.com/photos/33129/popcorn-movie-party-entertainment.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/33129/popcorn-movie-party-entertainment.jpg?auto=compress&cs=tinysrgb&w=1260', alt: 'Popcorn', category: ['ทานเล่น'] },
+            { id: 'snack3', name: 'นาโชส์ชีส', description: 'แผ่นข้าวโพดกรอบ ราดด้วยชีสและซอสซัลซ่า', prices: {'Normal': 120, 'Extra': 180}, src: 'https://images.pexels.com/photos/209406/pexels-photo-209406.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/209406/pexels-photo-209406.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Nachos', category: ['ทานเล่น'] },
+            { id: 'snack4', name: 'ปีกไก่ทอด', description: 'ปีกไก่ทอดคลุกเคล้าซอสบาร์บีคิว', prices: {'Normal': 130, 'Extra': 190}, src:
+            'https://www.africanbites.com/wp-content/uploads/2022/08/IMG_1804-scaled-e1729473138638.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://www.africanbites.com/wp-content/uploads/2022/08/IMG_1804-scaled-e1729473138638.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chicken Wings', category: ['ทานเล่น', 'จานหลัก'] },
+            { id: 'snack5', name: 'หอมทอด', description: 'หอมใหญ่ชุบแป้งทอดกรอบ ทานคู่กับซอสมะเขือเทศ', prices: {'Normal': 90, 'Extra': 130}, src: 'https://images.pexels.com/photos/3220617/pexels-photo-3220617.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/3220617/pexels-photo-3220617.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Onion Rings', category: ['ทานเล่น'] },
+            { id: 'snack6', name: 'ปอเปี๊ยะทอด', description: 'ปอเปี๊ยะไส้ผักและวุ้นเส้น ทอดจนกรอบ', prices: {'Normal': 70, 'Extra': 100}, src: 'https://images.pexels.com/photos/4057760/pexels-photo-4057760.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/4057760/pexels-photo-4057760.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Spring Rolls', category: ['ทานเล่น'] },
+            { id: 'snack7', name: 'ชิปส์และดิป', description: 'มันฝรั่งแผ่นทอดกรอบ เสิร์ฟพร้อมดิปซอสรสเด็ด', prices: {'Normal': 100}, src: 'https://images.pexels.com/photos/5848491/pexels-photo-5848491.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/5848491/pexels-photo-5848491.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chips and Dip', category: ['ทานเล่น'] },
+            { id: 'snack8', name: 'พิซซ่าสไลซ์', description: 'พิซซ่าขนาดพอดีคำ เลือกหน้าได้ตามชอบ', prices: {'Normal': 90}, src: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Pizza Slice', category: ['ทานเล่น', 'จานหลัก'] },
+            { id: 'snack9', name: 'เพรทเซล', description: 'ขนมปังเพรทเซลอบใหม่ โรยเกลือหอมๆ', prices: {'Normal': 65}, src:
+            'https://www.marketsatshrewsbury.com/wp-content/uploads/2023/06/pretzel-1.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://www.marketsatshrewsbury.com/wp-content/uploads/2023/06/pretzel-1.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Pretzels', category: ['ทานเล่น'] },
+            { id: 'snack10', name: 'คัพเค้ก', description: 'คัพเค้กเนื้อนุ่ม แต่งหน้าครีมสวยงาม', prices: {'Normal': 50}, src: 'https://images.pexels.com/photos/808941/pexels-photo-808941.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/808941/pexels-photo-808941.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cupcakes', category: ['ทานเล่น', 'ของหวาน'] },
+            { id: 'snack11', name: 'โดนัท', description: 'โดนัทหลากหลายรสชาติ ทั้งแบบเคลือบน้ำตาลและสอดไส้', prices: {'Normal': 40}, src: 'https://img.salehere.co.th/p/1200x0/2022/05/07/ouju1h3kaoql.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://img.salehere.co.th/p/1200x0/2022/05/07/ouju1h3kaoql.jpg?auto=compress&cs=tinysrgb&w=1260', alt: 'Donuts', category: ['ทานเล่น', 'ของหวาน'] },
+            { id: 'snack12', name: 'คุกกี้', description: 'คุกกี้เนยสด หรือ ช็อกโกแลตชิพ (ราคาต่อชิ้น)', prices: {'Normal': 35}, src: 'https://images.pexels.com/photos/209205/pexels-photo-209205.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/209205/pexels-photo-209205.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cookies', category: ['ทานเล่น', 'ของหวาน'] },
+             // == สลัด (Salad) ==
+            { id: 'salad1', name: 'สลัดผักสด', description: 'รวมผักสดกรอบ ราดน้ำสลัดใส', prices: {'Normal': 130}, src: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fresh Green Salad', category: ['สลัด', 'เฮลท์ตี้ โบวล์'] },
+            { id: 'salad2', name: 'สลัดผักรวมสีสัน', description: 'เติมความสดชื่นด้วยผักหลากหลายสี', prices: {'Normal': 140}, src: 'https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Colorful Vegetable Salad', category: ['สลัด', 'เฮลท์ตี้ โบวล์'] },
+            { id: 'salad3', name: 'สลัดไก่', description: 'สลัดผักสดพร้อมเนื้อไก่ฉีกหรือไก่ย่าง', prices: {'Normal': 160, 'Extra': 210}, src: 'https://images.pexels.com/photos/461382/pexels-photo-461382.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/461382/pexels-photo-461382.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chicken Salad', category: ['สลัด', 'จานหลัก'] },
+            { id: 'salad4', name: 'สลัดผลไม้', description: 'รวมผลไม้สดตามฤดูกาล หวานชื่นใจ', prices: {'Normal': 120}, src: 'https://images.pexels.com/photos/109275/pexels-photo-109275.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/109275/pexels-photo-109275.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fruit Salad', category: ['สลัด', 'ของหวาน', 'เฮลท์ตี้ โบวล์'] },
+            { id: 'salad5', name: 'สลัดคาเปรเซ่', description: 'มะเขือเทศสด มอสซาเรลล่าชีส และใบโหระพา ราดบัลซามิก', prices: {'Normal': 170}, src: 'https://images.pexels.com/photos/1437318/pexels-photo-1437318.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1437318/pexels-photo-1437318.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Caprese Salad', category: ['สลัด'] },
+            { id: 'salad6', name: 'กรีกสลัด', description: 'สลัดสไตล์กรีก ใส่เฟต้าชีสและมะกอกดำ', prices: {'Normal': 165}, src: 'https://images.pexels.com/photos/1109197/pexels-photo-1109197.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1109197/pexels-photo-1109197.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Greek Salad', category: ['สลัด'] },
+            { id: 'salad7', name: 'คอบบ์สลัด', description: 'สลัดรวมมิตรเครื่องแน่น ทั้งไก่ เบคอน ไข่ อโวคาโด', prices: {'Normal': 190, 'Extra': 250}, src: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cobb Salad', category: ['สลัด', 'จานหลัก'] },
+            { id: 'salad8', name: 'ซีซาร์สลัด', description: 'ผักคอสสดกรอบ คลุกเคล้าน้ำสลัดซีซาร์และขนมปังกรอบ', prices: {'Normal': 150, 'Extra': 200}, src: 'https://images.pexels.com/photos/2862154/pexels-photo-2862154.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2862154/pexels-photo-2862154.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Caesar Salad', category: ['สลัด'] },
+            { id: 'salad9', name: 'สลัดทูน่า', description: 'เนื้อทูน่าในน้ำสลัดมายองเนส ทานกับผักสด', prices: {'Normal': 155, 'Extra': 205}, src: 'https://images.pexels.com/photos/806361/pexels-photo-806361.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/806361/pexels-photo-806361.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Tuna Salad', category: ['สลัด', 'ทะเล'] },
+            { id: 'salad10', name: 'สลัดพาสต้า', description: 'เส้นพาสต้าลวก คลุกกับผักและน้ำสลัด', prices: {'Normal': 145, 'Extra': 195}, src: 'https://images.pexels.com/photos/1435903/pexels-photo-1435903.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1435903/pexels-photo-1435903.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Pasta Salad', category: ['สลัด', 'จานหลัก'] },
+            { id: 'salad11', name: 'สลัดควินัว', description: 'ควินัวผสมกับผักสดและสมุนไพร', prices: {'Normal': 175}, src: 'https://images.pexels.com/photos/1199960/pexels-photo-1199960.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1199960/pexels-photo-1199960.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Quinoa Salad', category: ['สลัด', 'เฮลท์ตี้ โบวล์'] },
+            { id: 'salad12', name: 'สลัดถั่วรวม', description: 'รวมถั่วหลากหลายชนิด ให้โปรตีนสูง', prices: {'Normal': 160}, src: 'https://images.pexels.com/photos/4057737/pexels-photo-4057737.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/4057737/pexels-photo-4057737.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Bean Salad', category: ['สลัด', 'เฮลท์ตี้ โบวล์'] },
+             // == ทะเล (Seafood) ==
+            { id: 'seafood1', name: 'ปลาแซลมอนย่าง', description: 'เนื้อปลาแซลมอนสด ย่างกำลังดี เสิร์ฟพร้อมเลมอน', prices: {'Normal': 350}, src: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grilled Salmon', category: ['ทะเล', 'จานหลัก'] },
+            { id: 'seafood2', name: 'สปาเก็ตตี้กุ้ง', description: 'เส้นสปาเก็ตตี้ผัดกับกุ้งสดและซอสกระเทียม', prices: {'Normal': 280, 'Extra': 360}, src: 'https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Shrimp Scampi Pasta', category: ['ทะเล', 'จานหลัก'] },
+            { id: 'seafood3', name: 'ล็อบสเตอร์อบชีส', description: 'เนื้อล็อบสเตอร์สด อบกับชีสหอมมัน', prices: {'Normal': 990}, src: 'https://images.pexels.com/photos/775871/pexels-photo-775871.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/775871/pexels-photo-775871.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Lobster Thermidor', category: ['ทะเล', 'จานหลัก'] },
+            { id: 'seafood4', name: 'ปลาย่างมะนาว', description: 'เนื้อปลาย่างหอมๆ ราดซอสมะนาวรสจัดจ้าน', prices: {'Normal': 260}, src: 'https://images.pexels.com/photos/725991/pexels-photo-725991.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/725991/pexels-photo-725991.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Grilled Fish with Lemon', category: ['ทะเล', 'จานหลัก'] },
+            { id: 'seafood5', name: 'ซูชิรวม', description: 'ข้าวปั้นหน้าปลาดิบและอาหารทะเลสดๆ', prices: {'Normal': 320, 'Extra': 450}, src: 'https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Sushi Rolls', category: ['ทะเล', 'ทานเล่น'] },
+            { id: 'seafood6', name: 'สเต็กปลาทูน่า', description: 'เนื้อปลาทูน่าสด ย่างแบบมีเดียมแรร์', prices: {'Normal': 380}, src: 'https://images.pexels.com/photos/842142/pexels-photo-842142.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/842142/pexels-photo-842142.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Tuna Steak', category: ['ทะเล', 'จานหลัก'] },
+            { id: 'seafood7', name: 'หอยแมลงภู่อบไวน์ขาว', description: 'หอยแมลงภู่สดอบกับไวน์ขาวและสมุนไพร', prices: {'Normal': 290}, src: 'https://images.pexels.com/photos/2871757/pexels-photo-2871757.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2871757/pexels-photo-2871757.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Mussels in White Wine', category: ['ทะเล', 'ทานเล่น'] },
+            { id: 'seafood8', name: 'หอยนางรมสด', description: 'หอยนางรมสดจากทะเล เสิร์ฟพร้อมเครื่องเคียง (ราคาต่อตัว)', prices: {'Normal': 80}, src: 'https://images.pexels.com/photos/566344/pexels-photo-566344.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/566344/pexels-photo-566344.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Oysters', category: ['ทะเล', 'ทานเล่น'] },
+            { id: 'seafood9', name: 'ซุปหอยลาย', description: 'ซุปครีมข้นใส่เนื้อหอยลายและมันฝรั่ง', prices: {'Normal': 180}, src: 'https://images.pexels.com/photos/128399/pexels-photo-128399.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/128399/pexels-photo-128399.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Clam Chowder', category: ['ทะเล', 'ซุป'] },
+            { id: 'seafood10', name: 'ปูอบ', description: 'เนื้อปูสดๆ อบ เสิร์ฟพร้อมน้ำจิ้มซีฟู้ด (ราคาตามน้ำหนัก)', prices: {'Normal': 550}, src: 'https://static.wixstatic.com/media/414281_683a5caf56b348d4bbbde11769f02572~mv2.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://static.wixstatic.com/media/414281_683a5caf56b348d4bbbde11769f02572~mv2.jpg?auto=compress&cs=tinysrgb&w=1260', alt: 'Steamed Crab', category: ['ทะเล', 'จานหลัก'] },
+            { id: 'seafood11', name: 'ซาชิมิรวม', description: 'ปลาดิบสด แล่บางๆ จัดจานสวยงาม', prices: {'Normal': 420, 'Extra': 650}, src: 'https://images.pexels.com/photos/2098085/pexels-photo-2098085.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2098085/pexels-photo-2098085.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Sashimi Platter', category: ['ทะเล', 'ทานเล่น'] },
+            { id: 'seafood12', name: 'ปลาหมึกทอดคาลามารี', description: 'ปลาหมึกชุบแป้งทอดกรอบ จิ้มกับซอสทาร์ทาร์', prices: {'Normal': 190, 'Extra': 260}, src: 'https://images.pexels.com/photos/62609/pexels-photo-62609.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/62609/pexels-photo-62609.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fried Calamari', category: ['ทะเล', 'ทานเล่น'] },
+             // == ของหวาน (Dessert) ==
+            { id: 'dessert1', name: 'เค้กช็อกโกแลต', description: 'เค้กช็อกโกแลตเนื้อนุ่ม ราดซอสช็อกโกแลตเข้มข้น', prices: {'Normal': 120}, src: 'https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Slice of Chocolate Cake', category: ['ของหวาน', 'ทานเล่น'] },
+            { id: 'dessert2', name: 'คัพเค้กแฟนซี', description: 'คัพเค้กแต่งหน้าครีมหลากสีสัน', prices: {'Normal': 80}, src: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cupcakes with Frosting', category: ['ของหวาน', 'ทานเล่น'] },
+            { id: 'dessert3', name: 'โดนัทรวมรส', description: 'โดนัทเนื้อนุ่ม มีให้เลือกหลายหน้า', prices: {'Normal': 60}, src: 'https://images.pexels.com/photos/14093120/pexels-photo-14093120.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/14093120/pexels-photo-14093120.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Assorted Donuts', category: ['ของหวาน', 'ทานเล่น'] },
+            { id: 'dessert4', name: 'คุกกี้ช็อกโกแลตชิพ', description: 'คุกกี้กรอบ หอมเนย สอดไส้ช็อกโกแลตชิพ', prices: {'Normal': 50}, src: 'https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Chocolate Chip Cookies', category: ['ของหวาน', 'ทานเล่น'] },
+            { id: 'dessert5', name: 'ทาร์ตผลไม้รวม', description: 'แป้งทาร์ตกรอบ ใส่ครีมคัสตาร์ดและผลไม้สด', prices: {'Normal': 140}, src: 'https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fruit Tart', category: ['ของหวาน'] },
+            { id: 'dessert6', name: 'ไอศกรีมซันเดย์', description: 'ไอศกรีมรสโปรด ท็อปปิ้งด้วยวิปครีมและเชอร์รี่', prices: {'Normal': 110}, src: 'https://images.pexels.com/photos/1362534/pexels-photo-1362534.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1362534/pexels-photo-1362534.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Ice Cream Sundae', category: ['ของหวาน'] },
+            { id: 'dessert7', name: 'ชีสเค้ก', description: 'ชีสเค้กเนื้อเนียน รสชาติเข้มข้น', prices: {'Normal': 130}, src: 'https://images.pexels.com/photos/1126384/pexels-photo-1126384.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1126384/pexels-photo-1126384.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cheesecake', category: ['ของหวาน'] },
+            { id: 'dessert8', name: 'บราวนี่', description: 'บราวนี่ช็อกโกแลตเข้มข้น เนื้อหนึบ', prices: {'Normal': 90}, src: 'https://images.pexels.com/photos/2067396/pexels-photo-2067396.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/2067396/pexels-photo-2067396.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Brownies', category: ['ของหวาน', 'ทานเล่น'] },
+            { id: 'dessert9', name: 'หมูปิ้ง', description: 'หมูปิ้ง ฉ่ำเยิ้ม หมักเครื่องเทศ 12ชม. ย่างถ่านไม้ลิ้นจี่', prices: {'Normal': 70}, src: 'https://www.smethailandclub.com/upload/startup/image/1685522169.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://www.smethailandclub.com/upload/startup/image/1685522169.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'หมูปิ้ง', category: ['ของหวาน', 'ทานเล่น'] },
+            { id: 'dessert10', name: 'แพนเค้ก', description: 'แพนเค้กนุ่มๆ ราดน้ำผึ้งหรือเมเปิ้ลไซรัป', prices: {'Normal': 150}, src: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Pancakes', category: ['ของหวาน', 'จานหลัก'] },
+            { id: 'dessert11', name: 'วาฟเฟิล', description: 'วาฟเฟิลอบร้อนๆ ทานคู่กับไอศกรีมหรือผลไม้', prices: {'Normal': 160}, src: 'https://images.pexels.com/photos/574111/pexels-photo-574111.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/574111/pexels-photo-574111.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Waffles', category: ['ของหวาน', 'จานหลัก'] },
+            { id: 'dessert12', name: 'ทีรามิสุ', description: 'ขนมหวานสไตล์อิตาเลียน รสกาแฟเข้มข้น', prices: {'Normal': 140}, src: 'https://images.pexels.com/photos/588776/pexels-photo-588776.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/588776/pexels-photo-588776.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Tiramisu', category: ['ของหวาน'] },
+             // == เครื่องดื่ม (Drinks) ==
+            { id: 'drink1', name: 'กาแฟ', description: 'กาแฟสดร้อน หรือ กาแฟเย็น ชงสดใหม่ทุกแก้ว', prices: {'Normal': 70, 'Extra': 90}, src: 'https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Coffee', category: ['เครื่องดื่ม'] },
+            { id: 'drink2', name: 'น้ำผลไม้สด', description: 'น้ำส้มคั้นสด หรือ น้ำผลไม้อื่นๆ ตามฤดูกาล', prices: {'Normal': 80, 'Extra': 110}, src: 'https://images.pexels.com/photos/1458867/pexels-photo-1458867.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1458867/pexels-photo-1458867.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Fresh Juice', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์'] },
+            { id: 'drink3', name: 'สมูทตี้ผลไม้', description: 'ผลไม้ปั่นเนื้อเนียน เย็นชื่นใจ', prices: {'Normal': 90, 'Extra': 120}, src: 'https://images.pexels.com/photos/103566/pexels-photo-103566.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/103566/pexels-photo-103566.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Smoothie', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์', 'ของหวาน'] },
+            { id: 'drink4', name: 'ค็อกเทล', description: 'เครื่องดื่มผสมแอลกอฮอล์ มีให้เลือกหลากหลาย', prices: {'Normal': 150}, src: 'https://images.pexels.com/photos/616838/pexels-photo-616838.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/616838/pexels-photo-616838.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Cocktail', category: ['เครื่องดื่ม'] },
+            { id: 'drink5', name: 'ชา', description: 'ชาร้อน หรือ ชาเย็น (ชาดำ, ชาเขียว, ชาสมุนไพร)', prices: {'Normal': 60, 'Extra': 80}, src: 'https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Tea', category: ['เครื่องดื่ม'] },
+            { id: 'drink6', name: 'น้ำมะนาว', description: 'น้ำมะนาวคั้นสด เปรี้ยวหวานลงตัว', prices: {'Normal': 50, 'Extra': 70}, src: 'https://images.pexels.com/photos/1187766/pexels-photo-1187766.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1187766/pexels-photo-1187766.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Lemonade', category: ['เครื่องดื่ม'] },
+            { id: 'drink7', name: 'มิลค์เชค', description: 'นมปั่นกับไอศกรีมรสต่างๆ', prices: {'Normal': 100, 'Extra': 130}, src: 'https://images.pexels.com/photos/349610/pexels-photo-349610.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/349610/pexels-photo-349610.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Milkshake', category: ['เครื่องดื่ม', 'ของหวาน'] },
+            { id: 'drink8', name: 'Bloody Mary', description: 'favourite mixes vodka, tomato juice and all the best seasonings and spice to create the perfect balance', prices: {'Normal': 40}, src:
+            'https://onedishkitchen.com/wp-content/uploads/2022/12/bloody-mary-one-dish-kitchen-1.jpg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://onedishkitchen.com/wp-content/uploads/2022/12/bloody-mary-one-dish-kitchen-1.jpg', alt: 'Bloody Mary', category: ['เครื่องดื่ม'] },
+            { id: 'drink9', name: 'ช็อกโกแลตร้อน', description: 'ช็อกโกแลตเข้มข้น ชงร้อนๆ', prices: {'Normal': 80, 'Extra': 100}, src: 'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Hot Chocolate', category: ['เครื่องดื่ม', 'ของหวาน'] },
+            { id: 'drink10', name: 'น้ำเปล่า', description: 'น้ำดื่มสะอาด', prices: {'Normal': 20}, src: 'https://images.pexels.com/photos/416528/pexels-photo-416528.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/416528/pexels-photo-416528.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Water', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์'] },
+            { id: 'drink11', name: 'น้ำส้มกล่อง', description: 'น้ำส้มสำเร็จรูป', prices: {'Normal': 30}, src: 'https://images.pexels.com/photos/1304540/pexels-photo-1304540.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/1304540/pexels-photo-1304540.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Orange Juice Box', category: ['เครื่องดื่ม'] },
+            { id: 'drink12', name: 'น้ำแร่โซดา', description: 'น้ำแร่ธรรมชาติชนิดมีฟอง', prices: {'Normal': 45}, src: 'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=600', dataImageSrc: 'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=1260', alt: 'Sparkling Water', category: ['เครื่องดื่ม', 'เฮลท์ตี้ โบวล์'] },
+        ];
+
+        // --- Shopping Cart & Ordered Items Logic ---
+        let cartItems = [];
+        let orderedItems = []; // <-- State สำหรับรายการที่สั่งแล้ว
+        const LOCAL_STORAGE_KEY = 'menuCartData';
+        const ORDERED_ITEMS_LOCAL_STORAGE_KEY = 'menuOrderedItemsData'; // <-- Key ใหม่
+        let currentDisplayedItemId = null;
+        let currentCategory = null;
+        let currentFilteredItems = [];
+        let currentIndex = -1;
+
+        // --- Swipe Detection Variables ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let isSwiping = false;
+        const swipeThreshold = 50;
+
+        // --- DOM Elements ---
+        const tableNumberDisplayElement = document.getElementById('table-number-display'); // <-- เพิ่ม Element นี้
+        const mainFoodImage = document.getElementById('main-food-image');
+        const imageContainer = document.getElementById('image-swipe-area');
+        const bottomMenu = document.querySelector('.bottom-menu');
+        const categoryItems = document.querySelectorAll('.category-item');
+        const menuDetailsContainer = document.getElementById('menu-details');
+        const menuNameElement = document.getElementById('menu-name');
+        const menuDescriptionElement = document.getElementById('menu-description');
+        const menuPriceContainer = document.getElementById('menu-price');
+        const priceElementsCache = {
+            'Small': { label: document.getElementById('label-small'), value: document.getElementById('price-small'), button: menuPriceContainer?.querySelector('button[data-size="Small"]'), separator: document.getElementById('price-sep-small') },
+            'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null }, // Assuming no separator *after* normal by default
+            'Extra': { label: document.getElementById('label-extra'), value: document.getElementById('price-extra'), button: menuPriceContainer?.querySelector('button[data-size="Extra"]'), separator: document.getElementById('price-sep') }, // Assuming this is the sep *before* Extra
+            'Family': { label: document.getElementById('label-family'), value: document.getElementById('price-family'), button: menuPriceContainer?.querySelector('button[data-size="Family"]'), separator: document.getElementById('price-sep-family') } // Assuming this is the sep *before* Family
+        };
+
+
+        // Cart UI
+        const cartIconContainer = document.getElementById('cart-icon-container');
+        const cartItemCountBadge = document.getElementById('cart-item-count');
+        const cartPopup = document.getElementById('cart-popup');
+        const cartItemsList = document.getElementById('cart-items-list');
+        const cartTotalPriceElement = document.getElementById('cart-total-price');
+        const cartCloseBtn = cartPopup?.querySelector('.cart-close-btn');
+        const orderButton = document.getElementById('order-button'); // ปุ่มสั่งในตะกร้า
+
+        // My Food List UI Elements
+        const myFoodIconContainer = document.getElementById('my-food-icon-container');
+        const myFoodItemCountBadge = document.getElementById('my-food-item-count');
+        const myFoodPopup = document.getElementById('my-food-popup');
+        const myFoodItemsList = document.getElementById('my-food-items-list');
+        const myFoodCloseBtn = myFoodPopup?.querySelector('.my-food-close-btn');
+        const myFoodCheckoutButton = document.getElementById('my-food-checkout-button'); // ปุ่ม Checkout ใหม่
+
+        // ========================================================================
+        // START: Telegram Configuration (Obfuscated - Still INSECURE CLIENT-SIDE)
+        // คำเตือน: การเก็บ Token ในโค้ดฝั่ง Client ไม่ปลอดภัย ควรใช้ Backend จัดการ
+        // ========================================================================
+        const tPart1 = 'NzA0ODk5NzkxODpB';       // Base64 encoded part 1
+        const tPart2 = 'QUhZdDVqQk9HM1E2';       // Base64 encoded part 2
+        const tPart3 = 'N2JwenRJbl9SR3BE';       // Base64 encoded part 3
+        const tPart4 = 'Q2NYMHlBVVlWQQ==';       // Base64 encoded part 4
+        const CHAT_ID = '-1002634956608';        // Telegram Chat ID
+        // ========================================================================
+        // END: Telegram Configuration
+        // ========================================================================
+
+
+        // --- Utility Functions ---
+        function getCurrentDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // --- Local Storage Functions ---
+        function saveCartToLocalStorage() {
+            const cartData = { date: getCurrentDateString(), items: cartItems };
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cartData));
+            } catch (error) { console.error("Error saving cart to localStorage:", error); }
+        }
+
+        function loadCartFromLocalStorage() {
+            const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+            cartItems = [];
+            if (storedData) {
+                try {
+                    const parsedData = JSON.parse(storedData);
+                    if (parsedData && parsedData.date === getCurrentDateString() && Array.isArray(parsedData.items)) {
+                        cartItems = parsedData.items;
+                    } else { localStorage.removeItem(LOCAL_STORAGE_KEY); }
+                } catch (error) {
+                    console.error("Error parsing cart data from localStorage:", error);
+                    localStorage.removeItem(LOCAL_STORAGE_KEY);
+                }
+            }
+        }
+
+        // Ordered Items Load/Save
+        function saveOrderedItemsToLocalStorage() {
+            const orderedData = { date: getCurrentDateString(), items: orderedItems };
+            try {
+                localStorage.setItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY, JSON.stringify(orderedData));
+            } catch (error) { console.error("Error saving ordered items to localStorage:", error); }
+        }
+
+        function loadOrderedItemsFromLocalStorage() {
+            const storedData = localStorage.getItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY);
+            orderedItems = [];
+            if (storedData) {
+                try {
+                    const parsedData = JSON.parse(storedData);
+                    if (parsedData && parsedData.date === getCurrentDateString() && Array.isArray(parsedData.items)) {
+                        orderedItems = parsedData.items;
+                    } else { localStorage.removeItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY); }
+                } catch (error) {
+                    console.error("Error parsing ordered items data from localStorage:", error);
+                    localStorage.removeItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY);
+                }
+            }
+        }
+
+        // --- Cart Update Functions ---
+        function addToCart(itemId, size) {
+            const product = menuData.find(item => item.id === itemId);
+            if (!product || typeof product.prices !== 'object') { console.error("Product not found:", itemId); return; }
+            const price = product.prices[size];
+            if (price === null || price === undefined || isNaN(price)) { console.error("Invalid price:", itemId, size); return; }
+            const cartItemId = `${itemId}-${size}`;
+            const existingItemIndex = cartItems.findIndex(item => item.cartId === cartItemId);
+            if (existingItemIndex > -1) { cartItems[existingItemIndex].quantity++; }
+            else { cartItems.push({ cartId: cartItemId, id: product.id, name: product.name, price: price, size: size, quantity: 1 }); }
+            saveCartToLocalStorage();
+            renderCart();
+            updateCartIconCount();
+            if (cartIconContainer) { cartIconContainer.classList.add('updated'); setTimeout(() => { cartIconContainer.classList.remove('updated'); }, 300); }
+        }
+
+        function updateQuantity(cartId, change) {
+            const itemIndex = cartItems.findIndex(item => item.cartId === cartId);
+            if (itemIndex > -1) {
+                cartItems[itemIndex].quantity += change;
+                if (cartItems[itemIndex].quantity <= 0) { cartItems.splice(itemIndex, 1); }
+                saveCartToLocalStorage();
+                renderCart();
+                updateCartIconCount();
+            }
+        }
+
+        function removeFromCart(cartId) {
+             const itemIndex = cartItems.findIndex(item => item.cartId === cartId);
+             if (itemIndex > -1) {
+                 cartItems.splice(itemIndex, 1);
+                 saveCartToLocalStorage();
+                 renderCart();
+                 updateCartIconCount();
+             }
+        }
+
+        // --- Rendering Functions ---
+        function renderCart() {
+            if (!cartItemsList || !cartTotalPriceElement) { return; }
+            cartItemsList.innerHTML = '';
+            let totalPrice = 0;
+            if (cartItems.length === 0) {
+                cartItemsList.innerHTML = '<p class="cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>';
+            } else {
+                cartItems.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.classList.add('cart-item');
+                    const itemPrice = item.price || 0;
+                    const itemQuantity = item.quantity || 0;
+                    const itemTotalPrice = itemPrice * itemQuantity;
+                    totalPrice += itemTotalPrice;
+                    itemElement.innerHTML = `
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</div>
+                            <div class="cart-item-price">฿${itemPrice} x ${itemQuantity} = ฿${itemTotalPrice}</div>
+                        </div>
+                        <div class="cart-item-controls">
+                            <button class="cart-quantity-btn decrease-qty" data-cartid="${item.cartId}" aria-label="ลดจำนวน">-</button>
+                            <span class="cart-item-quantity">${itemQuantity}</span>
+                            <button class="cart-quantity-btn increase-qty" data-cartid="${item.cartId}" aria-label="เพิ่มจำนวน">+</button>
+                            <button class="cart-remove-btn" data-cartid="${item.cartId}" title="ลบรายการนี้" aria-label="ลบรายการนี้"><i class="fas fa-trash-alt"></i></button>
+                        </div>`;
+                    const decreaseBtn = itemElement.querySelector('.decrease-qty');
+                    const increaseBtn = itemElement.querySelector('.increase-qty');
+                    const removeBtn = itemElement.querySelector('.cart-remove-btn');
+                    if(decreaseBtn) decreaseBtn.addEventListener('click', (e) => updateQuantity(e.currentTarget.dataset.cartid, -1));
+                    if(increaseBtn) increaseBtn.addEventListener('click', (e) => updateQuantity(e.currentTarget.dataset.cartid, 1));
+                    if(removeBtn) removeBtn.addEventListener('click', (e) => removeFromCart(e.currentTarget.dataset.cartid));
+                    cartItemsList.appendChild(itemElement);
+                });
+            }
+             cartTotalPriceElement.textContent = `฿${totalPrice}`;
+        }
+
+        function updateCartIconCount() {
+             if (!cartItemCountBadge) return;
+            const totalQuantity = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            if (totalQuantity > 0) {
+                cartItemCountBadge.textContent = totalQuantity;
+                cartItemCountBadge.classList.remove('hidden');
+            } else {
+                cartItemCountBadge.classList.add('hidden');
+            }
+        }
+
+        // Render/Update Count for Ordered Items
+        function renderOrderedItems() {
+            if (!myFoodItemsList) { return; }
+            myFoodItemsList.innerHTML = '';
+
+            if (orderedItems.length === 0) {
+                myFoodItemsList.innerHTML = '<p class="my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>';
+                 if (myFoodCheckoutButton) myFoodCheckoutButton.style.display = 'none'; // Hide checkout if no ordered items
+            } else {
+                 if (myFoodCheckoutButton) myFoodCheckoutButton.style.display = 'block'; // Show checkout
+                 let orderedTotal = 0;
+                orderedItems.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.classList.add('ordered-item');
+                    const itemPrice = item.price || 0;
+                    const itemQuantity = item.quantity || 0;
+                    const itemTotalPrice = itemPrice * itemQuantity;
+                    orderedTotal += itemTotalPrice;
+                    itemElement.innerHTML = `
+                        <div class="ordered-item-details">
+                            <div class="ordered-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</div>
+                            <div class="ordered-item-info">จำนวน: ${itemQuantity} (฿${itemPrice}/ชิ้น)</div>
+                        </div>
+                        <div class="ordered-item-total">
+                           ฿${itemTotalPrice}
+                        </div>`;
+                    myFoodItemsList.appendChild(itemElement);
+                });
+                 // Optional: Display total in header or footer
+                 // const headerH3 = myFoodPopup?.querySelector('.my-food-header h3');
+                 // if(headerH3) headerH3.textContent = `รายการที่สั่งแล้ว (รวม ฿${orderedTotal})`;
+            }
+        }
+
+        function updateMyFoodIconCount() {
+             if (!myFoodItemCountBadge) return;
+             const totalQuantity = orderedItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+             if (totalQuantity > 0) {
+                 myFoodItemCountBadge.textContent = totalQuantity;
+                 myFoodItemCountBadge.classList.remove('hidden');
+                 if (myFoodIconContainer) myFoodIconContainer.classList.add('updated');
+                 setTimeout(() => { if (myFoodIconContainer) myFoodIconContainer.classList.remove('updated'); }, 300);
+             } else {
+                 myFoodItemCountBadge.classList.add('hidden');
+             }
+         }
+
+        // +++ START: REVISED showItemDetails Function +++
+        // --- Show Item Details Function (REVISED for Animation Stability) ---
+        function showItemDetails(index, direction = 'none') {
+            if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer) { return; }
+            if (index < 0 || index >= currentFilteredItems.length) { menuDetailsContainer.style.display = 'none'; currentDisplayedItemId = null; currentIndex = -1; return; }
+
+            currentIndex = index;
+            const itemData = currentFilteredItems[currentIndex];
+            currentDisplayedItemId = itemData.id;
+
+            const newImageSrc = itemData.dataImageSrc || itemData.src;
+            const currentImageSrc = mainFoodImage.getAttribute('src');
+
+            // --- Animation Logic ---
+            const updateImageElement = (src, alt) => {
+                mainFoodImage.setAttribute('src', src);
+                mainFoodImage.alt = alt;
+            };
+
+            imageContainer.classList.remove('slide-out-left', 'slide-in-right', 'slide-out-right', 'slide-in-left');
+
+            if (direction !== 'none' && currentImageSrc !== newImageSrc) {
+                let outClass = '';
+                let inClass = '';
+                if (direction === 'next') { outClass = 'slide-out-left'; inClass = 'slide-in-right'; }
+                else if (direction === 'prev') { outClass = 'slide-out-right'; inClass = 'slide-in-left'; }
+
+                requestAnimationFrame(() => {
+                    imageContainer.classList.add(outClass);
+
+                    const handleOutAnimationEnd = (event) => {
+                        imageContainer.classList.remove(outClass);
+                        updateImageElement(newImageSrc, itemData.alt);
+
+                        requestAnimationFrame(() => {
+                            imageContainer.classList.add(inClass);
+
+                            const handleInAnimationEnd = (eventIn) => {
+                                imageContainer.classList.remove(inClass);
+                            };
+                            imageContainer.addEventListener('animationend', handleInAnimationEnd, { once: true });
+                        });
+                    };
+                    imageContainer.addEventListener('animationend', handleOutAnimationEnd, { once: true });
+                });
+
+            } else {
+                updateImageElement(newImageSrc, itemData.alt);
+            }
+
+            // --- Update Text and Price Details (Improved Separator Logic) ---
+            menuNameElement.textContent = itemData.name || 'ชื่อเมนู';
+            menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
+
+            const prices = itemData.prices || {};
+            const displayOrder = ['Small', 'Normal', 'Extra', 'Family'];
+            let visiblePriceCount = 0;
+
+            displayOrder.forEach(size => {
+                const cache = priceElementsCache[size];
+                if (cache) {
+                    const parentSpan = cache.label?.closest('.price-item');
+                    if (parentSpan) parentSpan.classList.add('hidden');
+                    if (cache.separator) cache.separator.classList.add('hidden');
+                }
+            });
+
+            displayOrder.forEach(size => {
+                const cache = priceElementsCache[size];
+                 if (cache && cache.label && cache.value && cache.button) {
+                     const priceValue = prices[size];
+                     const parentSpan = cache.label.closest('.price-item');
+                     if (parentSpan) {
+                         if (priceValue !== null && priceValue !== undefined && !isNaN(priceValue)) {
+                             cache.value.textContent = `฿${priceValue}`;
+                             parentSpan.classList.remove('hidden');
+                             visiblePriceCount++;
+                         }
+                     }
+                 }
+            });
+
+            let firstVisibleFound = false;
+            let lastVisibleSize = null;
+            displayOrder.forEach(size => {
+                 const cache = priceElementsCache[size];
+                 const parentSpan = cache?.label?.closest('.price-item');
+                 if (parentSpan && !parentSpan.classList.contains('hidden')) {
+                     if (firstVisibleFound && lastVisibleSize) {
+                        const separatorCache = priceElementsCache[lastVisibleSize];
+                        if(separatorCache && separatorCache.separator) {
+                            separatorCache.separator.classList.remove('hidden');
+                        }
+                        else if (lastVisibleSize === 'Normal' && size === 'Extra' && priceElementsCache['Extra']?.separator) {
+                             priceElementsCache['Extra'].separator.classList.remove('hidden');
+                         }
+                         else if (lastVisibleSize === 'Extra' && size === 'Family' && priceElementsCache['Family']?.separator) {
+                             priceElementsCache['Family'].separator.classList.remove('hidden');
+                         }
+                         else if (lastVisibleSize === 'Small' && size === 'Normal' && priceElementsCache['Small']?.separator) {
+                            priceElementsCache['Small'].separator.classList.remove('hidden');
+                         }
+                     }
+                     firstVisibleFound = true;
+                     lastVisibleSize = size;
+                 }
+            });
+
+
+            menuDetailsContainer.style.display = 'block';
+        }
+        // +++ END: REVISED showItemDetails Function +++
+
+
+        function displayMenuItems(category) {
+            if (!bottomMenu) return;
+            bottomMenu.innerHTML = '';
+            currentCategory = category;
+
+            currentFilteredItems = menuData.filter(item => Array.isArray(item.category) && item.category.includes(category));
+
+            if (currentFilteredItems.length === 0) {
+                 bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีเมนูในหมวดหมู่นี้</p>';
+                 if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+                 currentDisplayedItemId = null;
+                 currentIndex = -1;
+                 return;
+             }
+
+            currentFilteredItems.forEach((item, index) => {
+                const menuItemDiv = document.createElement('div');
+                menuItemDiv.classList.add('menu-item');
+                menuItemDiv.dataset.itemId = item.id;
+                menuItemDiv.dataset.index = index;
+
+                const img = document.createElement('img');
+                img.src = item.src;
+                img.alt = item.alt;
+                img.loading = 'lazy';
+                img.onerror = function() { this.src='placeholder.jpg'; };
+
+                menuItemDiv.appendChild(img);
+                bottomMenu.appendChild(menuItemDiv);
+
+                menuItemDiv.addEventListener('click', () => {
+                    const itemIndex = parseInt(menuItemDiv.dataset.index, 10);
+                    if (!isNaN(itemIndex) && itemIndex < currentFilteredItems.length) {
+                         showItemDetails(itemIndex);
+                         requestAnimationFrame(() => {
+                             window.scrollTo({ top: 0, behavior: 'smooth' });
+                         });
+                    } else {
+                         console.error("Invalid index clicked:", itemIndex, "Filtered items count:", currentFilteredItems.length);
+                    }
+                });
+            });
+
+            if (currentFilteredItems.length > 0) {
+                showItemDetails(0);
+            }
+        }
+
+        function showPreviousItem() {
+            if (currentFilteredItems.length <= 1 || currentIndex < 0) return;
+            let newIndex = (currentIndex - 1 + currentFilteredItems.length) % currentFilteredItems.length;
+            showItemDetails(newIndex, 'prev');
+        }
+
+        function showNextItem() {
+            if (currentFilteredItems.length <= 1 || currentIndex < 0) return;
+            let newIndex = (currentIndex + 1) % currentFilteredItems.length;
+            showItemDetails(newIndex, 'next');
+        }
+
+
+        // --- Event Listeners ---
+        if(menuPriceContainer) {
+            menuPriceContainer.addEventListener('click', (e) => {
+                if (e.target && e.target.classList.contains('add-to-cart-button')) {
+                    const size = e.target.dataset.size;
+                    if (currentDisplayedItemId && size) {
+                        addToCart(currentDisplayedItemId, size);
+                    } else {
+                        console.warn("Cannot add to cart. Missing item ID or size.");
+                    }
+                }
+            });
+        }
+
+        categoryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const selectedCategory = item.getAttribute('data-category');
+                categoryItems.forEach(cat => cat.classList.remove('selected'));
+                item.classList.add('selected');
+                displayMenuItems(selectedCategory);
+            });
+        });
+
+        if (cartIconContainer) {
+            cartIconContainer.addEventListener('click', () => {
+                if (myFoodPopup && myFoodPopup.classList.contains('open')) {
+                    myFoodPopup.classList.remove('open');
+                }
+                if(cartPopup) cartPopup.classList.toggle('open');
+                if (cartPopup && cartPopup.classList.contains('open')) {
+                    renderCart();
+                }
+            });
+        }
+        if (cartCloseBtn) {
+            cartCloseBtn.addEventListener('click', () => {
+                if(cartPopup) cartPopup.classList.remove('open');
+            });
+        }
+
+        if (myFoodIconContainer) {
+            myFoodIconContainer.addEventListener('click', () => {
+                 if (cartPopup && cartPopup.classList.contains('open')) {
+                     cartPopup.classList.remove('open');
+                 }
+                if(myFoodPopup) myFoodPopup.classList.toggle('open');
+                if (myFoodPopup && myFoodPopup.classList.contains('open')) {
+                    renderOrderedItems();
+                }
+            });
+        }
+        if (myFoodCloseBtn) {
+             myFoodCloseBtn.addEventListener('click', () => {
+                 if(myFoodPopup) myFoodPopup.classList.remove('open');
+             });
+         }
+
+        if (imageContainer) {
+            imageContainer.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    isSwiping = true;
+                }
+            }, { passive: true });
+
+            imageContainer.addEventListener('touchmove', (e) => {
+                if (!isSwiping || e.touches.length !== 1) return;
+                touchEndX = e.touches[0].clientX;
+            }, { passive: true });
+
+            imageContainer.addEventListener('touchend', (e) => {
+                if (!isSwiping || e.changedTouches.length !== 1) {
+                    isSwiping = false;
+                    return;
+                }
+                touchEndX = e.changedTouches[0].clientX;
+                const deltaX = touchEndX - touchStartX;
+                if (Math.abs(deltaX) > swipeThreshold) {
+                    if (deltaX > 0) { showPreviousItem(); }
+                    else { showNextItem(); }
+                }
+                isSwiping = false;
+                touchStartX = 0;
+                touchEndX = 0;
+            });
+        }
+
+        // --- Cart Action Button Listeners ---
+        if (orderButton) {
+            orderButton.addEventListener('click', async () => {
+                if (cartItems.length === 0) { alert('ตระกร้าสินค้าของคุณว่างเปล่า'); return; }
+
+                let reconstructedToken = '';
+                try {
+                    reconstructedToken = atob(tPart1) + atob(tPart2) + atob(tPart3) + atob(tPart4);
+                } catch (e) {
+                    console.error("Error decoding token:", e);
+                    alert("ข้อผิดพลาด: ไม่สามารถเตรียมข้อมูล Token");
+                    return;
+                }
+                if (!reconstructedToken) {
+                    console.error("Token empty after decoding");
+                    alert("ข้อผิดพลาด: Token ไม่ถูกต้องหลังจากการถอดรหัส");
+                    return;
+                }
+
+                let orderMessage = `โต๊ะ ${TABLE_NUMBER}\n--------------------\n`;
+                orderMessage += "🛒 **รายการสั่งซื้อใหม่** 🛒\n\n";
+                let total = 0;
+
+                cartItems.forEach((item, index) => {
+                    const itemPrice = item.price || 0;
+                    const itemQuantity = item.quantity || 0;
+                    const lineTotal = itemPrice * itemQuantity;
+                    orderMessage += `${index + 1}. โต๊ะ ${TABLE_NUMBER}: ${item.name || 'N/A'} (${item.size || 'N/A'})\n`;
+                    orderMessage += `   จำนวน: ${itemQuantity} x ราคา: ฿${itemPrice} = ฿${lineTotal}\n`;
+                    total += lineTotal;
+                });
+
+                orderMessage += `\n**ยอดรวมทั้งหมด: ฿${total}**`;
+                orderMessage += `\n\nสั่งเมื่อ: ${new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'medium' })}`;
+
+                const telegramApiUrl = `https://api.telegram.org/bot${reconstructedToken}/sendMessage`;
+                const payload = {
+                    chat_id: CHAT_ID,
+                    text: orderMessage,
+                    parse_mode: 'Markdown'
+                };
+
+                orderButton.disabled = true;
+                orderButton.textContent = 'กำลังส่ง...';
+
+                try {
+                    const response = await fetch(telegramApiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.ok) {
+                        alert(`ส่งรายการสั่งซื้อจาก โต๊ะ ${TABLE_NUMBER} สำเร็จ! รายการจะถูกย้ายไปที่ "รายการอาหารของฉัน"`);
+
+                        cartItems.forEach(cartItem => {
+                            const existingIndex = orderedItems.findIndex(orderedItem => orderedItem.cartId === cartItem.cartId);
+                            if (existingIndex > -1) {
+                                orderedItems[existingIndex].quantity += cartItem.quantity;
+                            } else {
+                                orderedItems.push({ ...cartItem });
+                            }
+                        });
+                        cartItems = [];
+
+                        saveCartToLocalStorage();
+                        saveOrderedItemsToLocalStorage();
+
+                        renderCart();
+                        updateCartIconCount();
+                        updateMyFoodIconCount();
+
+                        if(cartPopup) cartPopup.classList.remove('open');
+
+                    } else {
+                        console.error('Telegram API error:', result.description);
+                        alert(`เกิดข้อผิดพลาดในการส่งจาก โต๊ะ ${TABLE_NUMBER}: ${result.description}`);
+                    }
+                } catch (error) {
+                    console.error('Error sending order via fetch:', error);
+                    alert(`เกิดข้อผิดพลาดในการเชื่อมต่อ (โต๊ะ ${TABLE_NUMBER}) กรุณาลองใหม่อีกครั้ง`);
+                } finally {
+                     orderButton.disabled = false;
+                     orderButton.textContent = 'สั่งรายการอาหาร';
+                }
+            });
+        }
+
+        if (myFoodCheckoutButton) {
+             myFoodCheckoutButton.addEventListener('click', () => {
+                 if (orderedItems.length === 0) {
+                     alert('ยังไม่มีรายการอาหารที่สั่งสำหรับชำระเงิน');
+                     return;
+                 }
+                 alert(`ดำเนินการชำระเงินสำหรับรายการที่สั่งแล้วจาก โต๊ะ ${TABLE_NUMBER} (ส่วนนี้ยังไม่พร้อมใช้งาน)`);
+                 // Future checkout logic here
+             });
+         }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (tableNumberDisplayElement) {
+                tableNumberDisplayElement.textContent = TABLE_NUMBER_PREFIX + TABLE_NUMBER;
+            }
+
+            loadCartFromLocalStorage();
+            loadOrderedItemsFromLocalStorage();
+
+            renderCart();
+            updateCartIconCount();
+            renderOrderedItems();
+            updateMyFoodIconCount();
+
+            if (categoryItems.length > 0) {
+                const initialCategoryElement = categoryItems[0];
+                const initialCategory = initialCategoryElement.getAttribute('data-category');
+                categoryItems.forEach(cat => cat.classList.remove('selected'));
+                initialCategoryElement.classList.add('selected');
+                displayMenuItems(initialCategory);
+            } else {
+                 if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+                 if(bottomMenu) bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary);">ไม่มีหมวดหมู่เมนู</p>';
+                 currentDisplayedItemId = null;
+                 currentIndex = -1;
+            }
+        });
+
+    </script>
+</body>
+</html>
