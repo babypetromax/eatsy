@@ -1,1 +1,325 @@
+/* --- Base Styles & Variables --- */
+:root {
+    /* Dark Theme Colors (ปรับตามต้องการ) */
+    --bg-darkest: #1a1a1a;
+    --bg-darker: #2c2c2c;
+    --bg-dark: #3f3f3f;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --accent-color: #4CAF50; /* สีเขียวสำหรับเน้น */
+    --border-color: #555;
 
+    /* Status Colors (ปรับให้เข้ากับ Theme) */
+    --status-blue: #3498db;    /* < 5 min */
+    --status-yellow: #f1c40f; /* 5-10 min */
+    --status-orange: #e67e22; /* 10-15 min */
+    --status-red: #e74c3c;    /* > 15 min */
+    --status-green: #2ecc71;  /* Completed */
+    --status-grey: #7f8c8d;   /* Inactive Table */
+
+    /* Fonts */
+    --font-primary: 'Sarabun', 'Inter', sans-serif;
+
+    /* Layout */
+    --sidebar-width: 220px;
+    --header-height: 60px;
+    --footer-height: 50px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: var(--font-primary);
+    background-color: var(--bg-darkest);
+    color: var(--text-primary);
+    font-size: 16px;
+    overflow: hidden; /* ป้องกัน scroll หลักของ body */
+}
+
+button {
+    font-family: inherit;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+button.active, .view-button.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+i {
+    margin-right: 6px;
+}
+
+/* --- App Layout --- */
+#app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* เต็มความสูงหน้าจอ */
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: var(--header-height);
+    background-color: var(--bg-darker);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0; /* ไม่ให้ header หด */
+}
+
+.app-header h1 {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.view-switcher button {
+    margin-left: 10px;
+}
+
+.main-layout {
+    display: flex;
+    flex-grow: 1; /* ให้ส่วนนี้ขยายเต็มพื้นที่ที่เหลือ */
+    overflow: hidden; /* ป้องกัน scroll ที่ layout หลัก */
+}
+
+/* --- Left Sidebar --- */
+#left-sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-darker);
+    border-right: 1px solid var(--border-color);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* ให้ sidebar เลื่อนได้ถ้าเนื้อหาเกิน */
+    flex-shrink: 0; /* ไม่ให้ sidebar หด */
+}
+
+#left-sidebar h2 {
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+#table-list-container {
+    flex-grow: 1; /* ให้ list ขยายเต็มพื้นที่ */
+    margin-bottom: 20px;
+}
+
+.table-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.table-item:hover {
+    background-color: #555;
+}
+
+.table-item.active {
+    /* สีจะถูกกำหนดโดย JS ตามอายุออเดอร์ */
+    border: 2px solid var(--accent-color); /* หรือสีสถานะ */
+    color: white; /* ทำให้เห็นชัดขึ้น */
+}
+
+.table-item.inactive {
+    background-color: transparent;
+    border-color: var(--status-grey);
+    color: var(--status-grey);
+    cursor: default;
+}
+
+.sort-options {
+    margin-top: auto; /* ดันไปอยู่ล่างสุด */
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.sort-options h4 {
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+
+.sort-options button {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+    text-align: left;
+    font-size: 0.9em;
+}
+
+/* --- Content Area --- */
+#content-area {
+    flex-grow: 1; /* ขยายเต็มพื้นที่ที่เหลือ */
+    padding: 20px;
+    overflow-y: auto; /* ให้เนื้อหาหลักเลื่อนได้ */
+}
+
+.view {
+    display: none; /* ซ่อน View ทั้งหมดไว้ก่อน */
+}
+
+.view.active {
+    display: block; /* แสดงเฉพาะ View ที่ Active */
+}
+
+.view h2 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+/* --- View 1: Cashier View --- */
+.table-blocks-container {
+    /* Placeholder: ใช้ CSS Columns หรือ Flexbox wrap สำหรับ Pinterest style */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* ตัวอย่าง Grid */
+    gap: 20px;
+}
+
+.table-block {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 150px; /* Example */
+}
+
+.table-block h3 {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+/* เพิ่ม style สำหรับแสดงรายการอาหาร, ยอดรวม ภายใน .table-block */
+
+/* --- View 2: Kitchen View (KDS) --- */
+.kds-grid-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* อาจต้องปรับ */
+}
+
+.kds-header {
+    display: grid;
+    /* กำหนด Grid columns ให้ตรงกับเนื้อหา */
+    grid-template-columns: 80px 100px 2fr 1fr 120px 120px 100px;
+    padding: 10px 5px;
+    background-color: var(--bg-darker);
+    border-bottom: 2px solid var(--border-color);
+    font-weight: bold;
+    position: sticky; /* ทำให้ header ติดด้านบนเมื่อ scroll */
+    top: 0;
+    z-index: 10;
+}
+
+.kds-col {
+    padding: 0 5px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.col-item, .col-mods { text-align: left; }
+
+.kds-items-list {
+    flex-grow: 1;
+    /* overflow-y: auto; ไม่จำเป็นถ้า #content-area scroll ได้แล้ว */
+}
+
+.kds-item-row {
+    display: grid;
+    grid-template-columns: 80px 100px 2fr 1fr 120px 120px 100px; /* เหมือน header */
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 5px;
+    align-items: center; /* จัดกึ่งกลางแนวตั้ง */
+    cursor: pointer; /* อาจมี action เมื่อคลิกแถว */
+    transition: background-color 0.2s;
+}
+
+.kds-item-row:hover {
+    background-color: var(--bg-dark);
+}
+
+.kds-item-row > div { /* Style สำหรับ cell */
+    padding: 0 5px;
+    overflow-wrap: break-word; /* ให้ตัดคำถ้าจำเป็น */
+}
+
+.kds-item-row .col-item { font-weight: bold; font-size: 1.1em; }
+.kds-item-row .col-mods { font-size: 0.9em; color: var(--text-secondary); }
+.kds-item-row .col-time .elapsed-time { display: block; font-size: 0.8em; color: var(--text-secondary); }
+.kds-item-row .col-status button { width: 100%; font-size: 0.85em; padding: 5px; }
+
+/* Placeholder styles for color coding */
+.kds-item-row .col-table.status-blue, .kds-item-row .col-item.status-blue { background-color: var(--status-blue); color: white; }
+.kds-item-row .col-table.status-yellow, .kds-item-row .col-item.status-yellow { background-color: var(--status-yellow); color: #333; }
+.kds-item-row .col-table.status-orange, .kds-item-row .col-item.status-orange { background-color: var(--status-orange); color: white; }
+.kds-item-row .col-table.status-red, .kds-item-row .col-item.status-red { background-color: var(--status-red); color: white; }
+.kds-item-row.completed { background-color: var(--status-green); color: white; } /* ถ้าทำเสร็จทั้งแถว */
+
+/* --- Bottom Menu Bar --- */
+#bottom-menu-bar {
+    display: flex;
+    justify-content: center; /* หรือ space-around */
+    align-items: center;
+    height: var(--footer-height);
+    background-color: var(--bg-darker);
+    border-top: 1px solid var(--border-color);
+    padding: 0 20px;
+    flex-shrink: 0; /* ไม่ให้ footer หด */
+}
+
+.bottom-menu-content {
+    display: none; /* ซ่อนเมนูทั้งสองไว้ก่อน */
+    gap: 15px;
+}
+
+.bottom-menu-content.active {
+    display: flex; /* แสดงเฉพาะเมนูที่ตรงกับ View ปัจจุบัน */
+}
+
+/* --- Placeholders --- */
+.table-placeholder, .table-block-placeholder, .kds-item-placeholder {
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 30px;
+    font-style: italic;
+}
+
+/* --- Responsive (Example Basic) --- */
+@media (max-width: 768px) {
+    #left-sidebar {
+        display: none; /* ซ่อน sidebar ในจอเล็ก */
+        /* หรือทำให้เป็นแบบ toggle */
+    }
+    .kds-header, .kds-item-row {
+        /* ปรับ layout grid สำหรับจอเล็ก */
+        grid-template-columns: 60px 80px 1.5fr 1fr 100px 100px 80px;
+        font-size: 0.9em; /* ลดขนาด font โดยรวม */
+    }
+    .app-header h1 { font-size: 1.2em; }
+    #content-area { padding: 10px; }
+}
