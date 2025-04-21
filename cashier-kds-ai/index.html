@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Kitchen Display AI</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- เพิ่ม Font Awesome (สำหรับ Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- เพิ่ม Google Fonts (Sarabun & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app-container">
+        <!-- ส่วนหัวสำหรับสลับ View -->
+        <header class="app-header">
+            <h1>Cashier Kitchen Display AI</h1>
+            <nav class="view-switcher">
+                <button id="switchToCashierView" class="view-button">
+                    <i class="fas fa-cash-register"></i> แคชเชียร์
+                </button>
+                <button id="switchToKitchenView" class="view-button active">
+                    <i class="fas fa-utensils"></i> หน้าครัว (KDS)
+                </button>
+                <!-- เพิ่มปุ่มอื่นๆ ที่จำเป็น เช่น ตั้งค่า, ออกจากระบบ -->
+            </nav>
+        </header>
 
+        <div class="main-layout">
+            <!-- แถบด้านซ้าย (Sidebar) -->
+            <aside id="left-sidebar">
+                <h2>โต๊ะ</h2>
+                <div id="table-list-container">
+                    <!-- เลขโต๊ะจะถูกใส่โดย JavaScript -->
+                    <div class="table-placeholder">กำลังโหลด...</div>
+                </div>
+                <div class="sort-options">
+                    <h4>จัดเรียง:</h4>
+                    <button class="sort-button" data-sort="table-active">ตามเลข Active</button>
+                    <button class="sort-button" data-sort="time">ตามเวลา</button>
+                    <button class="sort-button" data-sort="group">จัดกลุ่ม</button>
+                </div>
+            </aside>
+
+            <!-- พื้นที่แสดงผลหลัก -->
+            <main id="content-area">
+                <!-- View 1: หน้าจอแคชเชียร์ -->
+                <div id="cashier-view" class="view">
+                    <h2>หน้าจอแคชเชียร์ (Cashier View)</h2>
+                    <div class="table-blocks-container">
+                        <!-- บล็อกข้อมูลโต๊ะจะถูกใส่โดย JavaScript -->
+                        <div class="table-block-placeholder">ยังไม่มีโต๊ะที่ใช้งาน</div>
+                    </div>
+                </div>
+
+                <!-- View 2: หน้าจอครัว -->
+                <div id="kitchen-view" class="view active">
+                    <h2>หน้าจอครัว (Kitchen View / KDS)</h2>
+                    <div class="kds-grid-container">
+                        <div class="kds-header">
+                            <div class="kds-col col-table">โต๊ะ</div>
+                            <div class="kds-col col-type">ประเภท</div>
+                            <div class="kds-col col-item">จำนวน & รายการ</div>
+                            <div class="kds-col col-mods">คำสั่งพิเศษ</div>
+                            <div class="kds-col col-time">เวลาสั่ง</div>
+                            <div class="kds-col col-priority">หมายเหตุ</div>
+                            <div class="kds-col col-status">สถานะ</div>
+                        </div>
+                        <div class="kds-items-list">
+                            <!-- รายการอาหารจะถูกใส่โดย JavaScript -->
+                            <div class="kds-item-placeholder">ไม่มีรายการอาหารที่ต้องทำ</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- แถบเมนูด้านล่าง -->
+        <footer id="bottom-menu-bar">
+            <div id="cashier-menu" class="bottom-menu-content">
+                <button><i class="fas fa-print"></i> Print</button>
+                <button><i class="fas fa-layer-group"></i> Group</button>
+                <button><i class="fas fa-exclamation-triangle"></i> Urgent</button>
+            </div>
+            <div id="kitchen-menu" class="bottom-menu-content active">
+                <button><i class="fas fa-check-double"></i> Bump</button>
+                <button><i class="fas fa-undo"></i> Recall</button>
+                <button><i class="fas fa-list-alt"></i> Summary</button>
+                <button><i class="fas fa-filter"></i> Filter</button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
