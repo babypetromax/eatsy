@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Dynamically set title later -->
-    <title>เมนูอาหาร</title>
+    <title>เมนูอาหาร - [Eatsy ปลวกแดง]</title> <!-- อาจจะใส่ชื่อร้านใน Title ด้วย -->
+    <meta name="description" content="เมนูอาหารร้าน [Eatsy Healthy Food and Bar ปลวกแดง] Healthy Bowl ! อาหารสุขภาพ, อาหารทะเลสุด, สลัดเลิศๆ, อัปเดตล่าสุด ดูเมนูและสั่งออนไลน์ได้เลย ราคาล่าสุด สั่งเดลิเวอรี่ออนไลน์ได้เลย!">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#656D4A">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -950,103 +953,97 @@
                  setTimeout(() => { myFoodIconContainer?.classList.remove('updated'); }, 300);
              }
          }
-
-        function showItemDetails(index, direction = 'none') {
-            // Ensure all required elements exist
-            if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer) {
-                console.error("Missing essential elements for showItemDetails.");
-                return;
-            }
-            if (index < 0 || index >= currentFilteredItems.length) {
-                 // Optionally hide details if index is invalid or list is empty
-                 menuDetailsContainer.style.display = 'none';
-                 mainFoodImage.src = ''; // Clear image
-                 mainFoodImage.alt = '';
-                 currentDisplayedItemId = null;
-                 currentIndex = -1;
-                 console.log("No item to display or index out of bounds.");
-                 return;
-            }
+         function showItemDetails(index, direction = 'none') {
+            // ตรวจสอบ element ที่จำเป็น (เหมือนเดิม)
+            if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer) { return; }
+            // ตรวจสอบ index (เหมือนเดิม)
+            if (index < 0 || index >= currentFilteredItems.length) { menuDetailsContainer.style.display = 'none'; currentDisplayedItemId = null; currentIndex = -1; return; }
 
             currentIndex = index;
             const itemData = currentFilteredItems[currentIndex];
-             if (!itemData) { // Double check itemData exists
-                 console.error("Item data not found at index:", index);
-                 menuDetailsContainer.style.display = 'none';
-                 return;
-             }
             currentDisplayedItemId = itemData.id;
 
-            const newImageSrc = itemData.dataImageSrc || itemData.src || 'placeholder.jpg'; // Add placeholder fallback
+            // หาทั้ง src รูปใหญ่และรูปเล็ก (เหมือน V114)
+            const newImageSrc = itemData.dataImageSrc || itemData.src; // <<< ใช้ dataImageSrc ก่อน ถ้าไม่มีใช้ src
             const currentImageSrc = mainFoodImage.getAttribute('src');
 
+            // ฟังก์ชันช่วยอัปเดตรูปภาพ (เหมือน V114)
             const updateImageElement = (src, alt) => {
-                mainFoodImage.src = src;
-                 mainFoodImage.alt = alt || itemData.name || 'Menu item image'; // Better alt text fallback
-                 mainFoodImage.onerror = () => { // Handle image loading errors
-                     console.warn(`Image failed to load: ${src}. Using placeholder.`);
-                     mainFoodImage.src = 'placeholder.jpg'; // Path to your placeholder
-                     mainFoodImage.alt = `${itemData.name || 'Menu item'} (Image unavailable)`;
-                 };
+                mainFoodImage.setAttribute('src', src);
+                mainFoodImage.alt = alt || itemData.name || 'Menu item image'; // เพิ่ม fallback alt
+                mainFoodImage.onerror = () => { // เพิ่ม onerror handler ด้วย
+                    console.warn(`Image failed to load: ${src}. Using placeholder.`);
+                    mainFoodImage.src = 'placeholder.jpg';
+                    mainFoodImage.alt = `${itemData.name || 'Menu item'} (Image unavailable)`;
+                };
             };
 
-            // Handle image transition/update
-            imageContainer.classList.remove('slide-out-left', 'slide-in-right', 'slide-out-right', 'slide-in-left'); // Reset animations
-            if (direction !== 'none' && currentImageSrc && currentImageSrc !== newImageSrc && currentImageSrc !== 'placeholder.jpg') {
-                let outClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right';
-                let inClass = direction === 'next' ? 'slide-in-right' : 'slide-in-left';
+            // ลบคลาสแอนิเมชันเก่า (เหมือนเดิม)
+            imageContainer.classList.remove('slide-out-left', 'slide-in-right', 'slide-out-right', 'slide-in-left');
 
-                 // Use requestAnimationFrame for smoother animation triggering
-                 requestAnimationFrame(() => {
-                    imageContainer.classList.add(outClass);
-                     // Use 'animationend' event for reliability
-                     const handleOutAnimationEnd = (event) => {
-                         // Ensure the event is for the image container itself if needed
-                         if (event.target !== imageContainer) return;
+            // ตรรกะการทำแอนิเมชัน (<<< ใช้แบบ V114 ที่ทำงานได้)
+            if (direction !== 'none' && currentImageSrc !== newImageSrc && currentImageSrc !== 'placeholder.jpg') { // เพิ่มเช็ค placeholder เหมือน V118
+                let outClass = ''; let inClass = '';
+                if (direction === 'next') { outClass = 'slide-out-left'; inClass = 'slide-in-right'; }
+                else if (direction === 'prev') { outClass = 'slide-out-right'; inClass = 'slide-in-left'; }
 
-                         imageContainer.removeEventListener('animationend', handleOutAnimationEnd);
-                         imageContainer.classList.remove(outClass);
-                         updateImageElement(newImageSrc, itemData.alt);
+                // ใช้ requestAnimationFrame เพื่อให้แน่ใจว่า class ถูกเพิ่ม/ลบ ใน frame ถัดไป
+                requestAnimationFrame(() => {
+                    imageContainer.classList.add(outClass); // เพิ่ม class เลื่อนออก
 
-                         requestAnimationFrame(() => {
-                             imageContainer.classList.add(inClass);
-                             const handleInAnimationEnd = (eventInner) => {
-                                 if (eventInner.target !== imageContainer) return;
-                                 imageContainer.removeEventListener('animationend', handleInAnimationEnd);
-                                 imageContainer.classList.remove(inClass);
-                             };
-                             imageContainer.addEventListener('animationend', handleInAnimationEnd, { once: true }); // Use once: true
-                         });
-                     };
-                     imageContainer.addEventListener('animationend', handleOutAnimationEnd, { once: true }); // Use once: true
-                 });
+                    // สร้าง handler สำหรับ animationend ของการเลื่อนออก
+                    const handleOutAnimationEnd = () => {
+                        imageContainer.removeEventListener('animationend', handleOutAnimationEnd); // *** ลบ listener ออกด้วยตัวเอง ***
+                        imageContainer.classList.remove(outClass); // ลบ class เลื่อนออก
+
+                        // *** อัปเดตรูปภาพหลังจากเลื่อนออกจบ ***
+                        updateImageElement(newImageSrc, itemData.alt);
+
+                        // เริ่มกระบวนการเลื่อนเข้า
+                        requestAnimationFrame(() => {
+                            imageContainer.classList.add(inClass); // เพิ่ม class เลื่อนเข้า
+
+                            // สร้าง handler สำหรับ animationend ของการเลื่อนเข้า
+                            const handleInAnimationEnd = () => {
+                                imageContainer.removeEventListener('animationend', handleInAnimationEnd); // *** ลบ listener ออกด้วยตัวเอง ***
+                                imageContainer.classList.remove(inClass); // ลบ class เลื่อนเข้า
+                            };
+                            // เพิ่ม listener สำหรับเลื่อนเข้า
+                            imageContainer.addEventListener('animationend', handleInAnimationEnd);
+                        });
+                    };
+                    // เพิ่ม listener สำหรับเลื่อนออก
+                    imageContainer.addEventListener('animationend', handleOutAnimationEnd);
+                });
             } else {
-                 // No animation needed, just update
-                 updateImageElement(newImageSrc, itemData.alt);
+                // ถ้าไม่ต้องทำ animation ก็ update รูปเลย
+                updateImageElement(newImageSrc, itemData.alt);
             }
 
-            // Update Text Details
+            // อัปเดตชื่อและคำอธิบาย (เหมือนเดิม)
             menuNameElement.textContent = itemData.name || 'ชื่อเมนู';
             menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
 
-            // Update Prices
+            // อัปเดตราคา (ใช้ตรรกะที่ซับซ้อนกว่าของ V118 ซึ่งควรจะทำงานถูกต้อง)
             const prices = itemData.prices || {};
             const displayOrder = ['Small', 'Normal', 'Extra', 'Family'];
             let firstVisibleFound = false;
 
-             // Hide all price items and separators initially
+             // ซ่อนรายการราคาและตัวคั่นทั้งหมดก่อนในตอนแรก
              displayOrder.forEach(size => {
                  const cache = priceElementsCache[size];
                  if (cache) {
                      cache.label?.closest('.price-item')?.classList.add('hidden');
                      if (cache.separator) cache.separator.classList.add('hidden');
-                     // Ensure all separators are hidden
-                     if (size === 'Extra' && priceElementsCache['Small']?.separator) priceElementsCache['Small'].separator.classList.add('hidden'); // The small one
-                     if (size === 'Family' && priceElementsCache['Extra']?.separator) priceElementsCache['Extra'].separator.classList.add('hidden'); // The normal/extra one
+                     if (size === 'Normal' && priceElementsCache['Small']?.separator) priceElementsCache['Small'].separator.classList.add('hidden');
+                     if (size === 'Extra' && priceElementsCache['Extra']?.separator) priceElementsCache['Extra'].separator.classList.add('hidden');
+                     if (size === 'Family' && priceElementsCache['Family']?.separator) priceElementsCache['Family'].separator.classList.add('hidden');
                  }
              });
 
-            // Show relevant prices and determine separator visibility
+            // แสดงราคาที่เกี่ยวข้อง และตัดสินใจว่าจะแสดงตัวคั่นหรือไม่
+             let visibleCount = 0;
+             let lastVisibleSize = null;
              displayOrder.forEach(size => {
                  const cache = priceElementsCache[size];
                  if (cache && cache.label && cache.value && cache.button) {
@@ -1054,22 +1051,32 @@
                      const parentSpan = cache.label.closest('.price-item');
                      if (parentSpan) {
                          if (priceValue !== null && priceValue !== undefined && !isNaN(priceValue)) {
-                             cache.value.textContent = `฿${Number(priceValue).toLocaleString()}`; // Format price
+                             cache.value.textContent = `฿${Number(priceValue).toLocaleString()}`;
                              parentSpan.classList.remove('hidden');
-
-                             // Show separator *before* this item if it's not the first visible one
-                             if (firstVisibleFound) {
-                                 if (size === 'Normal' && priceElementsCache['Small']?.separator) priceElementsCache['Small'].separator.classList.remove('hidden');
-                                 else if (size === 'Extra' && priceElementsCache['Extra']?.separator) priceElementsCache['Extra'].separator.classList.remove('hidden');
-                                 else if (size === 'Family' && priceElementsCache['Family']?.separator) priceElementsCache['Family'].separator.classList.remove('hidden');
-                             }
-                             firstVisibleFound = true; // Mark that we found the first visible item
+                             visibleCount++;
+                             lastVisibleSize = size;
                          }
                      }
                  }
              });
 
-            menuDetailsContainer.style.display = 'block'; // Show the details container
+             // จัดการตัวคั่น (|) ตามรายการราคาที่ *มองเห็น* จริงๆ
+             firstVisibleFound = false;
+             displayOrder.forEach(size => {
+                 const cache = priceElementsCache[size];
+                 const parentSpan = cache?.label?.closest('.price-item');
+                 if (parentSpan && !parentSpan.classList.contains('hidden')) {
+                     if (firstVisibleFound) {
+                         if (size === 'Normal' && priceElementsCache['Small']?.separator) priceElementsCache['Small'].separator.classList.remove('hidden');
+                         else if (size === 'Extra' && priceElementsCache['Extra']?.separator) priceElementsCache['Extra'].separator.classList.remove('hidden');
+                         else if (size === 'Family' && priceElementsCache['Family']?.separator) priceElementsCache['Family'].separator.classList.remove('hidden');
+                     }
+                     firstVisibleFound = true;
+                 }
+             });
+
+            // แสดง container รายละเอียด (เหมือนเดิม)
+            menuDetailsContainer.style.display = 'block';
         }
 
         function displayMenuItems(category) {
