@@ -2,7 +2,7 @@
   "name": "[Eatsy Healthy Food and Bar ปลวกแดง]",
   "short_name": "[Eatsy]",
   "description": " Healthy Bowl ! อาหารสุขภาพ, อาหารทะเลสุด, สลัดเลิศๆ, อัปเดตล่าสุด ดูเมนูและสั่งออนไลน์ได้เลย ราคาล่าสุด สั่งเดลิเวอรี่ออนไลน์ได้เลย",
-  "start_url": "./menuVer_V119_bigswip.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#F8F9FA",
   "theme_color": "#656D4A",
