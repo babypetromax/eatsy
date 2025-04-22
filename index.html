@@ -109,6 +109,97 @@
         .price-separator { margin: 0 8px; font-weight: normal; color: #adb5bd; }
         .hidden { display: none !important; }
 
+        /* --- NEW: Menu Options Styling --- */
+        .menu-options-section {
+             border-top: 1px solid var(--color-border);
+             padding-top: 15px;
+             /* margin-top is set inline in the HTML */
+        }
+        .menu-options-container {
+            margin-bottom: 10px;
+        }
+        .option-title {
+            font-size: 0.95em;
+            font-weight: bold;
+            color: var(--color-dark-green);
+            margin: 0 0 8px 0;
+            display: block;
+        }
+        .option-choices {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping if too many choices */
+            gap: 8px; /* Spacing between choices */
+        }
+        .option-choice-label {
+            display: inline-flex; /* Align items nicely */
+            align-items: center;
+            background-color: #e9ecef; /* Light grey background */
+            color: var(--color-text-secondary);
+            padding: 6px 12px;
+            border-radius: 15px; /* Rounded pill shape */
+            cursor: pointer;
+            transition: background-color var(--transition-speed-fast) ease, color var(--transition-speed-fast) ease;
+            font-size: 0.85em;
+            border: 1px solid transparent; /* Placeholder for selected border */
+            user-select: none; /* Prevent text selection */
+        }
+        /* Hide the actual radio button visually */
+        .option-choice-label input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 0;
+            height: 0;
+            opacity: 0;
+            position: absolute; /* Take out of layout flow */
+            margin: 0;
+            padding: 0;
+        }
+        /* Style for selected state */
+        .option-choice-label input[type="radio"]:checked + span {
+             /* Keep span content */
+        }
+        /* Change label appearance when checked */
+        .option-choice-label input[type="radio"]:checked {
+           /* We style the label itself, not the hidden input */
+        }
+        .option-choice-label:has(input[type="radio"]:checked) { /* Use :has for modern browsers */
+             background-color: var(--color-medium-green); /* Theme color */
+             color: var(--color-white);
+             font-weight: bold;
+             border: 1px solid var(--color-dark-green);
+        }
+        /* Add a subtle hover effect */
+        .option-choice-label:not(:has(input[type="radio"]:checked)):hover {
+            background-color: #ced4da; /* Slightly darker grey on hover */
+        }
+        /* Style for options in cart/ordered lists */
+        .list-item-options {
+            font-size: 0.8em;
+            color: var(--color-text-secondary);
+            margin-top: 3px;
+            margin-left: 10px; /* Indent options slightly */
+            line-height: 1.3;
+        }
+        .list-item-options span {
+             display: block; /* Each option on a new line */
+             margin-bottom: 2px;
+         }
+         /* Style for options in receipt */
+         .receipt-item-options {
+             font-size: 0.8em; /* Smaller font for options */
+             color: var(--color-text-secondary);
+             grid-column: 1 / -1; /* Span all columns */
+             padding-left: 15px; /* Indent */
+             margin-top: -5px; /* Adjust spacing slightly */
+             margin-bottom: 5px;
+             line-height: 1.4;
+         }
+         .receipt-item-options span {
+             display: block;
+         }
+        /* --- END NEW Options Styling --- */
+
         /* --- Category Bar --- */
         .category-bar {
             width: 100%; overflow-x: auto; overflow-y: hidden; white-space: nowrap; background-color: var(--color-white);
@@ -455,6 +546,24 @@
                          <button class="add-to-cart-button" data-size="Family" title="เพิ่มขนาดครอบครัวลงตระกร้า">+</button>
                      </span>
                  </p>
+                 <!-- NEW HTML STRUCTURE FOR OPTIONS (Placed after menu-price paragraph) -->
+                 <div id="menu-options-section" class="menu-options-section" style="margin-top: 15px;">
+                     <!-- Option Group 1 -->
+                     <div id="menu-option1-container" class="menu-options-container hidden">
+                         <h4 class="option-title" id="option1-title"></h4>
+                         <div class="option-choices" id="option1-choices">
+                             <!-- Radio buttons will be populated here by JS -->
+                         </div>
+                     </div>
+                     <!-- Option Group 2 -->
+                     <div id="menu-option2-container" class="menu-options-container hidden" style="margin-top: 10px;">
+                          <h4 class="option-title" id="option2-title"></h4>
+                          <div class="option-choices" id="option2-choices">
+                              <!-- Radio buttons will be populated here by JS -->
+                          </div>
+                     </div>
+                 </div>
+                 <!-- END NEW OPTIONS HTML -->
              </div>
         </div>
 
@@ -576,7 +685,7 @@
     // ========================================================================
     // START: Configuration
     // ========================================================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4yKdxYjS1-I9NgcmW5f5RE1Hf87bioGHmbFI4HexutOzdofb9FLkB1ErzyLOzhlo/exec"; // <-- Your Script URL
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHffrMtJPHnCf4NIryF-JUqOg60YO9k-FqCHAAfoqhzMxLI0Ot_rxg_C_87A01Yafh/exec"; // <-- Your Script URL
     const RESTAURANT_NAME = "Eatsy Healthy Food and Bar ปลวกแดง"; // <<< Set Your Restaurant Name Here
     const QR_CODE_IMAGE_URL = "https://raw.githubusercontent.com/babypetromax/eatsy/main/icons/qrpamentkbank.jpg"; // <<< Set QR Code Image URL
     const TABLE_NUMBER_PREFIX = "โต๊ะ ";
@@ -636,10 +745,19 @@
     const menuPriceContainer = document.getElementById('menu-price');
     const priceElementsCache = { // Cache elements for price display optimization
         'Small': { label: document.getElementById('label-small'), value: document.getElementById('price-small'), button: menuPriceContainer?.querySelector('button[data-size="Small"]'), separator: document.getElementById('price-sep-small') },
-        'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null },
+        'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null }, // Normal ไม่มี Separator ก่อนหน้าตัวมันเองโดยตรง
         'Extra': { label: document.getElementById('label-extra'), value: document.getElementById('price-extra'), button: menuPriceContainer?.querySelector('button[data-size="Extra"]'), separator: document.getElementById('price-sep') },
         'Family': { label: document.getElementById('label-family'), value: document.getElementById('price-family'), button: menuPriceContainer?.querySelector('button[data-size="Family"]'), separator: document.getElementById('price-sep-family') }
     };
+    // --- NEW: Cache Option Elements ---
+    const menuOptionsSection = document.getElementById('menu-options-section');
+    const menuOption1Container = document.getElementById('menu-option1-container');
+    const menuOption1TitleEl = document.getElementById('option1-title');
+    const menuOption1ChoicesEl = document.getElementById('option1-choices');
+    const menuOption2Container = document.getElementById('menu-option2-container');
+    const menuOption2TitleEl = document.getElementById('option2-title');
+    const menuOption2ChoicesEl = document.getElementById('option2-choices');
+    // --- END NEW ---
     const cartIconContainer = document.getElementById('cart-icon-container');
     const cartItemCountBadge = document.getElementById('cart-item-count');
     const cartPopup = document.getElementById('cart-popup');
@@ -819,15 +937,22 @@
              if (!contentType || !contentType.includes("application/json")) {
                 const textResponse = await response.text();
                 console.error("Non-JSON response received:", textResponse.substring(0, 200)); // Log start of text response
-                throw new Error(`Expected JSON, but got ${contentType}.`);
+                throw new Error(`Expected JSON, but got ${contentType}. Check GAS deployment and script output.`);
              }
             const data = await response.json();
-            if (data.error) { throw new Error(`Script error: ${data.message}`); }
-            if (!data || !Array.isArray(data.menuData) || !Array.isArray(data.categories)) { throw new Error("Invalid data structure received."); }
+            // Check for success flag from GAS (if implemented) or specific data structure
+            if (data.error || (data.success === false)) { // Check for explicit error or success:false
+                throw new Error(`Script error: ${data.message || 'Unknown error from script'}`);
+            }
+            // Validate the expected data structure from GAS
+            if (!data || !Array.isArray(data.menuData) || !Array.isArray(data.categories)) {
+                console.error("Invalid data structure received:", data);
+                throw new Error("Invalid data structure received from script.");
+            }
 
             console.log("Menu data fetched successfully:", data.menuData.length, "items,", data.categories.length, "categories.");
-            menuData = data.menuData;
-            allCategories = data.categories;
+            menuData = data.menuData; // Assign fetched menu data
+            allCategories = data.categories; // Assign fetched categories
             return true; // Success
         } catch (error) {
             console.error('Error fetching or processing menu data:', error);
@@ -836,7 +961,8 @@
                 ❌ เกิดข้อผิดพลาดในการโหลดข้อมูลเมนู:<br><small>${error.message}</small><br>โปรดลองรีเฟรชหน้า หรือติดต่อพนักงาน</p>`;
             if (container && categoryBarElement) { container.insertBefore(errorDiv, categoryBarElement); }
             else if (container) { container.prepend(errorDiv); }
-            menuData = []; allCategories = []; // Clear data on error
+            menuData = []; // Clear data on error
+            allCategories = []; // Clear categories on error
             return false; // Failure
         } finally {
             if (loadingIndicator) loadingIndicator.remove(); // Remove indicator
@@ -888,17 +1014,47 @@
     // --- Cart Update Functions ---
 
     /** Adds an item to the cart or increments its quantity. */
+    // --- MODIFIED: addToCart Function ---
     function addToCart(itemId, size) {
         const product = menuData.find(item => item.id === itemId);
         if (!product || typeof product.prices !== 'object') { console.error("Product not found:", itemId); return; }
         const price = product.prices[size];
         if (price === null || price === undefined || isNaN(price)) { console.error("Invalid price for", itemId, size); return; }
 
-        const cartItemId = `${itemId}-${size}`; // Unique ID for item+size combination
+        // --- NEW: Get selected options ---
+        // Check if the option elements exist before querying
+        const selectedOption1Input = menuOption1ChoicesEl ? menuOption1ChoicesEl.querySelector('input[name="option1"]:checked') : null;
+        const selectedOption1Value = selectedOption1Input ? selectedOption1Input.value : null;
+
+        const selectedOption2Input = menuOption2ChoicesEl ? menuOption2ChoicesEl.querySelector('input[name="option2"]:checked') : null;
+        const selectedOption2Value = selectedOption2Input ? selectedOption2Input.value : null;
+        // --- END NEW ---
+
+        // --- Keep cartItemId simple as options don't affect price ---
+        const cartItemId = `${itemId}-${size}`;
+
         const existingItemIndex = cartItems.findIndex(item => item.cartId === cartItemId);
 
-        if (existingItemIndex > -1) { cartItems[existingItemIndex].quantity++; }
-        else { cartItems.push({ cartId: cartItemId, id: product.id, name: product.name, price: price, size: size, quantity: 1 }); }
+        if (existingItemIndex > -1) {
+            // Item already exists, increment quantity
+            cartItems[existingItemIndex].quantity++;
+            // Update options to the newly selected ones (overwrites previous selection for this specific cart item entry)
+            cartItems[existingItemIndex].selectedOption1 = selectedOption1Value;
+            cartItems[existingItemIndex].selectedOption2 = selectedOption2Value;
+        } else {
+            // --- MODIFIED: Add options to the new cart item object ---
+            cartItems.push({
+                cartId: cartItemId,
+                id: product.id,
+                name: product.name,
+                price: price,
+                size: size,
+                quantity: 1,
+                selectedOption1: selectedOption1Value, // Store selected option 1
+                selectedOption2: selectedOption2Value  // Store selected option 2
+            });
+            // --- END MODIFIED ---
+        }
 
         saveCartToLocalStorage();
         renderCart();
@@ -907,6 +1063,8 @@
         cartIconContainer?.classList.add('updated');
         setTimeout(() => { cartIconContainer?.classList.remove('updated'); }, 300);
     }
+    // --- END MODIFIED addToCart ---
+
 
     /** Updates the quantity of a cart item, removes if quantity <= 0. */
     function updateQuantity(cartId, change) {
@@ -934,6 +1092,7 @@
     // --- Rendering Functions ---
 
     /** Renders the cart items list in the cart popup. */
+    // --- MODIFIED: renderCart Function ---
     function renderCart() {
         if (!cartItemsList) return;
         cartItemsList.innerHTML = ''; // Clear previous items
@@ -947,9 +1106,24 @@
                 const itemPrice = item.price || 0;
                 const itemQuantity = item.quantity || 0;
                 const itemTotalPrice = itemPrice * itemQuantity;
+
+                // Build options HTML string conditionally
+                let optionsHtml = '';
+                if (item.selectedOption1 || item.selectedOption2) {
+                    optionsHtml += '<div class="list-item-options">';
+                    if (item.selectedOption1) {
+                        optionsHtml += `<span>+ ${item.selectedOption1}</span>`;
+                    }
+                    if (item.selectedOption2) {
+                        optionsHtml += `<span>+ ${item.selectedOption2}</span>`;
+                    }
+                    optionsHtml += '</div>';
+                }
+
                 itemElement.innerHTML = `
                     <div class="list-item-details cart-item-details">
                         <div class="list-item-name cart-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</div>
+                        ${optionsHtml} 
                         <div class="list-item-info cart-item-price">${itemPrice.toLocaleString()} x ${itemQuantity} = ${itemTotalPrice.toLocaleString()}</div>
                     </div>
                     <div class="cart-item-controls">
@@ -958,6 +1132,7 @@
                         <button class="cart-quantity-btn increase-qty" data-cartid="${item.cartId}" aria-label="เพิ่มจำนวน">+</button>
                         <button class="cart-remove-btn" data-cartid="${item.cartId}" title="ลบรายการนี้" aria-label="ลบรายการนี้"><i class="fas fa-trash-alt"></i></button>
                     </div>`;
+
                 // Add event listeners directly
                 itemElement.querySelector('.decrease-qty')?.addEventListener('click', (e) => updateQuantity(e.currentTarget.dataset.cartid, -1));
                 itemElement.querySelector('.increase-qty')?.addEventListener('click', (e) => updateQuantity(e.currentTarget.dataset.cartid, 1));
@@ -972,6 +1147,7 @@
              orderButton.title = (cartItems.length === 0) ? "ตระกร้าว่างเปล่า" : (!selectedTableNumber ? "กรุณาเลือกโต๊ะก่อน" : "สั่งรายการอาหาร");
          }
     }
+    // --- END MODIFIED renderCart ---
 
     /** Updates the badge count on the cart icon. */
     function updateCartIconCount() {
@@ -982,6 +1158,7 @@
     }
 
     /** Renders the ordered items list and total in the "My Food" popup. */
+    // --- MODIFIED: renderOrderedItems Function ---
     function renderOrderedItems() {
         if (!myFoodItemsList || !myFoodCheckoutButton || !myFoodTotalDisplay) return;
         myFoodItemsList.innerHTML = ''; // Clear previous
@@ -1000,9 +1177,24 @@
                 const itemQuantity = item.quantity || 0;
                 const itemTotalPrice = itemPrice * itemQuantity;
                 grandOrderedTotal += itemTotalPrice;
+
+                // Build options HTML string conditionally
+                let optionsHtml = '';
+                if (item.selectedOption1 || item.selectedOption2) {
+                    optionsHtml += '<div class="list-item-options">';
+                    if (item.selectedOption1) {
+                        optionsHtml += `<span>+ ${item.selectedOption1}</span>`;
+                    }
+                    if (item.selectedOption2) {
+                        optionsHtml += `<span>+ ${item.selectedOption2}</span>`;
+                    }
+                    optionsHtml += '</div>';
+                }
+
                 itemElement.innerHTML = `
                     <div class="list-item-details ordered-item-details">
                         <div class="list-item-name ordered-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</div>
+                        ${optionsHtml} 
                         <div class="list-item-info ordered-item-info">จำนวน: ${itemQuantity} (${itemPrice.toLocaleString()}/ชิ้น)</div>
                     </div>
                     <div class="list-item-total ordered-item-total">${itemTotalPrice.toLocaleString()}</div>`;
@@ -1017,6 +1209,8 @@
          myFoodCheckoutButton.title = (!hasOrderedItems) ? "ไม่มีรายการที่สั่ง" : (!selectedTableNumber ? "กรุณาเลือกโต๊ะก่อน" : "สรุปยอดและเรียกชำระเงิน");
          myFoodTotalDisplay.style.display = hasOrderedItems ? 'block' : 'none';
     }
+    // --- END MODIFIED renderOrderedItems ---
+
 
     /** Updates the badge count on the "My Food" icon. */
     function updateMyFoodIconCount() {
@@ -1031,135 +1225,182 @@
          }
      }
 
-    // --- START: showItemDetails function FROM V123 ---
+    // --- START: showItemDetails function (Modified for Options) ---
     function showItemDetails(index, direction = 'none') {
-        if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer) { return; }
-        if (index < 0 || index >= currentFilteredItems.length) { menuDetailsContainer.style.display = 'none'; currentDisplayedItemId = null; currentIndex = -1; return; }
+        // Ensure required elements exist (including new option elements)
+        if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer ||
+            !menuOptionsSection || !menuOption1Container || !menuOption1TitleEl || !menuOption1ChoicesEl ||
+            !menuOption2Container || !menuOption2TitleEl || !menuOption2ChoicesEl) {
+            console.error("One or more required elements for item details/options are missing.");
+            return;
+        }
+
+        if (index < 0 || index >= currentFilteredItems.length) {
+            menuDetailsContainer.style.display = 'none';
+            currentDisplayedItemId = null;
+            currentIndex = -1;
+            return;
+        }
 
         currentIndex = index;
         const itemData = currentFilteredItems[currentIndex];
         currentDisplayedItemId = itemData.id;
 
-        const newImageSrc = itemData.dataImageSrc || itemData.src || 'placeholder.jpg'; // Added placeholder fallback
+        // --- Image Update Logic (Existing, Unchanged) ---
+        const newImageSrc = itemData.dataImageSrc || itemData.src || 'placeholder.jpg';
         const currentImageSrc = mainFoodImage.getAttribute('src');
-
-        // --- Helper Function (defined inside) ---
         const updateImageElement = (src, alt) => {
-            mainFoodImage.setAttribute('src', src); // Use setAttribute for consistency
+            mainFoodImage.setAttribute('src', src);
             mainFoodImage.alt = alt || itemData.name || 'Menu item image';
-            mainFoodImage.onerror = () => { // Add error handling
+            mainFoodImage.onerror = () => {
                 console.warn(`Image failed to load: ${src}. Using placeholder.`);
-                mainFoodImage.src = 'placeholder.jpg'; // Set placeholder source
+                mainFoodImage.src = 'placeholder.jpg';
                 mainFoodImage.alt = `${itemData.name || 'Menu item'} (Image unavailable)`;
+                mainFoodImage.onerror = null; // Prevent infinite error loops
             };
         };
-        // --- End Helper ---
-
-        // --- Animation Logic ---
-        // Reset any existing animation classes on the CONTAINER
         imageContainer.classList.remove('slide-out-left', 'slide-in-right', 'slide-out-right', 'slide-in-left');
-
-        // Condition for animation: swipe direction provided, image source is changing, and not starting from empty/placeholder
         if (direction !== 'none' && currentImageSrc !== newImageSrc && currentImageSrc !== 'placeholder.jpg') {
             let outClass = ''; let inClass = '';
             if (direction === 'next') { outClass = 'slide-out-left'; inClass = 'slide-in-right'; }
             else if (direction === 'prev') { outClass = 'slide-out-right'; inClass = 'slide-in-left'; }
-
-            // Use requestAnimationFrame for smoother start
             requestAnimationFrame(() => {
                 imageContainer.classList.add(outClass);
-
                 const handleOutAnimationEnd = () => {
                     imageContainer.removeEventListener('animationend', handleOutAnimationEnd);
                     imageContainer.classList.remove(outClass);
-
-                    // IMPORTANT: Update the image source *after* the out animation finishes
                     updateImageElement(newImageSrc, itemData.alt);
-
-                    // Start the 'in' animation on the next frame
                     requestAnimationFrame(() => {
                         imageContainer.classList.add(inClass);
-
                         const handleInAnimationEnd = () => {
                             imageContainer.removeEventListener('animationend', handleInAnimationEnd);
-                            imageContainer.classList.remove(inClass); // Clean up 'in' class
+                            imageContainer.classList.remove(inClass);
                         };
-                        imageContainer.addEventListener('animationend', handleInAnimationEnd, { once: true }); // Use { once: true }
+                        imageContainer.addEventListener('animationend', handleInAnimationEnd, { once: true });
                     });
                 };
-                // Add listener for the 'out' animation *before* adding the class
-                imageContainer.addEventListener('animationend', handleOutAnimationEnd, { once: true }); // Use { once: true }
+                imageContainer.addEventListener('animationend', handleOutAnimationEnd, { once: true });
             });
         } else {
-            // No animation needed, just update the image directly
             updateImageElement(newImageSrc, itemData.alt);
         }
-        // --- End Animation Logic ---
+        // --- End Image Update Logic ---
 
-        // --- Update Text Details ---
+        // --- Update Text Details (Existing, Unchanged) ---
         menuNameElement.textContent = itemData.name || 'ชื่อเมนู';
         menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
 
-        // --- Update Prices and Separators ---
+        // --- Update Prices and Separators (Existing, Unchanged) ---
         const prices = itemData.prices || {};
         const displayOrder = ['Small', 'Normal', 'Extra', 'Family'];
+        displayOrder.forEach(size => {
+            const cache = priceElementsCache[size];
+            if (cache) {
+                cache.label?.closest('.price-item')?.classList.add('hidden');
+                if (cache.separator) cache.separator.classList.add('hidden');
+            }
+        });
+        let visibleCount = 0;
+        displayOrder.forEach(size => {
+            const cache = priceElementsCache[size];
+            if (cache?.label && cache.value && cache.button) {
+                const priceValue = prices[size];
+                const parentSpan = cache.label.closest('.price-item');
+                if (parentSpan) {
+                    if (priceValue !== null && priceValue !== undefined && !isNaN(priceValue)) {
+                        cache.value.textContent = `${Number(priceValue).toLocaleString()}`;
+                        parentSpan.classList.remove('hidden');
+                        visibleCount++;
+                    }
+                }
+            }
+        });
         let firstVisibleFound = false;
-
-        // Hide all price items and separators initially
-         displayOrder.forEach(size => {
-             const cache = priceElementsCache[size];
-             if (cache) {
-                 cache.label?.closest('.price-item')?.classList.add('hidden');
-                 if (cache.separator) cache.separator.classList.add('hidden');
-                 // Ensure all potential separators are hidden initially based on position
-                 if (size === 'Normal' && priceElementsCache['Small']?.separator) priceElementsCache['Small'].separator.classList.add('hidden');
-                 if (size === 'Extra' && priceElementsCache['Extra']?.separator) priceElementsCache['Extra'].separator.classList.add('hidden');
-                 if (size === 'Family' && priceElementsCache['Family']?.separator) priceElementsCache['Family'].separator.classList.add('hidden');
-             }
-         });
-
-         // Make valid price items visible
-         let visibleCount = 0;
-         displayOrder.forEach(size => {
-             const cache = priceElementsCache[size];
-             if (cache && cache.label && cache.value && cache.button) {
-                 const priceValue = prices[size];
-                 const parentSpan = cache.label.closest('.price-item');
-                 if (parentSpan) {
-                     if (priceValue !== null && priceValue !== undefined && !isNaN(priceValue)) {
-                         cache.value.textContent = `${Number(priceValue).toLocaleString()}`; // Format price (no ฿)
-                         parentSpan.classList.remove('hidden');
-                         visibleCount++;
-                     }
-                 }
-             }
-         });
-
-         // Show separators only *between* visible items
-         firstVisibleFound = false;
-         let previousVisibleSize = null; // Track the previously shown size
-         displayOrder.forEach(size => {
-             const cache = priceElementsCache[size];
-             const parentSpan = cache?.label?.closest('.price-item');
-             // Check if the current item is visible
-             if (parentSpan && !parentSpan.classList.contains('hidden')) {
-                 // If this is not the very first visible item we've found...
-                 if (firstVisibleFound) {
-                      // ...show the separator that logically *precedes* this item.
-                      // This logic assumes the separators are named based on the item they *follow*.
-                      if (size === 'Normal' && priceElementsCache['Small']?.separator) priceElementsCache['Small'].separator.classList.remove('hidden');
-                      else if (size === 'Extra' && priceElementsCache['Extra']?.separator) priceElementsCache['Extra'].separator.classList.remove('hidden');
-                      else if (size === 'Family' && priceElementsCache['Family']?.separator) priceElementsCache['Family'].separator.classList.remove('hidden');
-                 }
-                 firstVisibleFound = true; // Mark that we have found at least one visible item
-                 previousVisibleSize = size; // Update the last visible size found (not strictly needed for this logic but good practice)
-             }
-         });
+        displayOrder.forEach(size => {
+            const cache = priceElementsCache[size];
+            const parentSpan = cache?.label?.closest('.price-item');
+            if (parentSpan && !parentSpan.classList.contains('hidden')) {
+                if (firstVisibleFound) {
+                    if (size === 'Normal' && priceElementsCache['Small']?.separator) priceElementsCache['Small'].separator.classList.remove('hidden');
+                    else if (size === 'Extra' && priceElementsCache['Extra']?.separator) priceElementsCache['Extra'].separator.classList.remove('hidden');
+                    else if (size === 'Family' && priceElementsCache['Family']?.separator) priceElementsCache['Family'].separator.classList.remove('hidden');
+                }
+                firstVisibleFound = true;
+            }
+        });
         // --- End Price Logic ---
 
+
+        // --- NEW: Populate Options ---
+        // Helper function to create radio buttons styled as labels
+        const createOptionRadio = (name, value, label, index) => {
+            const uniqueId = `${name}-${value.replace(/\s+/g, '-')}-${index}`; // Create a more unique ID
+
+            const labelEl = document.createElement('label');
+            labelEl.classList.add('option-choice-label');
+            labelEl.setAttribute('for', uniqueId); // Associate label with input
+
+            const inputEl = document.createElement('input');
+            inputEl.type = 'radio';
+            inputEl.name = name; // Group radio buttons
+            inputEl.value = value;
+            inputEl.id = uniqueId; // Assign unique ID
+            // No default selection unless specified
+            // if (index === 0) { inputEl.checked = true; }
+
+            const spanEl = document.createElement('span');
+            spanEl.textContent = label;
+
+            labelEl.appendChild(inputEl);
+            labelEl.appendChild(spanEl);
+            return labelEl;
+        };
+
+        let hasVisibleOptions = false; // Track if any options are displayed
+
+        // Populate Option 1
+        if (menuOption1Container && menuOption1TitleEl && menuOption1ChoicesEl && itemData.option1_title && itemData.option1_choices && itemData.option1_choices.length > 0) {
+            menuOption1TitleEl.textContent = itemData.option1_title;
+            menuOption1ChoicesEl.innerHTML = ''; // Clear previous
+            const fragment1 = document.createDocumentFragment();
+            itemData.option1_choices.forEach((choice, index) => {
+                fragment1.appendChild(createOptionRadio('option1', choice, choice, index));
+            });
+            menuOption1ChoicesEl.appendChild(fragment1);
+            menuOption1Container.classList.remove('hidden');
+            hasVisibleOptions = true;
+        } else if (menuOption1Container) {
+            menuOption1Container.classList.add('hidden');
+            if(menuOption1ChoicesEl) menuOption1ChoicesEl.innerHTML = ''; // Clear radios if hidden
+        }
+
+        // Populate Option 2
+        if (menuOption2Container && menuOption2TitleEl && menuOption2ChoicesEl && itemData.option2_title && itemData.option2_choices && itemData.option2_choices.length > 0) {
+            menuOption2TitleEl.textContent = itemData.option2_title;
+            menuOption2ChoicesEl.innerHTML = ''; // Clear previous
+            const fragment2 = document.createDocumentFragment();
+            itemData.option2_choices.forEach((choice, index) => {
+                 fragment2.appendChild(createOptionRadio('option2', choice, choice, index));
+            });
+            menuOption2ChoicesEl.appendChild(fragment2);
+            menuOption2Container.classList.remove('hidden');
+            hasVisibleOptions = true;
+        } else if (menuOption2Container) {
+            menuOption2Container.classList.add('hidden');
+            if(menuOption2ChoicesEl) menuOption2ChoicesEl.innerHTML = ''; // Clear radios if hidden
+        }
+
+        // Show/Hide the entire options section based on visibility
+        if (menuOptionsSection) {
+            menuOptionsSection.style.display = hasVisibleOptions ? 'block' : 'none';
+        }
+        // --- END NEW OPTIONS POPULATION ---
+
+
+        // --- Show the details container ---
         menuDetailsContainer.style.display = 'block';
     }
-    // --- END: showItemDetails function FROM V123 ---
+    // --- END: showItemDetails function UPDATE ---
 
 
     /** Displays menu items filtered by the selected category. */
@@ -1324,7 +1565,7 @@
              if (e.target && e.target.classList.contains('add-to-cart-button')) {
                  const size = e.target.dataset.size;
                  if (currentDisplayedItemId && size) {
-                     addToCart(currentDisplayedItemId, size);
+                     addToCart(currentDisplayedItemId, size); // This now includes option handling
                  } else { console.warn("Cannot add to cart. Missing item ID or size."); }
              }
          });
@@ -1685,11 +1926,12 @@
     }
 
     /** Sends the current cart contents as a new order to Telegram. */
+    // --- MODIFIED: handleOrderSubmission Function ---
     async function handleOrderSubmission() {
          if (cartItems.length === 0) { alert('ตระกร้าสินค้าของคุณว่างเปล่า'); return; }
          if (!selectedTableNumber) { alert('กรุณาเลือกโต๊ะก่อนสั่งอาหาร'); openTableSelectModal(); return; }
 
-        // *** Use simpler Markdown formatting ***
+        // Build the message string including options
         let orderMessage = `*โต๊ะ ${selectedTableNumber} - รายการสั่งซื้อใหม่* ✨\n`;
         orderMessage += `------------------------------------\n`;
         let total = 0;
@@ -1697,10 +1939,30 @@
             const itemPrice = item.price || 0;
             const itemQuantity = item.quantity || 0;
             const lineTotal = itemPrice * itemQuantity;
-            orderMessage += `*${index + 1}. ${item.name || 'N/A'}* (${item.size || 'N/A'})\n`;
-            orderMessage += `   (จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n\n`; // Bold line total
+
+            // Start item line
+            orderMessage += `*${index + 1}. ${item.name || 'N/A'}* (${item.size || 'N/A'})`;
+
+            // Add options if they exist
+            if (item.selectedOption1 || item.selectedOption2) {
+                orderMessage += `\n`; // Newline before options
+                if (item.selectedOption1) {
+                    orderMessage += `   + ${item.selectedOption1}\n`;
+                }
+                if (item.selectedOption2) {
+                    orderMessage += `   + ${item.selectedOption2}\n`;
+                }
+                orderMessage += `   `; // Indent for the quantity line
+            } else {
+                orderMessage += `\n   `; // Indent for quantity line even if no options
+            }
+
+            // Add quantity and total line
+            orderMessage += `(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n\n`; // Add double newline for spacing
+
             total += lineTotal;
-        });
+        }); // End forEach cartItems
+
         orderMessage += `------------------------------------\n`;
         orderMessage += `*ยอดรวม: ${total.toLocaleString()}*\n`; // Bold grand total
         const { date, time } = getCurrentLocalDateTimeStrings();
@@ -1713,12 +1975,18 @@
             alert(`ส่งรายการสั่งซื้อจาก ${TABLE_NUMBER_PREFIX}${selectedTableNumber} สำเร็จ!`);
 
             // Move items from cart to ordered list
+            // IMPORTANT: Use spread syntax to ensure options are copied
             cartItems.forEach(cartItem => {
-                const existingIndex = orderedItems.findIndex(orderedItem => orderedItem.cartId === cartItem.cartId);
+                const existingIndex = orderedItems.findIndex(orderedItem =>
+                    orderedItem.id === cartItem.id &&
+                    orderedItem.size === cartItem.size &&
+                    orderedItem.selectedOption1 === cartItem.selectedOption1 && // Match options too for merging
+                    orderedItem.selectedOption2 === cartItem.selectedOption2
+                );
                 if (existingIndex > -1) {
-                    orderedItems[existingIndex].quantity += cartItem.quantity; // Increment quantity if exists
+                    orderedItems[existingIndex].quantity += cartItem.quantity; // Increment quantity if item+size+options match
                 } else {
-                    orderedItems.push({ ...cartItem }); // Add as new ordered item
+                    orderedItems.push({ ...cartItem }); // Add as new ordered item (copies options)
                 }
             });
             cartItems = []; // Clear the cart
@@ -1734,8 +2002,11 @@
          }
          // Button state is handled by sendTelegramMessage
      }
+    // --- END MODIFIED handleOrderSubmission ---
+
 
     /** Generates the content for the receipt modal and displays it. */
+    // --- MODIFIED: handleGenerateReceipt Function ---
     function handleGenerateReceipt() {
         // Validate required data
         if (orderedItems.length === 0) {
@@ -1770,14 +2041,29 @@
             const lineTotal = itemPrice * itemQuantity;
             grandTotal += lineTotal;
 
+            // Build options HTML conditionally
+            let optionsHtml = '';
+            if (item.selectedOption1 || item.selectedOption2) {
+                optionsHtml += '<div class="receipt-item-options">'; // Use the specific class for receipt options
+                if (item.selectedOption1) {
+                    optionsHtml += `<span>+ ${item.selectedOption1}</span>`;
+                }
+                if (item.selectedOption2) {
+                    optionsHtml += `<span>+ ${item.selectedOption2}</span>`;
+                }
+                optionsHtml += '</div>';
+            }
+
+
             const itemElement = document.createElement('div');
             itemElement.classList.add('receipt-item');
-            // Structure matches the header columns
+            // Structure matches the header columns + options div
             itemElement.innerHTML = `
                 <span class="receipt-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</span>
                 <span class="receipt-item-qty">${itemQuantity}x</span>
                 <span class="receipt-item-price">${itemPrice.toLocaleString()}</span>
                 <span class="receipt-item-total">${lineTotal.toLocaleString()}</span>
+                ${optionsHtml} 
             `;
             fragment.appendChild(itemElement);
         });
@@ -1808,6 +2094,8 @@
         console.log("Receipt generated successfully.");
         return true; // Indicate success
     }
+    // --- END MODIFIED handleGenerateReceipt ---
+
 
     /** Saves the content of the receipt modal as a PNG image. */
     async function saveReceiptAsImage() {
@@ -1855,14 +2143,15 @@
 
 
     /** Sends ONLY the text summary "Checkout Request" notification to Telegram. */
-    async function sendCheckoutTextSummaryToTelegram() { // <<< RENAMED FUNCTION
+    // --- MODIFIED: sendCheckoutTextSummaryToTelegram Function ---
+    async function sendCheckoutTextSummaryToTelegram() {
          // Safety checks
          if (orderedItems.length === 0 || !selectedTableNumber) {
              console.warn("sendCheckoutTextSummaryToTelegram called unexpectedly.");
              return false; // Indicate failure to send text
          }
 
-         // *** Use simpler Markdown formatting ***
+         // Build the message string
          let checkoutMessage = `💰 *!! เรียกชำระเงิน !!* 💰\n`;
          checkoutMessage += `------------------------------------\n`;
          checkoutMessage += `โต๊ะ: *${selectedTableNumber}*\n`;
@@ -1872,9 +2161,31 @@
              const itemPrice = item.price || 0;
              const itemQuantity = item.quantity || 0;
              const lineTotal = itemPrice * itemQuantity;
-             checkoutMessage += `*${index + 1}. ${item.name || 'N/A'}* (${item.size || 'N/A'}) - ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*\n`;
+
+             // Start item line
+             let itemLine = `*${index + 1}. ${item.name || 'N/A'}* (${item.size || 'N/A'})`;
+
+             // Add options on new lines if they exist
+             if (item.selectedOption1 || item.selectedOption2) {
+                 itemLine += `\n`; // Newline before options
+                 if (item.selectedOption1) {
+                     itemLine += `   + ${item.selectedOption1}\n`;
+                 }
+                 if (item.selectedOption2) {
+                     itemLine += `   + ${item.selectedOption2}\n`;
+                 }
+                  itemLine += `   `; // Indent before quantity/price line
+             } else {
+                  itemLine += `\n   `; // Indent anyway for consistency
+             }
+
+             // Add quantity and price info
+             itemLine += `(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n`; // Add final newline for spacing between items
+
+             checkoutMessage += itemLine;
              orderedTotal += lineTotal;
-         });
+         }); // End forEach orderedItems
+
          checkoutMessage += `------------------------------------\n`;
          checkoutMessage += `*ยอดรวมที่สั่งแล้ว: ${orderedTotal.toLocaleString()}*\n`;
          const { time } = getCurrentLocalDateTimeStrings();
@@ -1892,6 +2203,8 @@
          }
          return success; // Return success status for the text message part
      }
+    // --- END MODIFIED sendCheckoutTextSummaryToTelegram ---
+
 
     // --- Initial Application Load ---
     document.addEventListener('DOMContentLoaded', async () => {
@@ -1965,5 +2278,3 @@
 </script>
 </body>
 </html>
-
-โค้ดนี้ควรจะทำงานตามที่คุณต้องการแล้วครับ ลองนำไปทดสอบได้เลย
