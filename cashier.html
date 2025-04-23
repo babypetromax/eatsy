@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แคชเชียร์ - Eatsy Orders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles --- */
+        :root {
+            --color-bg: #f8f9fa;
+            --color-card-bg: #ffffff;
+            --color-text: #212529;
+            --color-text-secondary: #6c757d;
+            --color-border: #dee2e6;
+            --color-new: #0d6efd;      /* Blue */
+            --color-preparing: #ffc107; /* Yellow */
+            --color-ready: #198754;    /* Green */
+            --color-cancelled: #dc3545; /* Red */
+            --color-completed: #6c757d; /* Grey */
+            --color-highlight: #fff3cd; /* Light Yellow for note focus */
+        }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: 15px;
+        }
+        h1 {
+            text-align: center;
+            color: #414833; /* Dark Green */
+            margin-bottom: 10px;
+        }
+        #status-indicator {
+            font-size: 0.9em;
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--color-text-secondary);
+        }
+        .refresh-button {
+            display: block;
+            margin: 0 auto 15px auto;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background-color: #656D4A; /* var(--color-medium-green); */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+        .refresh-button:hover {
+            background-color: #414833; /* var(--color-dark-green); */
+        }
+         .refresh-button:disabled {
+             background-color: #ccc;
+             cursor: not-allowed;
+         }
+         .refresh-button .fa-spin { margin-right: 5px;}
+
+        #orders-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+        }
+        .order-card {
+            background-color: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: box-shadow 0.2s ease;
+            border-left: 6px solid var(--color-new); /* Default border */
+        }
+        .order-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+
+        /* Status-based styling */
+        .order-card.status-New { border-left-color: var(--color-new); }
+        .order-card.status-Preparing { border-left-color: var(--color-preparing); }
+        .order-card.status-Ready { border-left-color: var(--color-ready); }
+        .order-card.status-Cancelled { border-left-color: var(--color-cancelled); background-color: #fef2f2; }
+        .order-card.status-Completed { border-left-color: var(--color-completed); opacity: 0.75; }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+        }
+        .order-table {
+            font-weight: bold;
+            font-size: 1.3em;
+            color: var(--color-darkest);
+        }
+        .order-status {
+            font-weight: bold;
+            font-size: 0.9em;
+            padding: 4px 10px;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+        }
+        /* Status badge colors */
+        .status-New .order-status { background-color: var(--color-new); }
+        .status-Preparing .order-status { background-color: var(--color-preparing); color: #333; }
+        .status-Ready .order-status { background-color: var(--color-ready); }
+        .status-Cancelled .order-status { background-color: var(--color-cancelled); }
+        .status-Completed .order-status { background-color: var(--color-completed); }
+
+        .order-meta {
+            font-size: 0.85em;
+            color: var(--color-text-secondary);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .order-items-list {
+            list-style: none;
+            padding: 0;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+        .order-items-list li {
+            border-bottom: 1px dashed #eee;
+            padding: 8px 0;
+        }
+        .order-items-list li:last-child {
+            border-bottom: none;
+        }
+        .item-details {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .item-name {
+            flex-grow: 1;
+            font-weight: 500;
+        }
+        .item-size-options {
+             font-size: 0.9em;
+             color: var(--color-text-secondary);
+             display: block;
+             margin-left: 5px;
+             margin-top: 3px;
+        }
+        .item-option { display: block; margin-left: 10px; }
+
+        .item-qty-price {
+             display: flex;
+             gap: 10px;
+             align-items: baseline;
+             flex-shrink: 0;
+             text-align: right;
+         }
+
+        .item-qty {
+             min-width: 35px;
+             text-align: center;
+             color: var(--color-text-secondary);
+        }
+        .item-total {
+            font-weight: bold;
+            min-width: 60px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .order-total {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--color-border);
+            font-size: 1.15em;
+            color: var(--color-darkest);
+        }
+        .order-section {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dotted var(--color-border);
+        }
+        .order-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            background-color: #fff;
+            border-color: #ccc;
+            color: #333;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .action-btn:hover { background-color: #f1f1f1; }
+        .action-btn:disabled {
+             opacity: 0.6;
+             cursor: not-allowed;
+             background-color: #e9ecef;
+             border-color: #ced4da;
+             color: #6c757d;
+        }
+        .action-btn .fa-spin { margin-right: 5px; }
+
+        .btn-preparing { border-color: var(--color-preparing); color: var(--color-preparing); }
+        .btn-preparing:not(:disabled):hover { background-color: #fff3cd; border-color: #ffe69c; }
+        .btn-ready { border-color: var(--color-ready); color: var(--color-ready); }
+        .btn-ready:not(:disabled):hover { background-color: #d1e7dd; border-color: #b1d9c6; }
+        .btn-complete { border-color: var(--color-completed); color: var(--color-completed); }
+        .btn-complete:not(:disabled):hover { background-color: #e2e3e5; border-color: #d3d4d5; }
+        .btn-cancel { border-color: var(--color-cancelled); color: var(--color-cancelled); }
+        .btn-cancel:not(:disabled):hover { background-color: #f8d7da; border-color: #f1b9be; }
+
+        .cashier-notes-section textarea, .customer-update-section input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            font-family: inherit;
+        }
+        .cashier-notes-section textarea:focus, .customer-update-section input:focus {
+             border-color: #656D4A; /* var(--color-medium-green); */
+             box-shadow: 0 0 0 2px rgba(101, 109, 74, 0.2);
+             outline: none;
+        }
+        .note-update-actions { display: flex; gap: 8px; margin-top: 5px; }
+        .save-note-btn, .send-update-btn {
+             background-color: #656D4A; /* var(--color-medium-green); */
+             color: white;
+             border: none;
+        }
+        .save-note-btn:not(:disabled):hover, .send-update-btn:not(:disabled):hover {
+             background-color: #414833; /* var(--color-dark-green); */
+        }
+        .cashier-notes-display {
+             font-size: 0.85em;
+             color: #664d03;
+             margin-top: 8px;
+             background-color: var(--color-highlight);
+             padding: 5px 8px;
+             border-radius: 4px;
+             border: 1px solid #ffecb5;
+             font-style: italic;
+         }
+         .cashier-notes-display::before {
+             content: "โน้ต: ";
+             font-weight: bold;
+             font-style: normal;
+         }
+    </style>
+</head>
+<body>
+
+    <h1><i class="fas fa-clipboard-list"></i> Eatsy - รายการสั่งอาหาร (แคชเชียร์)</h1>
+
+    <div id="status-indicator">กำลังโหลด...</div>
+    <button id="refresh-button" class="refresh-button" title="โหลดรายการใหม่">
+        <i class="fas fa-sync-alt"></i> โหลดใหม่
+    </button>
+
+    <div id="orders-container">
+        <!-- Order cards will be loaded here by JavaScript -->
+    </div>
+
+    <!-- ***** START OF JAVASCRIPT CODE ***** -->
+    <script>
+        // --- CONFIGURATION ---
+        // !!! สำคัญ: ใส่ URL และ Token ที่ถูกต้องของคุณที่นี่ !!!
+        const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1Ev-0u9kuDJjynsX7bd3AdQvMWWjJegV7kW9OhMDwxbBzHhkVs9PSnaxlGt12wHpt/exec"; // <<< PASTE YOUR WEB APP URL HERE
+        const API_ACCESS_TOKEN = "1234"; // <<< PASTE THE SAME TOKEN YOU USED IN GAS
+        const REFRESH_INTERVAL_SECONDS = 30; // ความถี่ในการโหลดข้อมูลใหม่ (วินาที)
+
+        // --- DOM Elements ---
+        const ordersContainer = document.getElementById('orders-container');
+        const statusIndicator = document.getElementById('status-indicator');
+        const refreshButton = document.getElementById('refresh-button');
+
+        // --- State ---
+        let currentOrders = []; // เก็บข้อมูล Orders ที่แสดงผลอยู่
+        let fetchIntervalId = null; // ตัวแปรเก็บ ID ของ Interval
+        let isFetching = false; // Flag ป้องกันการกดโหลดซ้ำซ้อน
+
+        // --- Functions ---
+
+        /** Formats a date string or Date object */
+        function formatTimestamp(timestamp) {
+            try {
+                const date = new Date(timestamp);
+                if (isNaN(date.getTime())) return "Invalid Date";
+                return date.toLocaleTimeString('th-TH', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Bangkok'
+                });
+            } catch (e) {
+                console.error("Error formatting timestamp:", timestamp, e);
+                return timestamp;
+            }
+        }
+
+        /** Fetches active orders from the Google Apps Script */
+        async function fetchOrders() {
+            if (!ordersContainer || !statusIndicator || !refreshButton) return;
+            if (isFetching) return;
+
+            isFetching = true;
+            statusIndicator.textContent = `กำลังอัปเดต (${new Date().toLocaleTimeString('th-TH')})...`;
+            refreshButton.disabled = true;
+            refreshButton.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> กำลังโหลด...`;
+
+            const url = `${GOOGLE_APPS_SCRIPT_URL}?token=${API_ACCESS_TOKEN}&action=getOrders&_=${Date.now()}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    let errorBody = "Network error";
+                    try { errorBody = await response.text(); } catch(_) {}
+                    throw new Error(`Network error (${response.status}). Server said: ${errorBody}`);
+                }
+                const result = await response.json();
+                console.log("Fetched Orders:", result);
+
+                if (result.success && Array.isArray(result.data)) {
+                    currentOrders = result.data;
+                    renderOrders(currentOrders);
+                    statusIndicator.textContent = `อัปเดตล่าสุด: ${new Date().toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok' })}`;
+                } else {
+                    throw new Error(result.message || "Failed to fetch orders.");
+                }
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+                statusIndicator.textContent = `⚠️ เกิดข้อผิดพลาดในการโหลด: ${error.message}`;
+            } finally {
+                isFetching = false;
+                refreshButton.disabled = false;
+                refreshButton.innerHTML = `<i class="fas fa-sync-alt"></i> โหลดใหม่`;
+            }
+        }
+
+        /** Renders the fetched orders onto the page */
+        function renderOrders(orders) {
+            if (!ordersContainer) return;
+            ordersContainer.innerHTML = '';
+
+            if (orders.length === 0) {
+                ordersContainer.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); padding: 20px;">ยังไม่มีรายการสั่งอาหารใหม่</p>';
+                return;
+            }
+
+            orders.sort((a, b) => {
+                 const statusOrder = { "New": 1, "Preparing": 2, "Ready": 3, "Cancelled": 4, "Completed": 5 };
+                 const statusA = statusOrder[a.Status] || 99;
+                 const statusB = statusOrder[b.Status] || 99;
+                 if (statusA !== statusB) return statusA - statusB;
+                 try {
+                     const dateA = new Date(a.Timestamp);
+                     const dateB = new Date(b.Timestamp);
+                     if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+                          return dateB - dateA;
+                     }
+                 } catch(e) { console.error("Error comparing dates:", a.Timestamp, b.Timestamp); }
+                 return 0;
+             });
+
+            const fragment = document.createDocumentFragment();
+            orders.forEach(order => {
+                const card = document.createElement('div');
+                card.className = `order-card status-${order.Status ? order.Status.replace(/\s+/g, '-') : 'Unknown'}`;
+                card.dataset.orderId = order.OrderID;
+
+                const items = order.Items || [];
+                let totalOrderPrice = 0;
+                const itemsHtml = items.map(item => {
+                    const itemPrice = item.price || 0;
+                    const itemQuantity = item.quantity || 0;
+                    const lineTotal = itemPrice * itemQuantity;
+                    totalOrderPrice += lineTotal;
+
+                    let optionsHtml = '';
+                    if (item.selectedOption1 || item.selectedOption2) {
+                         if (item.selectedOption1) optionsHtml += `<span class="item-option">+ ${item.selectedOption1}</span>`;
+                         if (item.selectedOption2) optionsHtml += `<span class="item-option">+ ${item.selectedOption2}</span>`;
+                    }
+
+                    return `
+                        <li>
+                            <div class="item-details">
+                                 <div>
+                                    <span class="item-name">${item.name || 'N/A'}</span>
+                                     <span class="item-size-options">
+                                         (${item.size || 'N/A'})
+                                         ${optionsHtml}
+                                    </span>
+                                </div>
+                                <div class="item-qty-price">
+                                    <span class="item-qty">${itemQuantity}x</span>
+                                </div>
+                                <span class="item-total">${lineTotal.toLocaleString()}</span>
+                            </div>
+                        </li>`;
+                }).join('');
+
+                const isCompleted = order.Status === 'Completed';
+                const isCancelled = order.Status === 'Cancelled';
+                const disableActions = isCompleted || isCancelled;
+
+                card.innerHTML = `
+                    <div class="order-header">
+                        <span class="order-table">โต๊ะ ${order.TableNumber}</span>
+                        <span class="order-status">${order.Status || 'Unknown'}</span>
+                    </div>
+                    <div class="order-meta">
+                        <span class="order-time"><i class="far fa-clock"></i> ${formatTimestamp(order.Timestamp)}</span>
+                        <span class="order-id">ID: ${order.OrderID}</span>
+                    </div>
+                    <ul class="order-items-list">
+                        ${itemsHtml || '<li>ไม่มีรายการ</li>'}
+                    </ul>
+                    <div class="order-total">รวม: ${totalOrderPrice.toLocaleString()} บาท</div>
+
+                    <div class="order-section cashier-notes-section">
+                        <label for="notes-${order.OrderID}" style="font-size:0.9em; font-weight:bold; margin-bottom: 5px; display:block;">โน้ตแคชเชียร์:</label>
+                        <textarea id="notes-${order.OrderID}" placeholder="เพิ่มโน้ต (เช่น ของหมด, ขอเปลี่ยน)..." ${disableActions ? 'disabled' : ''}>${order.CashierNotes || ''}</textarea>
+                        <div class="note-update-actions">
+                            <button class="action-btn save-note-btn" data-orderid="${order.OrderID}" ${disableActions ? 'disabled' : ''}>
+                                <i class="fas fa-save"></i> บันทึกโน้ต
+                            </button>
+                        </div>
+                        ${order.CashierNotes ? `<div class="cashier-notes-display">${order.CashierNotes}</div>` : ''}
+                    </div>
+
+                    <div class="order-section customer-update-section">
+                         <label for="update-${order.OrderID}" style="font-size:0.9em; font-weight:bold; margin-bottom: 5px; display:block;">ข้อความแจ้งลูกค้า:</label>
+                         <input type="text" id="update-${order.OrderID}" placeholder="ข้อความสั้นๆ แจ้งลูกค้า (เช่น อาหารใกล้เสร็จแล้ว)" ${disableActions ? 'disabled' : ''}>
+                         <div class="note-update-actions">
+                             <button class="action-btn send-update-btn" data-orderid="${order.OrderID}" ${disableActions ? 'disabled' : ''}>
+                                 <i class="fas fa-paper-plane"></i> ส่งข้อความ
+                             </button>
+                         </div>
+                    </div>
+
+                    <div class="order-section order-actions">
+                        <button class="action-btn btn-preparing" data-status="Preparing" data-orderid="${order.OrderID}" ${order.Status === 'Preparing' || disableActions ? 'disabled' : ''}><i class="fas fa-fire"></i> เริ่มทำ</button>
+                        <button class="action-btn btn-ready" data-status="Ready" data-orderid="${order.OrderID}" ${order.Status === 'Ready' || disableActions ? 'disabled' : ''}><i class="fas fa-bell"></i> พร้อมเสิร์ฟ</button>
+                        <button class="action-btn btn-complete" data-status="Completed" data-orderid="${order.OrderID}" ${disableActions ? 'disabled' : ''}><i class="fas fa-check-circle"></i> เสร็จสิ้น/จ่าย</button>
+                        <button class="action-btn btn-cancel" data-status="Cancelled" data-orderid="${order.OrderID}" ${disableActions ? 'disabled' : ''}><i class="fas fa-times-circle"></i> ยกเลิก</button>
+                    </div>
+                `;
+                fragment.appendChild(card);
+            });
+            ordersContainer.appendChild(fragment);
+
+            addEventListenersToCards();
+        }
+
+        /** Adds event listeners to buttons within the order cards */
+        function addEventListenersToCards() {
+            ordersContainer.querySelectorAll('.action-btn').forEach(button => {
+                button.removeEventListener('click', handleActionClick);
+                button.addEventListener('click', handleActionClick);
+            });
+        }
+
+        /** Handles clicks on action buttons (Update Status, Save Note, Send Update) */
+        async function handleActionClick(event) {
+            const button = event.currentTarget;
+            const orderId = button.dataset.orderid;
+            const newStatus = button.dataset.status;
+            const isSaveNote = button.classList.contains('save-note-btn');
+            const isSendUpdate = button.classList.contains('send-update-btn');
+
+            if (!orderId) { console.error("Missing OrderID on button"); return; }
+
+            button.disabled = true;
+            const originalHtml = button.innerHTML;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ...`;
+
+            let action = '';
+            let params = { orderId: orderId };
+            let currentNotes = '';
+
+            const orderCard = button.closest('.order-card');
+            const noteTextarea = orderCard?.querySelector('.cashier-notes-section textarea');
+            const updateInput = orderCard?.querySelector('.customer-update-section input');
+            currentNotes = noteTextarea ? noteTextarea.value : '';
+
+            if (isSaveNote) {
+                action = 'updateOrder';
+                const currentOrder = currentOrders.find(o => o.OrderID === orderId);
+                const currentStatus = currentOrder ? currentOrder.Status : 'Unknown';
+                params.status = currentStatus;
+                params.notes = currentNotes;
+                console.log(`Saving note for ${orderId}: Status=${params.status}, Notes=${params.notes}`);
+            } else if (isSendUpdate) {
+                action = 'requestCustomerUpdate';
+                const message = updateInput ? updateInput.value.trim() : '';
+                if (!message) {
+                     alert("กรุณาใส่ข้อความที่จะแจ้งลูกค้า");
+                     button.disabled = false; button.innerHTML = originalHtml; return;
+                }
+                params.message = message;
+                console.log(`Sending customer update for ${orderId}: ${params.message}`);
+            } else if (newStatus) {
+                action = 'updateOrder';
+                params.status = newStatus;
+                params.notes = currentNotes;
+                console.log(`Updating status for ${orderId} to ${params.status} with notes: ${params.notes}`);
+            } else {
+                console.warn("Unknown action for button:", button);
+                button.disabled = false; button.innerHTML = originalHtml; return;
+            }
+
+            const url = `${GOOGLE_APPS_SCRIPT_URL}?token=${API_ACCESS_TOKEN}&action=${action}&${new URLSearchParams(params).toString()}&_=${Date.now()}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                     let errorBody = "Action failed";
+                     try { errorBody = await response.text(); } catch(_) {}
+                     throw new Error(`Network error (${response.status}). Server said: ${errorBody}`);
+                }
+                const result = await response.json();
+                if (!result.success) { throw new Error(result.message || "Action failed on server."); }
+
+                console.log(`Action ${action} for order ${orderId} successful.`);
+
+                if (isSendUpdate && updateInput) {
+                     updateInput.value = '';
+                }
+
+                fetchOrders();
+
+            } catch (error) {
+                console.error(`Error performing action ${action} for order ${orderId}:`, error);
+                alert(`เกิดข้อผิดพลาด: ${error.message}`);
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Cashier Page Loaded.");
+
+            if(refreshButton) {
+                refreshButton.addEventListener('click', fetchOrders);
+            }
+
+            fetchOrders(); // Initial fetch
+
+            if (fetchIntervalId) clearInterval(fetchIntervalId);
+            fetchIntervalId = setInterval(fetchOrders, REFRESH_INTERVAL_SECONDS * 1000);
+            console.log(`Set auto-refresh interval to ${REFRESH_INTERVAL_SECONDS} seconds.`);
+        });
+    </script>
+    <!-- ***** END OF JAVASCRIPT CODE ***** -->
+
+</body>
+</html>
