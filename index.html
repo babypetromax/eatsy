@@ -192,25 +192,37 @@
         .menu-name-container { margin-bottom: 5px; }
         #menu-name { font-size: 28px; font-weight: bold; text-transform: uppercase; margin: 0; color: var(--color-darkest); line-height: 1.2; }
         #menu-description { font-size: 14px; margin: 0 0 10px 0; color: var(--color-medium-green); line-height: 1.5; }
-        #menu-price { font-size: 18px; font-weight: bold; margin: 0; color: var(--color-medium-beige); display: flex; align-items: center; flex-wrap: wrap; gap: 5px 0; }
-        .price-item { display: inline-flex; align-items: center; margin-right: 10px; }
-        .price-label { font-size: 0.8em; font-weight: normal; color: var(--color-text-secondary); margin-right: 4px; }
-        .price-value { margin-right: 5px; }
-        .add-to-cart-button {
-            background-color: var(--color-medium-green); color: var(--color-white); border: none; border-radius: 50%;
-            width: 24px; height: 24px; font-size: 16px; font-weight: bold; line-height: 24px; text-align: center;
-            cursor: pointer; transition: background-color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
-            padding: 0; flex-shrink: 0;
+        
+        /* -- Price/Size Selection (IMPROVED) -- */
+        #menu-price-options { margin-bottom: 15px; }
+        .price-option-item {
+            display: flex; align-items: center; padding: 8px 0;
+            border-bottom: 1px solid #eee; cursor: pointer;
+            transition: background-color var(--transition-speed-fast);
         }
-        .add-to-cart-button:hover { background-color: var(--color-dark-green); transform: scale(1.1); }
-        .price-separator { margin: 0 8px; font-weight: normal; color: #adb5bd; }
+        .price-option-item:last-child { border-bottom: none; }
+        .price-option-item:hover { background-color: #f8f9fa; }
+        .price-option-item input[type="radio"] {
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            width: 18px; height: 18px; border: 2px solid var(--color-light-green);
+            border-radius: 50%; margin-right: 12px; cursor: pointer;
+            position: relative; outline: none;
+            transition: border-color var(--transition-speed-fast);
+        }
+        .price-option-item input[type="radio"]:checked { border-color: var(--color-dark-green); }
+        .price-option-item input[type="radio"]:checked::before {
+            content: ''; display: block; width: 10px; height: 10px;
+            background-color: var(--color-medium-green); border-radius: 50%;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .price-option-label-text { flex-grow: 1; font-size: 0.95em; color: var(--color-text-primary); }
+        .price-option-label-text .size-name { font-weight: 500; }
+        .price-option-value-text { font-size: 1em; font-weight: bold; color: var(--color-medium-beige); }
         .hidden { display: none !important; }
 
-        /* --- Menu Options Styling --- */
-        .menu-options-section {
-             border-top: 1px solid var(--color-border);
-             padding-top: 15px;
-        }
+
+        /* --- Additional Menu Options (e.g., Sweetness, Toppings) --- */
+        .menu-options-section { border-top: 1px solid var(--color-border); padding-top: 15px; }
         .menu-options-container { margin-bottom: 10px; }
         .option-title { font-size: 0.95em; font-weight: bold; color: var(--color-dark-green); margin: 0 0 8px 0; display: block; }
         .option-choices { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -223,13 +235,36 @@
         .option-choice-label input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 0; height: 0; opacity: 0; position: absolute; margin: 0; padding: 0; }
         .option-choice-label:has(input[type="radio"]:checked) { background-color: var(--color-medium-green); color: var(--color-white); font-weight: bold; border: 1px solid var(--color-dark-green); }
         .option-choice-label:not(:has(input[type="radio"]:checked)):hover { background-color: #ced4da; }
+        
+        /* -- Item Notes & Main Add to Cart Button (NEW) -- */
+        #item-notes-section { margin-top: 15px; }
+        #item-notes-label { display: block; font-size: 0.95em; font-weight: bold; color: var(--color-dark-green); margin-bottom: 8px; }
+        #item-notes-textarea {
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--color-border);
+            font-size: 0.9em; line-height: 1.5; min-height: 60px; resize: vertical;
+            box-sizing: border-box; transition: border-color var(--transition-speed-fast);
+        }
+        #item-notes-textarea:focus { border-color: var(--color-medium-green); outline: none; box-shadow: 0 0 0 0.2rem rgba(var(--color-medium-green-rgb, 101, 109, 74), 0.25); }
+        
+        #main-add-to-cart-button {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; background-color: var(--color-medium-green); color: var(--color-white);
+            padding: 12px 20px; margin-top: 20px; border: none; border-radius: 8px;
+            font-size: 1.1em; font-weight: bold; cursor: pointer;
+            transition: background-color var(--transition-speed-fast) ease, opacity var(--transition-speed-fast) ease;
+        }
+        #main-add-to-cart-button:hover:not(:disabled) { background-color: var(--color-dark-green); }
+        #main-add-to-cart-button:disabled { background-color: #cccccc; color: #666666; cursor: not-allowed; opacity: 0.7; }
+        #main-add-to-cart-button .price-on-button { margin-left: auto; font-size: 0.9em; opacity: 0.9;}
+
+        /* Common options styling for lists (kept for consistency if needed elsewhere) */
         .list-item-options { font-size: 0.8em; color: var(--color-text-secondary); margin-top: 3px; margin-left: 10px; line-height: 1.3; }
         .list-item-options span { display: block; margin-bottom: 2px; }
-         .receipt-item-options {
+        .receipt-item-options {
              font-size: 0.8em; color: var(--color-text-secondary); grid-column: 1 / -1;
              padding-left: 15px; margin-top: -5px; margin-bottom: 5px; line-height: 1.4;
-         }
-         .receipt-item-options span { display: block; }
+        }
+        .receipt-item-options span { display: block; }
 
 
         /* --- Pinterest-Style Menu Grid --- */
@@ -270,7 +305,7 @@
         #my-food-icon-container { bottom: 155px; z-index: 1011; font-size: 22px; }
         #cart-icon-container { bottom: 90px; z-index: 1010; font-size: 24px; }
         #call-staff-icon-container .fa-spinner { font-size: 24px; }
-        #translate-icon-container .lang-indicator { /* For showing current lang like EN, CN */
+        #translate-icon-container .lang-indicator { 
             position: absolute; bottom: 3px; right: 5px; background-color: rgba(0,0,0,0.4);
             color: white; border-radius: 3px; padding: 1px 3px; font-size: 9px;
             font-weight: bold; line-height: 1;
@@ -301,7 +336,7 @@
         .popup-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-text-secondary); line-height: 1; }
         .cart-header { background-color: rgba(182, 173, 144, 0.8); }
         .my-food-header { background-color: rgba(164, 172, 134, 0.8); }
-        .language-header { background-color: rgba(120, 130, 100, 0.8); } /* New Header Color */
+        .language-header { background-color: rgba(120, 130, 100, 0.8); } 
         .popup-items-list { padding: 5px 15px; overflow-y: auto; flex-grow: 1; }
         .list-item-base { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9em; }
         .list-item-base:last-child { border-bottom: none; }
@@ -346,12 +381,12 @@
         }
         .language-option-item:hover { background-color: rgba(var(--color-lightest-green-rgb, 194, 197, 170), 0.5); }
         .language-option-item.selected-lang { background-color: var(--color-medium-green); color: var(--color-white); font-weight: bold; }
-        .language-option-item .lang-flag { font-size: 1.2em; margin-right: 10px; } /* Optional: For flag icons */
+        .language-option-item .lang-flag { font-size: 1.2em; margin-right: 10px; } 
 
 
         /* --- Table Number Display & Modal --- */
         #table-number-display {
-            position: fixed; bottom: 20px; left: 20px; z-index: 990; /* Adjusted z-index */
+            position: fixed; bottom: 20px; left: 20px; z-index: 990; 
             background-color: var(--color-medium-green); color: var(--color-white);
             font-family: 'Sarabun', 'Inter', sans-serif; font-size: 0.9rem; font-weight: bold;
             padding: 8px 15px; border-radius: 9999px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -463,8 +498,7 @@
              .container { padding: 0 20px; }
              .bottom-menu { column-count: 3; }
              #menu-name { font-size: 32px; }
-             #menu-price { font-size: 20px; }
-             .price-label { font-size: 0.8em; }
+             .price-option-value-text { font-size: 1.1em; }
              .add-to-cart-button { width: 28px; height: 28px; line-height: 28px; font-size: 18px; }
              .top-section { width: calc(100% + 40px); margin-left: -20px; margin-right: -20px; }
              #film-strip-section { width: calc(100% + 40px); margin-left: -20px; margin-right: -20px;}
@@ -482,16 +516,18 @@
              .category-item i { font-size: 1.3em; }
              .category-item span { font-size: 0.75em; }
              :root { --category-bar-height: 62px; } 
-
         }
         @media (min-width: 768px) { .bottom-menu { column-count: 4; } .film-strip-item { width: 80px; height: 100px; } }
         @media (min-width: 1024px) { .bottom-menu { column-count: 5; } }
         @media (min-width: 1280px) { .bottom-menu { column-count: 6; } }
 
-        /* Google Translate Widget Styling - to hide the original widget */
+        /* Google Translate Widget Styling - to hide the original widget and its popups */
         #google_translate_element { display: none !important; }
-        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        .goog-te-banner-frame.skiptranslate, iframe.goog-te-menu-frame { display: none !important; }
         body { top: 0px !important; } /* Override Google Translate's top banner style */
+        .goog-tooltip { display: none !important; } /* Hide the "Rate this translation" tooltip */
+        .goog-tooltip:hover { display: none !important; }
+        .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; border: none !important; }
     </style>
 </head>
 <body>
@@ -539,31 +575,13 @@
                      <h2 id="menu-name">ชื่อเมนู</h2>
                  </div>
                  <p id="menu-description">คำอธิบายเมนูอาหาร</p>
-                 <p id="menu-price">
-                     <span class="price-item hidden">
-                         <span class="price-label" id="label-small">เล็ก:</span>
-                         <span class="price-value" id="price-small">0</span>
-                         <button class="add-to-cart-button" data-size="Small" title="เพิ่มขนาดเล็กลงตระกร้า">+</button>
-                     </span>
-                      <span class="price-separator hidden" id="price-sep-small">|</span>
-                     <span class="price-item hidden">
-                         <span class="price-label" id="label-normal">ปกติ:</span>
-                         <span class="price-value" id="price-normal">0</span>
-                         <button class="add-to-cart-button" data-size="Normal" title="เพิ่มขนาดปกติลงตระกร้า">+</button>
-                     </span>
-                     <span class="price-separator hidden" id="price-sep">|</span>
-                     <span class="price-item hidden">
-                         <span class="price-label" id="label-extra">พิเศษ:</span>
-                         <span class="price-value" id="price-extra">0</span>
-                         <button class="add-to-cart-button" data-size="Extra" title="เพิ่มขนาดพิเศษลงตระกร้า">+</button>
-                     </span>
-                     <span class="price-separator hidden" id="price-sep-family">|</span>
-                     <span class="price-item hidden">
-                         <span class="price-label" id="label-family">ครอบครัว:</span>
-                         <span class="price-value" id="price-family">0</span>
-                         <button class="add-to-cart-button" data-size="Family" title="เพิ่มขนาดครอบครัวลงตระกร้า">+</button>
-                     </span>
-                 </p>
+                 
+                 <!-- IMPROVED: Price/Size Selection with Radio Buttons -->
+                 <div id="menu-price-options">
+                    <!-- Price options populated by JS -->
+                 </div>
+
+                 <!-- Additional Menu Options (sweetness, toppings etc.) -->
                  <div id="menu-options-section" class="menu-options-section" style="margin-top: 15px;">
                      <div id="menu-option1-container" class="menu-options-container hidden">
                          <h4 class="option-title" id="option1-title"></h4>
@@ -574,6 +592,18 @@
                           <div class="option-choices" id="option2-choices"></div>
                      </div>
                  </div>
+
+                 <!-- NEW: Item Notes Section -->
+                 <div id="item-notes-section">
+                    <label id="item-notes-label" for="item-notes-textarea">หมายเหตุถึงร้านอาหาร (ถ้ามี):</label>
+                    <textarea id="item-notes-textarea" rows="2" placeholder="เช่น ไม่ใส่ผักชี, ขอเผ็ดน้อย, etc."></textarea>
+                 </div>
+
+                 <!-- NEW: Main Add to Cart Button -->
+                 <button id="main-add-to-cart-button" disabled>
+                    <span>เพิ่มไปยังตะกร้า</span>
+                    <span class="price-on-button hidden" id="selected-price-on-button"></span>
+                </button>
              </div>
         </div>
 
@@ -712,7 +742,7 @@
     const ORDERED_ITEMS_LOCAL_STORAGE_KEY = 'menuOrderedItemsData_v123_db';
     const tPart1 = 'NzA0ODk5NzkxODpB'; const tPart2 = 'QUhZdDVqQk9HM1E2'; const tPart3 = 'N2JwenRJbl9SR3BE'; const tPart4 = 'Q2NYMHlBVVlWQQ==';
     const CHAT_ID = '-1002634956608';
-    const AVAILABLE_LANGUAGES = [ // Language options for the popup
+    const AVAILABLE_LANGUAGES = [ 
         { code: 'th', name: 'ไทย', flag: '🇹🇭', short: 'TH' },
         { code: 'en', name: 'English', flag: '🇬🇧', short: 'EN' },
         { code: 'zh-CN', name: '中文 (简体)', flag: '🇨🇳', short: 'CN' },
@@ -737,6 +767,7 @@
     let touchStartX = 0; let touchEndX = 0; let isSwiping = false; const swipeThreshold = 50;
     let lastScrollTop = 0; 
     let currentSelectedLanguage = 'th';
+    let googleTranslateInitialized = false;
 
 
     // --- DOM Elements ---
@@ -755,13 +786,13 @@
     const menuDetailsContainer = document.getElementById('menu-details');
     const menuNameElement = document.getElementById('menu-name');
     const menuDescriptionElement = document.getElementById('menu-description');
-    const menuPriceContainer = document.getElementById('menu-price');
-    const priceElementsCache = {
-        'Small': { label: document.getElementById('label-small'), value: document.getElementById('price-small'), button: menuPriceContainer?.querySelector('button[data-size="Small"]'), separator: document.getElementById('price-sep-small') },
-        'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null },
-        'Extra': { label: document.getElementById('label-extra'), value: document.getElementById('price-extra'), button: menuPriceContainer?.querySelector('button[data-size="Extra"]'), separator: document.getElementById('price-sep') },
-        'Family': { label: document.getElementById('label-family'), value: document.getElementById('price-family'), button: menuPriceContainer?.querySelector('button[data-size="Family"]'), separator: document.getElementById('price-sep-family') }
-    };
+    
+    // IMPROVED: Price/Size related DOM elements
+    const menuPriceOptionsContainer = document.getElementById('menu-price-options');
+    const mainAddToCartButton = document.getElementById('main-add-to-cart-button');
+    const selectedPriceOnButton = document.getElementById('selected-price-on-button');
+    const itemNotesTextarea = document.getElementById('item-notes-textarea');
+    
     const menuOptionsSection = document.getElementById('menu-options-section');
     const menuOption1Container = document.getElementById('menu-option1-container');
     const menuOption1TitleEl = document.getElementById('option1-title');
@@ -794,7 +825,6 @@
     const saveReceiptBtn = document.getElementById('save-receipt-btn');
     const closeReceiptBtn = document.getElementById('close-receipt-btn');
     
-    // New DOM Elements for Language Feature
     const translateIconContainer = document.getElementById('translate-icon-container');
     const currentLangIndicator = document.getElementById('current-lang-indicator');
     const languagePopup = document.getElementById('language-popup');
@@ -815,49 +845,70 @@
 
     // --- Google Translate Functions ---
     function googleTranslateElementInit() {
+        if (googleTranslateInitialized) return; // Prevent multiple initializations
+        googleTranslateInitialized = true;
         new google.translate.TranslateElement({
             pageLanguage: 'th',
-            includedLanguages: 'en,zh-CN,ja,ko,th', // Ensure 'th' is here for reverting
+            includedLanguages: AVAILABLE_LANGUAGES.map(l => l.code).join(','),
             layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
             autoDisplay: false
         }, 'google_translate_element');
-        // After init, check current language cookie and update UI
-        updateLanguageIndicator();
+        
+        // Wait a brief moment for the widget to potentially load and apply cookie-based translation
+        setTimeout(() => {
+            updateLanguageIndicator();
+            console.log("Google Translate Initialized. Current lang from cookie:", getCurrentSelectedLanguage());
+        }, 500); 
     }
 
     function changeLanguage(langCode) {
         console.log("Attempting to change language to:", langCode);
-        currentSelectedLanguage = langCode;
-        if (langCode === 'th') {
-            // Remove the googtrans cookie to revert to original (Thai)
-            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax';
+        currentSelectedLanguage = langCode; // Update state immediately
+
+        const googleTranslateElement = document.getElementById('google_translate_element');
+        if (googleTranslateElement && google.translate && google.translate.TranslateElement) {
+            const currentCookieLang = getCurrentSelectedLanguage();
+            if (currentCookieLang !== langCode) {
+                 // Set the googtrans cookie for the selected language
+                document.cookie = `googtrans=/th/${langCode}; expires=Session; path=/; SameSite=Lax`;
+                // Forcing reload after cookie set
+                window.location.reload();
+            } else if (langCode === 'th' && currentCookieLang !== 'th') {
+                // This case might not be hit if currentCookieLang is already 'th'
+                document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax';
+                window.location.reload();
+            } else {
+                // If already the correct language or trying to set 'th' when it's already 'th'
+                console.log("Language is already set to or reverting to 'th'. No cookie change needed or already handled.");
+                updateLanguageIndicator(); // Just update UI
+            }
         } else {
-            // Set the googtrans cookie for the selected language
-            document.cookie = `googtrans=/th/${langCode}; path=/; SameSite=Lax`;
+            console.error("Google Translate Element or API not fully loaded.");
         }
-        // Reload the page for the translation to take effect
-        location.reload();
+        closeLanguagePopup();
     }
     
     function populateLanguageOptions() {
         if (!languageOptionsList) return;
         languageOptionsList.innerHTML = '';
         const frag = document.createDocumentFragment();
-        const currentLang = getCurrentSelectedLanguage();
+        const activeLang = getCurrentSelectedLanguage(); 
 
         AVAILABLE_LANGUAGES.forEach(lang => {
             const item = document.createElement('div');
-            item.className = 'language-option-item notranslate'; // 'notranslate' class to prevent this item itself from being translated
-            if (lang.code === currentLang) {
+            item.className = 'language-option-item notranslate'; 
+            if (lang.code === activeLang) {
                 item.classList.add('selected-lang');
             }
             item.dataset.langCode = lang.code;
-            item.innerHTML = `<span class="lang-flag">${lang.flag}</span> ${lang.name} <i class="fas fa-check ${lang.code === currentLang ? '' : 'hidden'}"></i>`;
-            item.onclick = () => {
-                if (lang.code !== currentSelectedLanguage) {
+            item.innerHTML = `<span class="lang-flag">${lang.flag}</span> ${lang.name} <i class="fas fa-check ${lang.code === activeLang ? '' : 'hidden'}"></i>`;
+            item.onclick = (e) => {
+                e.stopPropagation(); // Prevent popup from closing if logic inside takes time
+                if (lang.code !== activeLang) {
                     changeLanguage(lang.code);
+                } else {
+                    closeLanguagePopup(); // Close if clicking the already selected language
                 }
-                closeLanguagePopup();
             };
             frag.appendChild(item);
         });
@@ -881,25 +932,38 @@
         for (let i = 0; i < cookies.length; i++) {
             let cookie = cookies[i].trim();
             if (cookie.startsWith('googtrans=')) {
-                const parts = cookie.split('=')[1].split('/');
-                if (parts.length === 3 && parts[1] === 'th' && parts[2]) {
-                    return parts[2]; // e.g., 'en' from '/th/en'
+                const value = cookie.split('=')[1];
+                if (value && value !== 'null' && value.includes('/')) {
+                    const parts = value.split('/');
+                     // parts[0] is source lang (e.g., empty or 'auto'), parts[1] is target lang (e.g., 'en')
+                    // For /th/en, parts will be ['', 'th', 'en'] if path is just /
+                    // Or if cookie is /auto/en, then parts is ['', 'auto', 'en']
+                    // We are interested in the target language.
+                    if (parts.length === 3 && parts[1] === 'th' && parts[2]) { // Our specific format /th/TARGET_LANG
+                        return parts[2];
+                    } else if (parts.length === 2 && parts[0] === '' && parts[1] !== 'th') { //Handles format like /en
+                         return parts[1];
+                    }
                 }
             }
         }
-        return 'th'; // Default language
+        return 'th'; // Default language if no cookie or malformed
     }
 
     function updateLanguageIndicator() {
-        currentSelectedLanguage = getCurrentSelectedLanguage();
-        const langObj = AVAILABLE_LANGUAGES.find(l => l.code === currentSelectedLanguage);
-        if (currentLangIndicator && langObj && langObj.code !== 'th') {
-            currentLangIndicator.textContent = langObj.short;
-            currentLangIndicator.classList.remove('hidden');
-            if(translateIconContainer) translateIconContainer.style.backgroundColor = 'var(--color-dark-green)'; // Visual cue
-        } else if (currentLangIndicator) {
-            currentLangIndicator.classList.add('hidden');
-            if(translateIconContainer) translateIconContainer.style.backgroundColor = 'var(--color-medium-green)';
+        const langCode = getCurrentSelectedLanguage();
+        currentSelectedLanguage = langCode; // Update global state
+        const langObj = AVAILABLE_LANGUAGES.find(l => l.code === langCode);
+
+        if (currentLangIndicator && langObj) {
+            if (langObj.code !== 'th') {
+                currentLangIndicator.textContent = langObj.short;
+                currentLangIndicator.classList.remove('hidden');
+                if(translateIconContainer) translateIconContainer.style.backgroundColor = 'var(--color-dark-green)';
+            } else {
+                currentLangIndicator.classList.add('hidden');
+                if(translateIconContainer) translateIconContainer.style.backgroundColor = 'var(--color-medium-green)';
+            }
         }
     }
 
@@ -1068,23 +1132,69 @@
     function loadOrderedItemsFromLocalStorage() { orderedItems = []; const p = safeJsonParse(ORDERED_ITEMS_LOCAL_STORAGE_KEY); if (p && Array.isArray(p.items) && p.table === selectedTableNumber) {orderedItems = p.items; console.log(`Loaded ordered items for table ${selectedTableNumber}. Items: ${orderedItems.length}`);} else if (p && p.table !== selectedTableNumber) { console.log(`Ignoring ordered items data from table ${p.table}. Current table: ${selectedTableNumber}.`);}}
 
     // --- Cart Update Functions ---
-    function addToCart(itemId, size) {
-        if (currentGlobalFilmStripIndex < 0 || currentGlobalFilmStripIndex >= globalFilmStripItems.length) { console.error("Invalid currentGlobalFilmStripIndex for addToCart"); return; }
+    // IMPROVED: This is the main function now called by the big "Add to Cart" button
+    function handleMainAddToCart() {
+        if (currentGlobalFilmStripIndex < 0 || currentGlobalFilmStripIndex >= globalFilmStripItems.length) {
+            console.error("Invalid currentGlobalFilmStripIndex for addToCart");
+            return;
+        }
         const prod = globalFilmStripItems[currentGlobalFilmStripIndex];
-        if (!prod || prod.id !== itemId) { console.error("Product mismatch for addToCart:", itemId, prod.id); return; }
-        if (typeof prod.prices !== 'object') {console.error("Product prices not found:",itemId); return;}
+        if (!prod || prod.id !== currentDisplayedItemId) {
+            console.error("Product mismatch for addToCart:", currentDisplayedItemId, prod.id);
+            return;
+        }
 
-        const price = prod.prices[size]; if (price == null || isNaN(price)) {console.error("Invalid price for",itemId,size);return;}
+        const selectedSizeRadio = menuPriceOptionsContainer?.querySelector('input[name="itemSizeOption"]:checked');
+        if (!selectedSizeRadio) {
+            alert("กรุณาเลือกขนาดของรายการอาหาร");
+            return;
+        }
+        const size = selectedSizeRadio.value;
+        const price = parseFloat(selectedSizeRadio.dataset.price);
+
+        if (price == null || isNaN(price)) {
+            console.error("Invalid price for", prod.id, size);
+            alert("เกิดข้อผิดพลาด: ไม่สามารถหาราคาของขนาดที่เลือกได้");
+            return;
+        }
+
         const opt1 = menuOption1ChoicesEl?.querySelector('input[name="option1"]:checked')?.value || null;
         const opt2 = menuOption2ChoicesEl?.querySelector('input[name="option2"]:checked')?.value || null;
-        const cartId = `${itemId}-${size}${(opt1?'-'+opt1.replace(/\s+/g,''):'')}${(opt2?'-'+opt2.replace(/\s+/g,''):'')}`;
-        const exIdx = cartItems.findIndex(i => i.cartId === cartId);
+        const note = itemNotesTextarea?.value.trim() || null;
+        
+        // Construct a unique cartId based on item, size, and selected options (but not note)
+        const cartId = `${prod.id}-${size}${(opt1 ? '-' + opt1.replace(/\s+/g, '') : '')}${(opt2 ? '-' + opt2.replace(/\s+/g, '') : '')}`;
+        
+        const existingItemIndex = cartItems.findIndex(item => item.cartId === cartId);
 
-        if (exIdx > -1) { cartItems[exIdx].quantity++; }
-        else { cartItems.push({ cartId, id: prod.id, name: prod.name, price, size, quantity: 1, selectedOption1: opt1, selectedOption2: opt2 }); }
-        saveCartToLocalStorage(); renderCart(); updateCartIconCount();
-        cartIconContainer?.classList.add('updated'); setTimeout(() => cartIconContainer?.classList.remove('updated'), 300);
+        if (existingItemIndex > -1) {
+            // If item with same size and options exists, increment quantity. Note is typically per-item in cart if it changes, but for simplicity here, we're assuming one note for grouped items or the latest note applies. If each addition with a different note should be a new cart line, the cartId needs to include a hash of the note or a timestamp. For now, group them.
+            cartItems[existingItemIndex].quantity++;
+            if (note) cartItems[existingItemIndex].note = note; // Update note if provided for existing item
+        } else {
+            cartItems.push({
+                cartId,
+                id: prod.id,
+                name: prod.name,
+                price,
+                size,
+                quantity: 1,
+                selectedOption1: opt1,
+                selectedOption2: opt2,
+                note: note
+            });
+        }
+
+        saveCartToLocalStorage();
+        renderCart();
+        updateCartIconCount();
+        cartIconContainer?.classList.add('updated');
+        setTimeout(() => cartIconContainer?.classList.remove('updated'), 300);
+
+        // Optional: Give feedback
+        // alert(`${prod.name} (${size}) ${note ? 'พร้อมหมายเหตุ' : ''} ถูกเพิ่มลงในตระกร้าแล้ว`);
     }
+
     function updateQuantity(cartId, change) {
         const idx = cartItems.findIndex(i => i.cartId === cartId);
         if (idx > -1) { cartItems[idx].quantity += change; if (cartItems[idx].quantity <= 0) cartItems.splice(idx, 1); saveCartToLocalStorage(); renderCart(); updateCartIconCount(); }
@@ -1100,7 +1210,14 @@
         if (cartItems.length === 0) { cartItemsList.innerHTML = '<p class="popup-empty-message cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>'; }
         else { const frag = document.createDocumentFragment(); cartItems.forEach(item => {
                 const el = document.createElement('div'); el.className = 'list-item-base cart-item';
-                let optsHtml = ''; if (item.selectedOption1 || item.selectedOption2) { optsHtml += '<div class="list-item-options">'; if (item.selectedOption1) optsHtml += `<span>+ ${item.selectedOption1}</span>`; if (item.selectedOption2) optsHtml += `<span>+ ${item.selectedOption2}</span>`; optsHtml += '</div>'; }
+                let optsHtml = ''; 
+                if (item.selectedOption1 || item.selectedOption2 || item.note) { 
+                    optsHtml += '<div class="list-item-options">'; 
+                    if (item.selectedOption1) optsHtml += `<span>+ ${item.selectedOption1}</span>`; 
+                    if (item.selectedOption2) optsHtml += `<span>+ ${item.selectedOption2}</span>`; 
+                    if (item.note) optsHtml += `<span style="font-style:italic; color: var(--color-info);">หมายเหตุ: ${item.note}</span>`;
+                    optsHtml += '</div>'; 
+                }
                 el.innerHTML = `<div class="list-item-details cart-item-details"><div class="list-item-name cart-item-name">${item.name||'N/A'} (${item.size||'N/A'})</div>${optsHtml}<div class="list-item-info cart-item-price">${(item.price||0).toLocaleString()} x ${item.quantity||0} = ${((item.price||0)*(item.quantity||0)).toLocaleString()}</div></div><div class="cart-item-controls"><button class="cart-quantity-btn decrease-qty" data-cartid="${item.cartId}" aria-label="ลดจำนวน">-</button><span class="cart-item-quantity">${item.quantity||0}</span><button class="cart-quantity-btn increase-qty" data-cartid="${item.cartId}" aria-label="เพิ่มจำนวน">+</button><button class="cart-remove-btn" data-cartid="${item.cartId}" title="ลบรายการนี้" aria-label="ลบรายการนี้"><i class="fas fa-trash-alt"></i></button></div>`;
                 el.querySelector('.decrease-qty').onclick = (e) => updateQuantity(e.currentTarget.dataset.cartid, -1);
                 el.querySelector('.increase-qty').onclick = (e) => updateQuantity(e.currentTarget.dataset.cartid, 1);
@@ -1115,7 +1232,14 @@
         if (!hasItems) { myFoodItemsList.innerHTML = '<p class="popup-empty-message my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>'; myFoodTotalDisplay.textContent = ''; }
         else { const frag = document.createDocumentFragment(); orderedItems.forEach(item => {
                 const el = document.createElement('div'); el.className = 'list-item-base ordered-item'; const itemTotal = (item.price||0)*(item.quantity||0); grandTotal += itemTotal;
-                let optsHtml = ''; if (item.selectedOption1 || item.selectedOption2) { optsHtml += '<div class="list-item-options">'; if (item.selectedOption1) optsHtml += `<span>+ ${item.selectedOption1}</span>`; if (item.selectedOption2) optsHtml += `<span>+ ${item.selectedOption2}</span>`; optsHtml += '</div>'; }
+                let optsHtml = ''; 
+                if (item.selectedOption1 || item.selectedOption2 || item.note) { 
+                    optsHtml += '<div class="list-item-options">'; 
+                    if (item.selectedOption1) optsHtml += `<span>+ ${item.selectedOption1}</span>`; 
+                    if (item.selectedOption2) optsHtml += `<span>+ ${item.selectedOption2}</span>`;
+                    if (item.note) optsHtml += `<span style="font-style:italic; color: var(--color-info);">หมายเหตุ: ${item.note}</span>`;
+                    optsHtml += '</div>'; 
+                }
                 el.innerHTML = `<div class="list-item-details ordered-item-details"><div class="list-item-name ordered-item-name">${item.name||'N/A'} (${item.size||'N/A'})</div>${optsHtml}<div class="list-item-info ordered-item-info">จำนวน: ${item.quantity||0} (${(item.price||0).toLocaleString()}/ชิ้น)</div></div><div class="list-item-total ordered-item-total">${itemTotal.toLocaleString()}</div>`;
                 frag.appendChild(el); }); myFoodItemsList.appendChild(frag); myFoodTotalDisplay.textContent = `ยอดรวมที่สั่งแล้ว: ${grandTotal.toLocaleString()}`;
         }
@@ -1124,8 +1248,21 @@
     function updateMyFoodIconCount() { if (!myFoodItemCountBadge) return; const qty = orderedItems.reduce((s, i) => s + (i.quantity || 0), 0); myFoodItemCountBadge.textContent = qty; myFoodItemCountBadge.classList.toggle('hidden', qty === 0); if (qty > 0 && myFoodIconContainer) { myFoodIconContainer.classList.add('updated'); setTimeout(() => myFoodIconContainer?.classList.remove('updated'), 300);}}
 
     function showItemDetailsByGlobalIndex(globalIndex, direction = 'none') {
-        if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer || !menuOptionsSection || !menuOption1Container || !menuOption1TitleEl || !menuOption1ChoicesEl || !menuOption2Container || !menuOption2TitleEl || !menuOption2ChoicesEl) {console.error("Required elements for item details/options missing."); return;}
-        if (globalIndex < 0 || globalIndex >= globalFilmStripItems.length) { menuDetailsContainer.style.display = 'none'; currentDisplayedItemId = null; currentGlobalFilmStripIndex = -1; highlightActiveFilmStripItem(-1); return; }
+        // Ensure essential elements for the new structure exist
+        if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceOptionsContainer || !imageContainer || 
+            !menuOptionsSection || !menuOption1Container || !menuOption1TitleEl || !menuOption1ChoicesEl || 
+            !menuOption2Container || !menuOption2TitleEl || !menuOption2ChoicesEl ||
+            !mainAddToCartButton || !itemNotesTextarea || !selectedPriceOnButton) {
+            console.error("Required elements for item details/options/new cart logic missing."); 
+            return;
+        }
+        if (globalIndex < 0 || globalIndex >= globalFilmStripItems.length) { 
+            menuDetailsContainer.style.display = 'none'; 
+            currentDisplayedItemId = null; 
+            currentGlobalFilmStripIndex = -1; 
+            highlightActiveFilmStripItem(-1); 
+            return; 
+        }
 
         currentGlobalFilmStripIndex = globalIndex;
         const itemData = globalFilmStripItems[currentGlobalFilmStripIndex];
@@ -1139,18 +1276,84 @@
             requestAnimationFrame(()=>{ imageContainer.classList.add(outC); imageContainer.addEventListener('animationend', function hOut(){ imageContainer.removeEventListener('animationend',hOut); imageContainer.classList.remove(outC); updateImgEl(newImgSrc, itemData.alt); requestAnimationFrame(()=>{ imageContainer.classList.add(inC); imageContainer.addEventListener('animationend', function hIn(){ imageContainer.removeEventListener('animationend',hIn); imageContainer.classList.remove(inC);},{once:true});});},{once:true});});
         } else { updateImgEl(newImgSrc,itemData.alt); }
 
-        menuNameElement.textContent = itemData.name || 'ชื่อเมนู'; menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
-        const prices = itemData.prices || {}, order = ['Small','Normal','Extra','Family']; order.forEach(s => { const c=priceElementsCache[s]; if(c){c.label?.closest('.price-item')?.classList.add('hidden'); if(c.separator)c.separator.classList.add('hidden');}});
-        let visCnt=0; order.forEach(s => { const c=priceElementsCache[s]; if(c?.label && c.value && c.button){ const pVal=prices[s], pSpan=c.label.closest('.price-item'); if(pSpan){ if(pVal!=null && !isNaN(pVal)){c.value.textContent=`${Number(pVal).toLocaleString()}`; pSpan.classList.remove('hidden'); visCnt++;}}}});
-        let firstVis=false; order.forEach(s=>{ const c=priceElementsCache[s], pSpan=c?.label?.closest('.price-item'); if(pSpan&&!pSpan.classList.contains('hidden')){ if(firstVis){ if(s==='Normal'&&priceElementsCache['Small']?.separator)priceElementsCache['Small'].separator.classList.remove('hidden'); else if(s==='Extra'&&priceElementsCache['Extra']?.separator)priceElementsCache['Extra'].separator.classList.remove('hidden'); else if(s==='Family'&&priceElementsCache['Family']?.separator)priceElementsCache['Family'].separator.classList.remove('hidden');} firstVis=true;}});
+        menuNameElement.textContent = itemData.name || 'ชื่อเมนู'; 
+        menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
 
+        // --- IMPROVED: Populate Price/Size Radio Buttons ---
+        menuPriceOptionsContainer.innerHTML = ''; // Clear previous options
+        const prices = itemData.prices || {};
+        const priceOrder = ['Small', 'Normal', 'Extra', 'Family']; // Define order
+        let hasPriceOptions = false;
+
+        priceOrder.forEach((sizeKey, index) => {
+            if (prices[sizeKey] != null && !isNaN(prices[sizeKey])) {
+                hasPriceOptions = true;
+                const priceValue = Number(prices[sizeKey]);
+                const optionId = `price-option-${itemData.id}-${sizeKey}`;
+
+                const div = document.createElement('div');
+                div.className = 'price-option-item';
+                
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'itemSizeOption'; // Same name for grouping
+                radioInput.id = optionId;
+                radioInput.value = sizeKey;
+                radioInput.dataset.price = priceValue;
+
+                const label = document.createElement('label');
+                label.htmlFor = optionId;
+                label.className = 'price-option-label-text'; // For flex grow
+                
+                const sizeNameSpan = document.createElement('span');
+                sizeNameSpan.className = 'size-name';
+                // Map sizeKey to Thai label
+                let thaiSizeName = sizeKey;
+                if (sizeKey === 'Small') thaiSizeName = 'เล็ก';
+                else if (sizeKey === 'Normal') thaiSizeName = 'ปกติ';
+                else if (sizeKey === 'Extra') thaiSizeName = 'พิเศษ';
+                else if (sizeKey === 'Family') thaiSizeName = 'ครอบครัว';
+                sizeNameSpan.textContent = `${thaiSizeName}`;
+
+                const priceValueSpan = document.createElement('span');
+                priceValueSpan.className = 'price-option-value-text';
+                priceValueSpan.textContent = `${priceValue.toLocaleString()} ฿`;
+                
+                label.appendChild(sizeNameSpan);
+                div.appendChild(radioInput);
+                div.appendChild(label);
+                div.appendChild(priceValueSpan); // Price on the right
+
+                // Auto-select first available option for better UX, or "Normal" if available
+                 if (index === 0 || (sizeKey === 'Normal' && !menuPriceOptionsContainer.querySelector('input[type="radio"]:checked'))) {
+                    if (prices[sizeKey] != null && !isNaN(prices[sizeKey])) { // Ensure 'Normal' price actually exists
+                       // No auto-selection for cleaner UI; user must pick
+                    }
+                }
+                
+                div.addEventListener('click', () => { // Allow clicking whole row to select
+                    radioInput.checked = true;
+                    handleSizeSelectionChange(); // Update button state and price
+                });
+                menuPriceOptionsContainer.appendChild(div);
+            }
+        });
+        // Show/hide the price options container
+        menuPriceOptionsContainer.style.display = hasPriceOptions ? 'block' : 'none';
+        handleSizeSelectionChange(); // Initial call to set button state
+
+        // Reset and populate additional options (sweetness, toppings)
         const createOptRadio = (name, val, lbl, idx) => { const uid=`${name}-${val.replace(/\s+/g,'-')}-${idx}`, lab=document.createElement('label'); lab.className='option-choice-label'; lab.htmlFor=uid; const inp=document.createElement('input'); inp.type='radio'; inp.name=name; inp.value=val; inp.id=uid; const spn=document.createElement('span'); spn.textContent=lbl; lab.append(inp,spn); return lab;};
         let hasVisOpts=false;
         if(menuOption1Container&&menuOption1TitleEl&&menuOption1ChoicesEl&&itemData.option1_title&&itemData.option1_choices?.length>0){ menuOption1TitleEl.textContent=itemData.option1_title; menuOption1ChoicesEl.innerHTML=''; const f1=document.createDocumentFragment(); itemData.option1_choices.forEach((c,i)=>f1.appendChild(createOptRadio('option1',c,c,i))); menuOption1ChoicesEl.appendChild(f1); menuOption1Container.classList.remove('hidden'); hasVisOpts=true;}else if(menuOption1Container){menuOption1Container.classList.add('hidden'); if(menuOption1ChoicesEl)menuOption1ChoicesEl.innerHTML='';}
         if(menuOption2Container&&menuOption2TitleEl&&menuOption2ChoicesEl&&itemData.option2_title&&itemData.option2_choices?.length>0){ menuOption2TitleEl.textContent=itemData.option2_title; menuOption2ChoicesEl.innerHTML=''; const f2=document.createDocumentFragment(); itemData.option2_choices.forEach((c,i)=>f2.appendChild(createOptRadio('option2',c,c,i))); menuOption2ChoicesEl.appendChild(f2); menuOption2Container.classList.remove('hidden'); hasVisOpts=true;}else if(menuOption2Container){menuOption2Container.classList.add('hidden'); if(menuOption2ChoicesEl)menuOption2ChoicesEl.innerHTML='';}
         if(menuOptionsSection)menuOptionsSection.style.display=hasVisOpts?'block':'none';
-        menuDetailsContainer.style.display = 'block';
+        
+        // Reset notes and main "Add to Cart" button state
+        if (itemNotesTextarea) itemNotesTextarea.value = '';
+        handleSizeSelectionChange(); // Update main add to cart button state
 
+        menuDetailsContainer.style.display = 'block';
         highlightActiveFilmStripItem(globalIndex);
 
         if (itemData.categoryName !== currentCategory) {
@@ -1163,6 +1366,23 @@
             }
         }
     }
+    
+    // IMPROVED: Function to handle changes in size selection
+    function handleSizeSelectionChange() {
+        if (!mainAddToCartButton || !selectedPriceOnButton) return;
+        const selectedRadio = menuPriceOptionsContainer?.querySelector('input[name="itemSizeOption"]:checked');
+        if (selectedRadio) {
+            mainAddToCartButton.disabled = false;
+            const price = parseFloat(selectedRadio.dataset.price);
+            selectedPriceOnButton.textContent = `- ${price.toLocaleString()} ฿`;
+            selectedPriceOnButton.classList.remove('hidden');
+        } else {
+            mainAddToCartButton.disabled = true;
+            selectedPriceOnButton.classList.add('hidden');
+            selectedPriceOnButton.textContent = '';
+        }
+    }
+
 
     function displayMenuItems(category) {
         if (!bottomMenu) { console.error("Bottom menu element not found."); return; }
@@ -1252,7 +1472,16 @@
         tableSelectModal?.addEventListener('click', (e) => { if (e.target === tableSelectModal) closeTableSelectModal(); });
         tablePromptNotification?.addEventListener('click', hideTablePromptNotification);
         tablePromptNotification?.addEventListener('touchstart', hideTablePromptNotification, { passive: true });
-        menuPriceContainer?.addEventListener('click', (e) => { if (e.target?.classList.contains('add-to-cart-button')) { const size = e.target.dataset.size; if (currentDisplayedItemId && size) addToCart(currentDisplayedItemId, size); else { console.warn("Cannot add to cart. Missing item ID or size.");}}});
+        
+        // Listener for the main "Add to Cart" button
+        mainAddToCartButton?.addEventListener('click', handleMainAddToCart);
+
+        // Listener for price/size radio button changes (delegated to container)
+        menuPriceOptionsContainer?.addEventListener('change', (event) => {
+            if (event.target.type === 'radio' && event.target.name === 'itemSizeOption') {
+                handleSizeSelectionChange();
+            }
+        });
         
         cartIconContainer?.addEventListener('click', () => { closeAllPopupsExcept(cartPopup); cartPopup?.classList.toggle('open'); if (cartPopup?.classList.contains('open')) renderCart(); });
         cartCloseBtn?.addEventListener('click', () => cartPopup?.classList.remove('open'));
@@ -1295,8 +1524,12 @@
             if (!categoryBarEl) return;
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const categoryBarHeight = categoryBarEl.offsetHeight;
+            const googleBanner = document.querySelector('.goog-te-banner-frame');
 
-            if (scrollTop > lastScrollTop && scrollTop > categoryBarHeight / 2) { 
+            // Adjust scroll detection if Google Banner is visible
+            const bannerOffset = googleBanner && googleBanner.offsetHeight > 0 ? googleBanner.offsetHeight : 0;
+            
+            if (scrollTop > lastScrollTop && scrollTop > (categoryBarHeight / 2) + bannerOffset ) { 
                 categoryBarEl.classList.add('hidden-by-scroll');
             } else if (scrollTop < lastScrollTop) { 
                 categoryBarEl.classList.remove('hidden-by-scroll');
@@ -1363,12 +1596,30 @@
     async function handleOrderSubmission() {
         if(cartItems.length===0){alert('ตระกร้าสินค้าของคุณว่างเปล่า');return;} if(!selectedTableNumber){alert('กรุณาเลือกโต๊ะก่อนสั่งอาหาร');openTableSelectModal();return;}
         let orderMsg = `*โต๊ะ ${selectedTableNumber} - รายการสั่งซื้อใหม่* ✨\n`; orderMsg+=`------------------------------------\n`; let total=0;
-        cartItems.forEach((item,idx)=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; orderMsg+=`*${idx+1}. ${item.name||'N/A'}* (${item.size||'N/A'})`; if(item.selectedOption1||item.selectedOption2){orderMsg+=`\n`; if(item.selectedOption1)orderMsg+=`   + ${item.selectedOption1}\n`; if(item.selectedOption2)orderMsg+=`   + ${item.selectedOption2}\n`; orderMsg+=`   `;}else{orderMsg+=`\n   `;} orderMsg+=`(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n\n`; total+=lineTotal;});
+        cartItems.forEach((item,idx)=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; 
+            orderMsg+=`*${idx+1}. ${item.name||'N/A'}* (${item.size||'N/A'})`; 
+            if(item.selectedOption1||item.selectedOption2||item.note){
+                orderMsg+=`\n`; 
+                if(item.selectedOption1) orderMsg+=`   + ${item.selectedOption1}\n`; 
+                if(item.selectedOption2) orderMsg+=`   + ${item.selectedOption2}\n`;
+                if(item.note) orderMsg+=`   📝 _${item.note}_\n`; // Add note here
+                orderMsg+=`   `;
+            } else {
+                orderMsg+=`\n   `;
+            } 
+            orderMsg+=`(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n\n`; 
+            total+=lineTotal;
+        });
         orderMsg+=`------------------------------------\n`; orderMsg+=`*ยอดรวม: ${total.toLocaleString()}*\n`; const{date,time}=getCurrentLocalDateTimeStrings(); orderMsg+=`_(สั่งเมื่อ: ${date} ${time})_`;
         const success = await sendTelegramMessage(orderMsg,orderButton,'กำลังสั่ง...');
         if(success){
             alert(`ส่งรายการสั่งซื้อจาก ${TABLE_NUMBER_PREFIX}${selectedTableNumber} สำเร็จ!`);
-            cartItems.forEach(ci=>{ const exIdx=orderedItems.findIndex(oi=>oi.id===ci.id&&oi.size===ci.size&&oi.selectedOption1===ci.selectedOption1&&oi.selectedOption2===ci.selectedOption2); if(exIdx>-1)orderedItems[exIdx].quantity+=ci.quantity; else orderedItems.push({...ci});});
+            // Add note to orderedItems as well
+            cartItems.forEach(ci=>{ 
+                const exIdx=orderedItems.findIndex(oi=>oi.id===ci.id&&oi.size===ci.size&&oi.selectedOption1===ci.selectedOption1&&oi.selectedOption2===ci.selectedOption2 && oi.note === ci.note); // Note can also differentiate here if needed
+                if(exIdx>-1) orderedItems[exIdx].quantity+=ci.quantity; 
+                else orderedItems.push({...ci});
+            });
             cartItems=[]; saveCartToLocalStorage();saveOrderedItemsToLocalStorage();renderCart();updateCartIconCount();renderOrderedItems();updateMyFoodIconCount();
             if(cartPopup)cartPopup.classList.remove('open');
         }
@@ -1378,10 +1629,19 @@
         if(!receiptModal || !receiptContent || !receiptItemsListEl || !receiptGrandTotal || !receiptQrImage || !receiptRestaurantName || !receiptTableInfo || !receiptDateTime){ console.error("Receipt modal elements not found."); alert("เกิดข้อผิดพลาดในการแสดงใบสรุปยอด"); return false; }
         receiptRestaurantName.textContent=RESTAURANT_NAME; receiptTableInfo.textContent=`${TABLE_NUMBER_PREFIX}${selectedTableNumber}`; const{date,time}=getCurrentLocalDateTimeStrings(); receiptDateTime.textContent=`วันที่: ${date} เวลา: ${time}`;
         receiptItemsListEl.innerHTML=''; let grandTotal=0; const frag=document.createDocumentFragment();
-        orderedItems.forEach(item=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; grandTotal+=lineTotal; let optsHtml=''; if(item.selectedOption1||item.selectedOption2){optsHtml+='<div class="receipt-item-options">';if(item.selectedOption1)optsHtml+=`<span>+ ${item.selectedOption1}</span>`;if(item.selectedOption2)optsHtml+=`<span>+ ${item.selectedOption2}</span>`;optsHtml+='</div>';} const el=document.createElement('div');el.className='receipt-item'; el.innerHTML=`<span class="receipt-item-name">${item.name||'N/A'} (${item.size||'N/A'})</span><span class="receipt-item-qty">${itemQuantity}x</span><span class="receipt-item-price">${itemPrice.toLocaleString()}</span><span class="receipt-item-total">${lineTotal.toLocaleString()}</span>${optsHtml}`; frag.appendChild(el);});
+        orderedItems.forEach(item=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; grandTotal+=lineTotal; 
+            let optsHtml=''; 
+            if(item.selectedOption1||item.selectedOption2||item.note){
+                optsHtml+='<div class="receipt-item-options">';
+                if(item.selectedOption1)optsHtml+=`<span>+ ${item.selectedOption1}</span>`;
+                if(item.selectedOption2)optsHtml+=`<span>+ ${item.selectedOption2}</span>`;
+                if(item.note) optsHtml += `<span style="font-style:italic; color: var(--color-info);">หมายเหตุ: ${item.note}</span>`;
+                optsHtml+='</div>';
+            } 
+            const el=document.createElement('div');el.className='receipt-item'; el.innerHTML=`<span class="receipt-item-name">${item.name||'N/A'} (${item.size||'N/A'})</span><span class="receipt-item-qty">${itemQuantity}x</span><span class="receipt-item-price">${itemPrice.toLocaleString()}</span><span class="receipt-item-total">${lineTotal.toLocaleString()}</span>${optsHtml}`; frag.appendChild(el);});
         receiptItemsListEl.appendChild(frag); receiptGrandTotal.innerHTML=`ยอดรวมสุทธิ: ${grandTotal.toLocaleString()}<span class="total-label-eng">(Total)</span>`;
         receiptQrImage.src=QR_CODE_IMAGE_URL; receiptQrImage.alt="QR Code สำหรับชำระเงิน"; receiptQrImage.onerror=()=>{receiptQrImage.onerror=null;console.error("Failed to load QR code image from:",QR_CODE_IMAGE_URL);receiptQrImage.alt="QR Code ไม่สามารถแสดงได้";};
-        closeAllPopupsExcept(receiptModal); // Close other popups before showing receipt
+        closeAllPopupsExcept(receiptModal); 
         receiptModal.classList.add('open'); 
         if(receiptContent)receiptContent.scrollTop=0; 
         console.log("Receipt generated successfully."); return true;
@@ -1397,7 +1657,19 @@
     async function sendCheckoutTextSummaryToTelegram() {
         if(orderedItems.length===0||!selectedTableNumber){console.warn("sendCheckoutTextSummaryToTelegram called unexpectedly."); return false;}
         let msg = `💰 *!! เรียกชำระเงิน !!* 💰\n`; msg+=`------------------------------------\n`; msg+=`โต๊ะ: *${selectedTableNumber}*\n`; msg+=`------------------------------------\n`; let total=0;
-        orderedItems.forEach((item,idx)=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; let itemLine=`*${idx+1}. ${item.name||'N/A'}* (${item.size||'N/A'})`; if(item.selectedOption1||item.selectedOption2){itemLine+=`\n`;if(item.selectedOption1)itemLine+=`   + ${item.selectedOption1}\n`;if(item.selectedOption2)itemLine+=`   + ${item.selectedOption2}\n`;itemLine+=`   `;}else{itemLine+=`\n   `;} itemLine+=`(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n`; msg+=itemLine; total+=lineTotal;});
+        orderedItems.forEach((item,idx)=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; 
+            let itemLine=`*${idx+1}. ${item.name||'N/A'}* (${item.size||'N/A'})`; 
+            if(item.selectedOption1||item.selectedOption2||item.note){
+                itemLine+=`\n`;
+                if(item.selectedOption1)itemLine+=`   + ${item.selectedOption1}\n`;
+                if(item.selectedOption2)itemLine+=`   + ${item.selectedOption2}\n`;
+                if(item.note) itemLine+=`   📝 _${item.note}_\n`; // Add note here
+                itemLine+=`   `;
+            } else {
+                itemLine+=`\n   `;
+            }
+            itemLine+=`(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n`; 
+            msg+=itemLine; total+=lineTotal;});
         msg+=`------------------------------------\n`; msg+=`*ยอดรวมที่สั่งแล้ว: ${total.toLocaleString()}*\n`; const {time} = getCurrentLocalDateTimeStrings(); msg+=`_(เวลาเรียกชำระเงิน: ${time})_`;
         console.log("Sending checkout text summary..."); const success = await sendTelegramMessage(msg, null, '');
         if(success) console.log("Checkout text summary sent."); else console.error("Failed to send checkout text summary."); return success;
@@ -1406,7 +1678,15 @@
     // --- Initial Application Load ---
     document.addEventListener('DOMContentLoaded', async () => {
         console.log("DOM Content Loaded. Initializing Application...");
-        updateLanguageIndicator(); // Check cookie on load
+        
+        // Attempt to initialize Google Translate if the script is already loaded
+        if (typeof google !== 'undefined' && google.translate) {
+            googleTranslateElementInit();
+        } else {
+             // If not, the async script will call it via its 'cb' parameter
+            console.log("Google Translate script not yet loaded, will init via callback.");
+        }
+        updateLanguageIndicator(); // Check cookie on load, even before GT fully inits
 
         const dataLoaded = await fetchMenuData();
         selectedTableNumber = loadSelectedTable(); updateTableDisplay(selectedTableNumber); populateTableList(MAX_TABLE_NUMBER);
