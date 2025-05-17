@@ -1,75 +1,122 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Dynamically set title later -->
-    <title>เมนูอาหาร - [Eatsy ปลวกแดง]</title> <!-- ตั้งชื่อร้านใน Title -->
+    <title>เมนูอาหาร - [Eatsy ปลวกแดง]</title>
     <meta name="description" content="เมนูอาหารร้าน Eatsy Healthy Food and Bar ปลวกแดง Healthy Bowl ! อาหารสุขภาพ, อาหารทะเลสุด, สลัดเลิศๆ, อัปเดตล่าสุด ดูเมนูและสั่งออนไลน์ได้เลย ราคาล่าสุด สั่งเดลิเวอรี่ออนไลน์ได้เลย!">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="manifest" href="manifest.json"> <!-- For PWA -->
-    <meta name="theme-color" content="#656D4A"> <!-- Theme color for browser UI -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#656D4A">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Library for saving HTML element as image -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- Base Styles --- */
         :root {
-            /* Theme Colors */
             --color-darkest: #333D29;
             --color-dark-green: #414833;
             --color-medium-green: #656D4A;
-            --color-light-green: #A4AC86; /* Used for Order Button */
+            --color-light-green: #A4AC86;
             --color-lightest-green: #C2C5AA;
-            --color-light-beige: #B6AD90; /* Used for Cart Header */
-            --color-medium-beige: #A68A64; /* Color for Price and Checkout Button */
+            --color-light-beige: #B6AD90;
+            --color-medium-beige: #A68A64;
             --color-text-primary: #343A40;
             --color-text-secondary: #6C757D;
             --color-background: #F8F9FA;
             --color-white: #FFFFFF;
-            --color-white-transparent: rgba(255, 255, 255, 0.9); /* Cart background */
-            --color-footer-transparent: rgba(248, 249, 250, 0.9); /* Cart footer background */
+            --color-white-rgb: 255, 255, 255; /* For RGBA */
+            --color-background-rgb: 248, 249, 250; /* For RGBA */
+            --color-white-transparent: rgba(var(--color-white-rgb), 0.9);
+            --color-footer-transparent: rgba(var(--color-background-rgb), 0.9);
             --color-border: #dee2e6;
-            --color-danger: #dc3545; /* Red for remove/delete actions */
-            --color-info: #17a2b8; /* Info color for prompts */
+            --color-danger: #dc3545;
+            --color-info: #17a2b8;
             --color-modal-bg: rgba(0, 0, 0, 0.6);
-            /* Transitions */
             --transition-speed-fast: 0.2s;
             --transition-speed-medium: 0.3s;
             --transition-speed-slow: 0.5s;
+            --category-bar-height: 58px; /* Approximate height for category bar */
         }
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'Sarabun', 'Inter', sans-serif; /* Added Sarabun for Thai */
+            font-family: 'Sarabun', 'Inter', sans-serif;
             margin: 0; padding: 0;
             background-color: var(--color-background); color: var(--color-text-primary);
             overscroll-behavior-y: contain;
-            padding-bottom: 225px; /* Adjusted space for floating icons (55*3 + 10*2 + 20) */
+            padding-bottom: 290px; /* Increased padding for new icon */
+            /*padding-top: var(--category-bar-height); */
         }
         body::-webkit-scrollbar { display: none; }
         body { -ms-overflow-style: none; scrollbar-width: none; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 10px; }
 
+        /* --- Category Bar (MODIFIED for Sticky Top & Hide/Show on scroll) --- */
+        .category-bar {
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            background-color: rgba(var(--color-white-rgb), 0.95); /* Slightly transparent */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: 10px 5px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            border-radius: 0; /* No radius if it's edge to edge */
+            margin-bottom: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Softer shadow */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: transform var(--transition-speed-medium) ease-out, opacity var(--transition-speed-medium) ease-out;
+            height: var(--category-bar-height); /* Define height for smooth transitions */
+        }
+        .category-bar.hidden-by-scroll {
+            transform: translateY(-100%);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        .category-bar::-webkit-scrollbar { display: none; }
+        .category-item {
+            display: flex; flex-direction: column; align-items: center; padding: 6px 10px; /* Adjusted padding */
+            margin: 0 3px; /* Adjusted margin */
+            background-color: transparent; color: var(--color-text-secondary); border-radius: 6px; /* Softer radius */
+            cursor: pointer;
+            flex-shrink: 0; font-size: 0.75em; /* Slightly smaller font */
+            text-align: center;
+            transition: background-color var(--transition-speed-medium) ease, color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
+            border-bottom: 2px solid transparent;
+            user-select: none;
+        }
+        .category-item.selected { color: var(--color-dark-green); font-weight: bold; border-bottom: 2px solid var(--color-medium-green); background-color: rgba(var(--color-background-rgb),0.8); }
+        .category-item i { font-size: 1.2em; margin-bottom: 2px; pointer-events: none; }
+        .category-item span { font-size: 0.7em; white-space: normal; line-height: 1.1; pointer-events: none; }
+        .category-item:hover:not(.selected) { color: #495057; background-color: rgba(var(--color-background-rgb),0.5); transform: translateY(-1px); }
+
+
         /* --- Top Section --- */
         .top-section {
-            width: calc(100% + 20px); margin-bottom: 15px; position: relative;
+            width: calc(100% + 20px); 
+            position: relative;
             margin-left: -10px; margin-right: -10px;
         }
         .image-container {
             width: 100%;
-            /* aspect-ratio: 5 / 4; /* OLD Ratio */
-            aspect-ratio: 8 / 9; /* NEW Ratio (4 / 4.5 = 8 / 9) */
+            aspect-ratio: 8 / 9;
             overflow: hidden;
             background-color: #e0e0e0; position: relative; cursor: grab;
+            margin-bottom: 30px; 
         }
         .image-container:active { cursor: grabbing; }
         .main-food-image {
-            width: 100%; height: 100%; object-fit: cover; /* This handles the cropping */
-            object-position: center; /* This centers the crop */
+            width: 100%; height: 100%; object-fit: cover;
+            object-position: center;
             display: block;
         }
 
@@ -78,24 +125,74 @@
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
         @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        /* Apply animation to the CONTAINER, not the image directly for smoother transitions */
         .image-container.slide-out-left { animation: slideOutLeft var(--transition-speed-medium) ease-out forwards; }
         .image-container.slide-in-right { animation: slideInRight var(--transition-speed-medium) ease-out forwards; }
         .image-container.slide-out-right { animation: slideOutRight var(--transition-speed-medium) ease-out forwards; }
         .image-container.slide-in-left { animation: slideInLeft var(--transition-speed-medium) ease-out forwards; }
 
+        /* --- Film Strip Section (MODIFIED for Overlay) --- */
+        #film-strip-section {
+            width: calc(100% + 20px);
+            margin-left: -10px;
+            margin-right: -10px;
+            overflow: hidden;
+            padding: 8px 0; /* Adjusted padding */
+            background: linear-gradient(to top, rgba(var(--color-white-rgb), 0.9) 60%, rgba(var(--color-white-rgb), 0.4) 100%); /* Gradient for smooth overlay */
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-sizing: border-box;
+            position: relative;
+            margin-top: -55px; 
+            z-index: 10; 
+            border-top: 1px solid rgba(0,0,0,0.03); 
+        }
+        #film-strip-items-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 5px 10px; 
+            gap: 2px; 
+            -webkit-overflow-scrolling: touch;
+        }
+        #film-strip-items-container::-webkit-scrollbar { height: 4px; } 
+        #film-strip-items-container::-webkit-scrollbar-thumb { background-color: var(--color-light-green); border-radius: 2px; }
+        #film-strip-items-container::-webkit-scrollbar-track { background-color: transparent; } 
+
+        .film-strip-item {
+            flex-shrink: 0;
+            width: 68px; height: 88px; 
+            border-radius: 5px; 
+            overflow: hidden; cursor: pointer;
+            position: relative; border: 1px solid transparent; 
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            background-color: rgba(var(--color-background-rgb), 0.5); 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06); 
+        }
+        .film-strip-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            object-position: center; display: block;
+        }
+        .film-strip-item:hover { transform: scale(1.03); border-color: var(--color-medium-green); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .film-strip-item.active {
+            border-color: var(--color-darkest); 
+            transform: scale(1.08); 
+            box-shadow: 0 0 10px rgba(var(--color-dark-green-rgb, 51, 61, 41), 0.6); 
+            z-index: 11; 
+        }
 
         /* --- Menu Details --- */
         #menu-details {
             padding: 15px 10px; background-color: var(--color-white);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); display: none;
-             margin-left: 10px; margin-right: 10px;
-             width: calc(100% - 20px); border-radius: 0 0 10px 10px;
+            margin-left: 10px; margin-right: 10px;
+            width: calc(100% - 20px); border-radius: 0 0 10px 10px;
+            position: relative; 
+            z-index: 5; 
         }
         .menu-name-container { margin-bottom: 5px; }
-        #menu-name { font-size: 28px; font-weight: bold; /* Adjusted size */ text-transform: uppercase; margin: 0; color: var(--color-darkest); line-height: 1.2; }
+        #menu-name { font-size: 28px; font-weight: bold; text-transform: uppercase; margin: 0; color: var(--color-darkest); line-height: 1.2; }
         #menu-description { font-size: 14px; margin: 0 0 10px 0; color: var(--color-medium-green); line-height: 1.5; }
-        #menu-price { font-size: 18px; /* Adjusted size */ font-weight: bold; margin: 0; color: var(--color-medium-beige); display: flex; align-items: center; flex-wrap: wrap; gap: 5px 0; }
+        #menu-price { font-size: 18px; font-weight: bold; margin: 0; color: var(--color-medium-beige); display: flex; align-items: center; flex-wrap: wrap; gap: 5px 0; }
         .price-item { display: inline-flex; align-items: center; margin-right: 10px; }
         .price-label { font-size: 0.8em; font-weight: normal; color: var(--color-text-secondary); margin-right: 4px; }
         .price-value { margin-right: 5px; }
@@ -109,129 +206,42 @@
         .price-separator { margin: 0 8px; font-weight: normal; color: #adb5bd; }
         .hidden { display: none !important; }
 
-        /* --- NEW: Menu Options Styling --- */
+        /* --- Menu Options Styling --- */
         .menu-options-section {
              border-top: 1px solid var(--color-border);
              padding-top: 15px;
-             /* margin-top is set inline in the HTML */
         }
-        .menu-options-container {
-            margin-bottom: 10px;
-        }
-        .option-title {
-            font-size: 0.95em;
-            font-weight: bold;
-            color: var(--color-dark-green);
-            margin: 0 0 8px 0;
-            display: block;
-        }
-        .option-choices {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping if too many choices */
-            gap: 8px; /* Spacing between choices */
-        }
+        .menu-options-container { margin-bottom: 10px; }
+        .option-title { font-size: 0.95em; font-weight: bold; color: var(--color-dark-green); margin: 0 0 8px 0; display: block; }
+        .option-choices { display: flex; flex-wrap: wrap; gap: 8px; }
         .option-choice-label {
-            display: inline-flex; /* Align items nicely */
-            align-items: center;
-            background-color: #e9ecef; /* Light grey background */
-            color: var(--color-text-secondary);
-            padding: 6px 12px;
-            border-radius: 15px; /* Rounded pill shape */
-            cursor: pointer;
+            display: inline-flex; align-items: center; background-color: #e9ecef; color: var(--color-text-secondary);
+            padding: 6px 12px; border-radius: 15px; cursor: pointer;
             transition: background-color var(--transition-speed-fast) ease, color var(--transition-speed-fast) ease;
-            font-size: 0.85em;
-            border: 1px solid transparent; /* Placeholder for selected border */
-            user-select: none; /* Prevent text selection */
+            font-size: 0.85em; border: 1px solid transparent; user-select: none;
         }
-        /* Hide the actual radio button visually */
-        .option-choice-label input[type="radio"] {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            width: 0;
-            height: 0;
-            opacity: 0;
-            position: absolute; /* Take out of layout flow */
-            margin: 0;
-            padding: 0;
-        }
-        /* Style for selected state */
-        .option-choice-label input[type="radio"]:checked + span {
-             /* Keep span content */
-        }
-        /* Change label appearance when checked */
-        .option-choice-label input[type="radio"]:checked {
-           /* We style the label itself, not the hidden input */
-        }
-        .option-choice-label:has(input[type="radio"]:checked) { /* Use :has for modern browsers */
-             background-color: var(--color-medium-green); /* Theme color */
-             color: var(--color-white);
-             font-weight: bold;
-             border: 1px solid var(--color-dark-green);
-        }
-        /* Add a subtle hover effect */
-        .option-choice-label:not(:has(input[type="radio"]:checked)):hover {
-            background-color: #ced4da; /* Slightly darker grey on hover */
-        }
-        /* Style for options in cart/ordered lists */
-        .list-item-options {
-            font-size: 0.8em;
-            color: var(--color-text-secondary);
-            margin-top: 3px;
-            margin-left: 10px; /* Indent options slightly */
-            line-height: 1.3;
-        }
-        .list-item-options span {
-             display: block; /* Each option on a new line */
-             margin-bottom: 2px;
-         }
-         /* Style for options in receipt */
+        .option-choice-label input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 0; height: 0; opacity: 0; position: absolute; margin: 0; padding: 0; }
+        .option-choice-label:has(input[type="radio"]:checked) { background-color: var(--color-medium-green); color: var(--color-white); font-weight: bold; border: 1px solid var(--color-dark-green); }
+        .option-choice-label:not(:has(input[type="radio"]:checked)):hover { background-color: #ced4da; }
+        .list-item-options { font-size: 0.8em; color: var(--color-text-secondary); margin-top: 3px; margin-left: 10px; line-height: 1.3; }
+        .list-item-options span { display: block; margin-bottom: 2px; }
          .receipt-item-options {
-             font-size: 0.8em; /* Smaller font for options */
-             color: var(--color-text-secondary);
-             grid-column: 1 / -1; /* Span all columns */
-             padding-left: 15px; /* Indent */
-             margin-top: -5px; /* Adjust spacing slightly */
-             margin-bottom: 5px;
-             line-height: 1.4;
+             font-size: 0.8em; color: var(--color-text-secondary); grid-column: 1 / -1;
+             padding-left: 15px; margin-top: -5px; margin-bottom: 5px; line-height: 1.4;
          }
-         .receipt-item-options span {
-             display: block;
-         }
-        /* --- END NEW Options Styling --- */
+         .receipt-item-options span { display: block; }
 
-        /* --- Category Bar --- */
-        .category-bar {
-            width: 100%; overflow-x: auto; overflow-y: hidden; white-space: nowrap; background-color: var(--color-white);
-            padding: 12px 5px; display: flex; align-items: center; flex-shrink: 0; box-sizing: border-box;
-            border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            -ms-overflow-style: none; scrollbar-width: none; /* Hide scrollbar */
-        }
-        .category-bar::-webkit-scrollbar { display: none; }
-        .category-item {
-            display: flex; flex-direction: column; align-items: center; padding: 8px 15px; margin: 0 5px;
-            background-color: transparent; color: var(--color-text-secondary); border-radius: 8px; cursor: pointer;
-            flex-shrink: 0; font-size: 0.85em; text-align: center;
-            transition: background-color var(--transition-speed-medium) ease, color var(--transition-speed-medium) ease, transform var(--transition-speed-fast) ease;
-            border-bottom: 2px solid transparent;
-            user-select: none; /* Prevent text selection on click */
-        }
-        .category-item.selected { color: var(--color-dark-green); font-weight: bold; border-bottom: 2px solid var(--color-medium-green); background-color: #E9ECEF; }
-        .category-item i { font-size: 1.4em; margin-bottom: 4px; pointer-events: none; /* Prevent icon from intercepting click */ }
-        .category-item span { font-size: 0.75em; white-space: normal; line-height: 1.2; pointer-events: none; }
-        .category-item:hover:not(.selected) { color: #495057; background-color: #F1F3F4; transform: translateY(-2px); }
 
         /* --- Pinterest-Style Menu Grid --- */
         .bottom-menu {
             width: 100%; padding-top: 10px; column-count: 2;
-            column-gap: 10px; contain: layout paint; /* Performance optimization */
+            column-gap: 10px; contain: layout paint;
         }
         .menu-item {
             display: inline-block; width: 100%; margin-bottom: 10px; border-radius: 10px; overflow: hidden;
             cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             transition: transform var(--transition-speed-fast) ease-in-out, box-shadow var(--transition-speed-fast) ease-in-out, filter var(--transition-speed-fast) ease-in-out;
-            break-inside: avoid; /* Prevent items breaking across columns */
-            position: relative; /* Needed for potential overlays or actions */
+            break-inside: avoid; position: relative;
         }
         .menu-item:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 4px 8px rgba(0,0,0,0.15); filter: brightness(1.05); }
         .menu-item img { width: 100%; height: auto; display: block; }
@@ -254,14 +264,20 @@
             transition: transform var(--transition-speed-fast) ease;
         }
         .floating-icon.updated .icon-badge { transform: scale(1.3); }
+        /* Adjusted bottom positions for 4 icons */
+        #translate-icon-container { bottom: 285px; z-index: 1013; font-size: 22px; } /* New Icon */
+        #call-staff-icon-container { bottom: 220px; z-index: 1012; font-size: 22px; }
+        #my-food-icon-container { bottom: 155px; z-index: 1011; font-size: 22px; }
+        #cart-icon-container { bottom: 90px; z-index: 1010; font-size: 24px; }
+        #call-staff-icon-container .fa-spinner { font-size: 24px; }
+        #translate-icon-container .lang-indicator { /* For showing current lang like EN, CN */
+            position: absolute; bottom: 3px; right: 5px; background-color: rgba(0,0,0,0.4);
+            color: white; border-radius: 3px; padding: 1px 3px; font-size: 9px;
+            font-weight: bold; line-height: 1;
+        }
 
-        #call-staff-icon-container { bottom: 150px; z-index: 1002; font-size: 22px; /* Inherits .floating-icon */ }
-        #my-food-icon-container { bottom: 85px; z-index: 1001; font-size: 22px; /* Inherits .floating-icon */ }
-        #cart-icon-container { bottom: 20px; z-index: 1000; font-size: 24px; /* Inherits .floating-icon */ }
 
-        #call-staff-icon-container .fa-spinner { font-size: 24px; } /* Spinner Style */
-
-        /* --- Popups (Cart, My Food) --- */
+        /* --- Popups (Cart, My Food, Language) --- */
         .popup-base {
             position: fixed; right: 20px; width: 90%; max-width: 380px;
             background-color: var(--color-white-transparent); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
@@ -269,12 +285,13 @@
             display: none; flex-direction: column; overflow: hidden;
             opacity: 0; transform: translateY(20px) scale(0.95);
             transition: opacity var(--transition-speed-medium) ease-out, transform var(--transition-speed-medium) ease-out, bottom var(--transition-speed-medium) ease-out;
-            pointer-events: none;
+            pointer-events: none; 
         }
         .popup-base.open { display: flex; opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-
-        #cart-popup { bottom: 215px; max-height: 45vh; z-index: 998; /* Inherits .popup-base */ }
-        #my-food-popup { bottom: 150px; max-height: 50vh; z-index: 999; /* Inherits .popup-base */ }
+        /* Adjusted bottom positions for popups */
+        #language-popup { bottom: 350px; max-height: 40vh; z-index: 1009;} /* New Popup */
+        #cart-popup { bottom: 155px; max-height: 45vh; z-index: 1007; } 
+        #my-food-popup { bottom: 220px; max-height: 50vh; z-index: 1008; }
 
         .popup-header {
             display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;
@@ -282,23 +299,16 @@
         }
         .popup-header h3 { margin: 0; font-size: 1.1em; color: var(--color-darkest); }
         .popup-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-text-secondary); line-height: 1; }
-
-        .cart-header { background-color: rgba(182, 173, 144, 0.8); /* Light Beige */ }
-        .my-food-header { background-color: rgba(164, 172, 134, 0.8); /* Light Green */ }
-
+        .cart-header { background-color: rgba(182, 173, 144, 0.8); }
+        .my-food-header { background-color: rgba(164, 172, 134, 0.8); }
+        .language-header { background-color: rgba(120, 130, 100, 0.8); } /* New Header Color */
         .popup-items-list { padding: 5px 15px; overflow-y: auto; flex-grow: 1; }
-        #cart-items-list { /* Inherits .popup-items-list */ }
-        #my-food-items-list { /* Inherits .popup-items-list */ }
-
         .list-item-base { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9em; }
         .list-item-base:last-child { border-bottom: none; }
         .list-item-details { flex-grow: 1; margin-right: 10px; }
         .list-item-name { font-weight: bold; color: var(--color-dark-green); }
         .list-item-info { color: var(--color-medium-beige); font-size: 0.9em; }
         .list-item-total { font-weight: bold; color: var(--color-medium-beige); flex-shrink: 0;}
-
-        .cart-item { /* Inherits .list-item-base */ }
-        .cart-item-price { /* Inherits .list-item-info */ }
         .cart-item-controls { display: flex; align-items: center; flex-shrink: 0; }
         .cart-quantity-btn {
             background-color: #e9ecef; color: var(--color-text-secondary); border: 1px solid var(--color-border);
@@ -309,12 +319,6 @@
         .cart-item-quantity { min-width: 20px; text-align: center; font-weight: bold; }
         .cart-remove-btn { background: none; border: none; color: var(--color-danger); font-size: 16px; cursor: pointer; margin-left: 10px; transition: color var(--transition-speed-fast) ease; padding: 0 5px;}
         .cart-remove-btn:hover { color: #a0232f; }
-
-        .ordered-item { /* Inherits .list-item-base */ }
-        .ordered-item-name { /* Inherits .list-item-name */ }
-        .ordered-item-info { /* Inherits .list-item-info */ }
-        .ordered-item-total { /* Inherits .list-item-total */ }
-
         .popup-footer {
             padding: 15px; border-top: 1px solid var(--color-border); background-color: var(--color-footer-transparent);
             backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border-radius: 0 0 10px 10px; flex-shrink: 0;
@@ -327,31 +331,36 @@
         }
         .popup-action-btn:hover { opacity: 0.85; }
         .popup-action-btn:disabled { background-color: #ccc !important; color: #666 !important; cursor: not-allowed; opacity: 0.7; }
-        .popup-action-btn .fa-spinner { font-size: 1em; } /* Spinner inside buttons */
-
-        .order-btn { background-color: var(--color-light-green); color: var(--color-darkest); /* Inherits .popup-action-btn */ }
-        .my-food-checkout-btn { background-color: var(--color-medium-beige); color: var(--color-white); /* Inherits .popup-action-btn */ }
-
+        .popup-action-btn .fa-spinner { font-size: 1em; }
+        .order-btn { background-color: var(--color-light-green); color: var(--color-darkest); }
+        .my-food-checkout-btn { background-color: var(--color-medium-beige); color: var(--color-white); }
         .popup-empty-message { text-align: center; color: var(--color-text-secondary); padding: 20px; }
-
-        #my-food-total-display {
-            text-align: right; font-weight: bold; margin-bottom: 10px; font-size: 1.1em; color: var(--color-darkest);
+        #my-food-total-display { text-align: right; font-weight: bold; margin-bottom: 10px; font-size: 1.1em; color: var(--color-darkest); }
+        
+        /* Language Popup Specific Styles */
+        .language-option-item {
+            padding: 12px 10px; font-size: 1em; color: var(--color-darkest);
+            cursor: pointer; border-radius: 5px; margin: 3px 0;
+            transition: background-color var(--transition-speed-fast) ease;
+            display: flex; align-items: center; justify-content: space-between;
         }
+        .language-option-item:hover { background-color: rgba(var(--color-lightest-green-rgb, 194, 197, 170), 0.5); }
+        .language-option-item.selected-lang { background-color: var(--color-medium-green); color: var(--color-white); font-weight: bold; }
+        .language-option-item .lang-flag { font-size: 1.2em; margin-right: 10px; } /* Optional: For flag icons */
+
 
         /* --- Table Number Display & Modal --- */
         #table-number-display {
-            position: fixed; bottom: 10px; left: 10px; z-index: 1003; /* Above other icons */
+            position: fixed; bottom: 20px; left: 20px; z-index: 990; /* Adjusted z-index */
             background-color: var(--color-medium-green); color: var(--color-white);
             font-family: 'Sarabun', 'Inter', sans-serif; font-size: 0.9rem; font-weight: bold;
-            padding: 8px 15px; border-radius: 9999px; /* Capsule shape */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 8px 15px; border-radius: 9999px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             cursor: pointer; transition: background-color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
             user-select: none;
         }
         #table-number-display:hover { background-color: var(--color-dark-green); transform: scale(1.05); }
         #table-number-display .table-icon { margin-right: 5px; }
         #table-number-display .placeholder-text { font-style: italic; opacity: 0.8; }
-
         #table-select-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--color-modal-bg);
@@ -364,23 +373,18 @@
             padding: 20px; max-width: 90%; width: 300px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             transform: scale(0.95); transition: transform var(--transition-speed-medium) ease;
-            max-height: 80vh; display: flex; flex-direction: column; /* Limit height and enable scroll */
+            max-height: 80vh; display: flex; flex-direction: column;
         }
         #table-select-modal.open .table-select-content { transform: scale(1); }
-        .table-select-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; flex-shrink: 0;
-        }
+        .table-select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; flex-shrink: 0; }
         .table-select-header h4 { margin: 0; font-size: 1.2em; color: var(--color-darkest); }
         .table-select-close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-secondary); line-height: 1; padding: 0; }
         #table-list {
-            overflow-y: auto; /* Enable scroll for table list */
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 10px; padding: 5px; flex-grow: 1; /* Allow list to take available space */
+            overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px; padding: 5px; flex-grow: 1;
         }
         .table-list-item {
-            padding: 10px; border: 1px solid var(--color-border); border-radius: 5px;
-            text-align: center; font-weight: bold; cursor: pointer;
+            padding: 10px; border: 1px solid var(--color-border); border-radius: 5px; text-align: center; font-weight: bold; cursor: pointer;
             background-color: var(--color-background);
             transition: background-color var(--transition-speed-fast) ease, color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease;
         }
@@ -396,7 +400,9 @@
             font-size: 0.9em; font-weight: bold; text-align: center;
             opacity: 0; transition: top var(--transition-speed-medium) ease-out, opacity var(--transition-speed-medium) ease-out;
         }
-        #table-prompt-notification.show { top: 0; opacity: 1; }
+        #table-prompt-notification.show { top: var(--category-bar-height); opacity: 1; } 
+         #table-prompt-notification.show.category-bar-is-hidden { top: 0; } 
+
 
         /* --- Receipt Modal Styles --- */
         #receipt-modal {
@@ -407,17 +413,11 @@
             padding: 15px; box-sizing: border-box;
         }
         #receipt-modal.open { display: flex; opacity: 1; }
-        .receipt-modal-content { /* Outer container */
-            max-width: 90%; width: 380px; max-height: 90vh;
-            display: flex; flex-direction: column;
-            background-color: var(--color-white); border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); overflow: hidden;
+        .receipt-modal-content {
+            max-width: 90%; width: 380px; max-height: 90vh; display: flex; flex-direction: column;
+            background-color: var(--color-white); border-radius: 8px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); overflow: hidden;
         }
-        #receipt-content { /* Area to capture */
-            padding: 25px; overflow-y: auto;
-            font-family: 'Sarabun', 'Courier New', Courier, monospace;
-            color: var(--color-text-primary); flex-grow: 1;
-        }
+        #receipt-content { padding: 25px; overflow-y: auto; font-family: 'Sarabun', 'Courier New', Courier, monospace; color: var(--color-text-primary); flex-grow: 1; }
         .receipt-header { text-align: center; padding-bottom: 15px; margin-bottom: 15px; }
         .receipt-logo { max-width: 70px; height: auto; margin-bottom: 10px; }
         .receipt-header h3 { font-size: 1.2em; font-weight: bold; color: var(--color-darkest); margin: 0 0 8px 0; }
@@ -454,12 +454,9 @@
          }
          .receipt-total .total-label-eng { display: block; font-size: 0.7em; font-weight: normal; color: var(--color-text-secondary); margin-top: 2px; }
         .receipt-qr { text-align: center; margin-bottom: 20px; }
-        .receipt-qr img { max-width: 295px; /* Adjusted QR Size */ height: auto; display: inline-block; border: 1px solid var(--color-border); padding: 6px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .receipt-qr img { max-width: 295px; height: auto; display: inline-block; border: 1px solid var(--color-border); padding: 6px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .receipt-footer { text-align: center; font-size: 0.85em; color: var(--color-medium-green); padding-top: 15px; border-top: 1px dashed var(--color-border); line-height: 1.5; }
         .receipt-actions { display: flex; justify-content: center; gap: 10px; padding: 15px 20px; background-color: var(--color-background); border-top: 1px solid var(--color-border); flex-shrink: 0; }
-        .receipt-action-btn { /* Inherits .popup-action-btn */ }
-        .receipt-close-btn { background-color: var(--color-text-secondary); /* Inherits .popup-action-btn */ }
-        .receipt-action-btn .fa-download, .receipt-action-btn .fa-times { margin-right: 8px; }
 
         /* --- Responsive Adjustments --- */
         @media (min-width: 640px) {
@@ -470,20 +467,31 @@
              .price-label { font-size: 0.8em; }
              .add-to-cart-button { width: 28px; height: 28px; line-height: 28px; font-size: 18px; }
              .top-section { width: calc(100% + 40px); margin-left: -20px; margin-right: -20px; }
+             #film-strip-section { width: calc(100% + 40px); margin-left: -20px; margin-right: -20px;}
+             .film-strip-item { width: 75px; height: 95px; } 
              #menu-details { margin-left: 20px; margin-right: 20px; width: calc(100% - 40px); }
              #table-number-display { font-size: 1rem; bottom: 15px; left: 15px; padding: 10px 20px; }
              #table-prompt-notification { font-size: 1em; }
-             .receipt-modal-content { width: 420px; } /* Wider receipt */
+             .receipt-modal-content { width: 420px; }
              .receipt-header h3 { font-size: 1.4em; }
              .receipt-title { font-size: 1.3em; }
              #receipt-items-header { font-size: 0.85em; }
              .receipt-item { font-size: 0.95em; }
              .receipt-total { font-size: 1.2em; }
+             .category-item { padding: 8px 12px; font-size: 0.8em; } 
+             .category-item i { font-size: 1.3em; }
+             .category-item span { font-size: 0.75em; }
+             :root { --category-bar-height: 62px; } 
+
         }
-        @media (min-width: 768px) { .bottom-menu { column-count: 4; } }
+        @media (min-width: 768px) { .bottom-menu { column-count: 4; } .film-strip-item { width: 80px; height: 100px; } }
         @media (min-width: 1024px) { .bottom-menu { column-count: 5; } }
         @media (min-width: 1280px) { .bottom-menu { column-count: 6; } }
 
+        /* Google Translate Widget Styling - to hide the original widget */
+        #google_translate_element { display: none !important; }
+        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        body { top: 0px !important; } /* Override Google Translate's top banner style */
     </style>
 </head>
 <body>
@@ -497,7 +505,7 @@
         <div class="table-select-content">
             <div class="table-select-header">
                 <h4>เลือกหมายเลขโต๊ะ</h4>
-                <button class="table-select-close-btn" title="ปิด">&times;</button>
+                <button class="table-select-close-btn" title="ปิด">×</button>
             </div>
             <div id="table-list">
                 <!-- Table numbers populated by JS -->
@@ -511,11 +519,21 @@
     </div>
 
     <div class="container">
-        <!-- Top Section: Image and Details -->
+        <!-- Category Bar -->
+        <div class="category-bar">
+            <!-- Categories populated by JS -->
+         </div>
+
+        <!-- Top Section: Image, Film Strip, and Details -->
         <div class="top-section">
              <div class="image-container" id="image-swipe-area">
                  <img id="main-food-image" class="main-food-image" src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Salad Bowl">
              </div>
+            <div id="film-strip-section">
+                <div id="film-strip-items-container">
+                    <!-- Thumbnails will be populated by JS -->
+                </div>
+            </div>
              <div id="menu-details">
                  <div class="menu-name-container">
                      <h2 id="menu-name">ชื่อเมนู</h2>
@@ -524,53 +542,40 @@
                  <p id="menu-price">
                      <span class="price-item hidden">
                          <span class="price-label" id="label-small">เล็ก:</span>
-                         <span class="price-value" id="price-small">0</span> <!-- No ฿ -->
+                         <span class="price-value" id="price-small">0</span>
                          <button class="add-to-cart-button" data-size="Small" title="เพิ่มขนาดเล็กลงตระกร้า">+</button>
                      </span>
                       <span class="price-separator hidden" id="price-sep-small">|</span>
                      <span class="price-item hidden">
                          <span class="price-label" id="label-normal">ปกติ:</span>
-                         <span class="price-value" id="price-normal">0</span> <!-- No ฿ -->
+                         <span class="price-value" id="price-normal">0</span>
                          <button class="add-to-cart-button" data-size="Normal" title="เพิ่มขนาดปกติลงตระกร้า">+</button>
                      </span>
                      <span class="price-separator hidden" id="price-sep">|</span>
                      <span class="price-item hidden">
                          <span class="price-label" id="label-extra">พิเศษ:</span>
-                         <span class="price-value" id="price-extra">0</span> <!-- No ฿ -->
+                         <span class="price-value" id="price-extra">0</span>
                          <button class="add-to-cart-button" data-size="Extra" title="เพิ่มขนาดพิเศษลงตระกร้า">+</button>
                      </span>
                      <span class="price-separator hidden" id="price-sep-family">|</span>
                      <span class="price-item hidden">
                          <span class="price-label" id="label-family">ครอบครัว:</span>
-                         <span class="price-value" id="price-family">0</span> <!-- No ฿ -->
+                         <span class="price-value" id="price-family">0</span>
                          <button class="add-to-cart-button" data-size="Family" title="เพิ่มขนาดครอบครัวลงตระกร้า">+</button>
                      </span>
                  </p>
-                 <!-- NEW HTML STRUCTURE FOR OPTIONS (Placed after menu-price paragraph) -->
                  <div id="menu-options-section" class="menu-options-section" style="margin-top: 15px;">
-                     <!-- Option Group 1 -->
                      <div id="menu-option1-container" class="menu-options-container hidden">
                          <h4 class="option-title" id="option1-title"></h4>
-                         <div class="option-choices" id="option1-choices">
-                             <!-- Radio buttons will be populated here by JS -->
-                         </div>
+                         <div class="option-choices" id="option1-choices"></div>
                      </div>
-                     <!-- Option Group 2 -->
                      <div id="menu-option2-container" class="menu-options-container hidden" style="margin-top: 10px;">
                           <h4 class="option-title" id="option2-title"></h4>
-                          <div class="option-choices" id="option2-choices">
-                              <!-- Radio buttons will be populated here by JS -->
-                          </div>
+                          <div class="option-choices" id="option2-choices"></div>
                      </div>
                  </div>
-                 <!-- END NEW OPTIONS HTML -->
              </div>
         </div>
-
-        <!-- Category Bar -->
-        <div class="category-bar">
-            <!-- Categories populated by JS -->
-         </div>
 
         <!-- Menu Grid -->
         <div class="bottom-menu">
@@ -580,6 +585,10 @@
     </div> <!-- End .container -->
 
     <!-- Floating Icons -->
+    <div id="translate-icon-container" class="floating-icon" title="เปลี่ยนภาษา">
+        <i class="fas fa-language"></i>
+        <span id="current-lang-indicator" class="lang-indicator hidden"></span>
+    </div>
     <div id="call-staff-icon-container" class="floating-icon" title="เรียกพนักงาน">
         <i class="fas fa-bell"></i>
     </div>
@@ -592,22 +601,31 @@
         <span id="cart-item-count" class="icon-badge hidden">0</span>
     </div>
 
+    <!-- Language Selection Popup -->
+    <div id="language-popup" class="popup-base">
+        <div class="popup-header language-header">
+            <h3>เลือกภาษา</h3>
+            <button class="popup-close-btn language-close-btn" title="ปิด">×</button>
+        </div>
+        <div class="popup-items-list" id="language-options-list">
+            <!-- Language options populated by JS -->
+            <p class="popup-empty-message language-empty-message">กำลังโหลดตัวเลือกภาษา...</p>
+        </div>
+    </div>
+
     <!-- My Food Popup -->
     <div id="my-food-popup" class="popup-base">
         <div class="popup-header my-food-header">
             <h3>รายการอาหารที่สั่งแล้ว</h3>
-            <button class="popup-close-btn my-food-close-btn" title="ปิดรายการ">&times;</button>
+            <button class="popup-close-btn my-food-close-btn" title="ปิดรายการ">×</button>
         </div>
         <div class="popup-items-list" id="my-food-items-list">
             <p class="popup-empty-message my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>
         </div>
         <div class="popup-footer my-food-footer">
-            <div id="my-food-total-display">
-                <!-- Total populated by JS -->
-            </div>
+            <div id="my-food-total-display"></div>
             <div class="popup-actions my-food-actions">
                 <button class="popup-action-btn my-food-checkout-btn" id="my-food-checkout-button">
-                    <!-- Icon added dynamically if needed -->
                     สรุปยอดและเรียกชำระเงิน
                 </button>
             </div>
@@ -618,7 +636,7 @@
     <div id="cart-popup" class="popup-base">
         <div class="popup-header cart-header">
             <h3>ตระกร้าสินค้า</h3>
-            <button class="popup-close-btn cart-close-btn" title="ปิดตระกร้า">&times;</button>
+            <button class="popup-close-btn cart-close-btn" title="ปิดตระกร้า">×</button>
         </div>
         <div class="popup-items-list" id="cart-items-list">
             <p class="popup-empty-message cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>
@@ -626,7 +644,6 @@
         <div class="popup-footer cart-footer">
             <div class="popup-actions cart-actions">
                 <button class="popup-action-btn order-btn" id="order-button">
-                    <!-- Icon added dynamically if needed -->
                     สั่งรายการอาหาร
                 </button>
             </div>
@@ -636,7 +653,7 @@
     <!-- Receipt Modal -->
     <div id="receipt-modal">
         <div class="receipt-modal-content">
-            <div id="receipt-content"> <!-- Area to capture -->
+            <div id="receipt-content">
                 <div class="receipt-header">
                     <img src="https://raw.githubusercontent.com/babypetromax/eatsy/main/icons/icon-512x512.png" alt="Logo" class="receipt-logo">
                     <h3 id="receipt-restaurant-name">ชื่อร้าน</h3>
@@ -653,12 +670,8 @@
                     <span class="header-price">ราคา<br><span class="secondary-text">(Price)</span></span>
                     <span class="header-total">รวม<br><span class="secondary-text">(Total)</span></span>
                 </div>
-                <div id="receipt-items-list">
-                    <!-- Items populated by JS -->
-                </div>
-                <div class="receipt-total" id="receipt-grand-total">
-                    <!-- Content populated by JS -->
-                </div>
+                <div id="receipt-items-list"></div>
+                <div class="receipt-total" id="receipt-grand-total"></div>
                 <div class="receipt-qr">
                     <p style="font-size: 0.9em; margin-bottom: 5px; color: var(--color-text-secondary);">สแกนเพื่อชำระเงิน</p>
                     <img id="receipt-qr-image" src="" alt="QR Code Scan to Pay">
@@ -668,7 +681,6 @@
                        Good health starts here. Thanks for making us a part of your wellness journey! 😊</p>
                 </div>
             </div>
-            <!-- Action Buttons -->
             <div class="receipt-actions">
                 <button id="save-receipt-btn" class="popup-action-btn receipt-action-btn">
                     <i class="fas fa-download"></i> บันทึกเป็นรูปภาพ
@@ -680,56 +692,55 @@
         </div>
     </div>
 
+    <!-- Google Translate Element (Hidden) -->
+    <div id="google_translate_element" style="display:none;"></div>
 
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 <script>
     // ========================================================================
     // START: Configuration
     // ========================================================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHffrMtJPHnCf4NIryF-JUqOg60YO9k-FqCHAAfoqhzMxLI0Ot_rxg_C_87A01Yafh/exec"; // <-- Your Script URL
-    const RESTAURANT_NAME = "Eatsy Healthy Food and Bar ปลวกแดง"; // <<< Set Your Restaurant Name Here
-    const QR_CODE_IMAGE_URL = "https://raw.githubusercontent.com/babypetromax/eatsy/main/icons/qrpamentkbank.jpg"; // <<< Set QR Code Image URL
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHffrMtJPHnCf4NIryF-JUqOg60YO9k-FqCHAAfoqhzMxLI0Ot_rxg_C_87A01Yafh/exec";
+    const RESTAURANT_NAME = "Eatsy Healthy Food and Bar ปลวกแดง";
+    const QR_CODE_IMAGE_URL = "https://raw.githubusercontent.com/babypetromax/eatsy/main/icons/qrpamentkbank.jpg";
     const TABLE_NUMBER_PREFIX = "โต๊ะ ";
     const MAX_TABLE_NUMBER = 30;
     const TABLE_SELECT_PROMPT_MESSAGE = "กรุณาเลือกหมายเลขโต๊ะของท่านค่ะ";
-    const TABLE_STORAGE_KEY = 'selectedTableData_v123'; // Unique key for table data from V126
-    const TABLE_EXPIRY_HOURS = 6; // How long table selection persists from V126
-
-    // Local storage keys (versioned to allow clearing old data if needed) from V126
+    const TABLE_STORAGE_KEY = 'selectedTableData_v123';
+    const TABLE_EXPIRY_HOURS = 6;
     const CART_LOCAL_STORAGE_KEY = 'menuCartData_v123_db';
     const ORDERED_ITEMS_LOCAL_STORAGE_KEY = 'menuOrderedItemsData_v123_db';
+    const tPart1 = 'NzA0ODk5NzkxODpB'; const tPart2 = 'QUhZdDVqQk9HM1E2'; const tPart3 = 'N2JwenRJbl9SR3BE'; const tPart4 = 'Q2NYMHlBVVlWQQ==';
+    const CHAT_ID = '-1002634956608';
+    const AVAILABLE_LANGUAGES = [ // Language options for the popup
+        { code: 'th', name: 'ไทย', flag: '🇹🇭', short: 'TH' },
+        { code: 'en', name: 'English', flag: '🇬🇧', short: 'EN' },
+        { code: 'zh-CN', name: '中文 (简体)', flag: '🇨🇳', short: 'CN' },
+        { code: 'ja', name: '日本語', flag: '🇯🇵', short: 'JP' },
+        { code: 'ko', name: '한국어', flag: '🇰🇷', short: 'KR' }
+    ];
 
-    // ========================================================================
-    // START: Telegram Configuration (Obfuscated - Client-side remains insecure) from V126
-    // ========================================================================
-    const tPart1 = 'NzA0ODk5NzkxODpB';
-    const tPart2 = 'QUhZdDVqQk9HM1E2';
-    const tPart3 = 'N2JwenRJbl9SR3BE';
-    const tPart4 = 'Q2NYMHlBVVlWQQ==';
-    const CHAT_ID = '-1002634956608'; // Your Telegram Chat ID
-    // ========================================================================
-    // END: Telegram Configuration
-    // ========================================================================
 
     // --- Global Data Variables ---
-    let menuData = []; // Populated by fetch
-    let allCategories = []; // Unique categories from fetch
+    let menuData = [];
+    let allCategories = [];
+    let globalFilmStripItems = [];
+    let sortedCategoriesCache = [];
 
     // --- State Variables ---
     let cartItems = [];
     let orderedItems = [];
     let selectedTableNumber = null;
-    let currentDisplayedItemId = null; // ID of the item shown in the top detail view
-    let currentCategory = null; // Currently selected category filter
-    let currentFilteredItems = []; // Items matching the current category
-    let currentIndex = -1; // Index of the current item in currentFilteredItems
+    let currentDisplayedItemId = null;
+    let currentCategory = null;
+    let currentGlobalFilmStripIndex = -1;
+    let touchStartX = 0; let touchEndX = 0; let isSwiping = false; const swipeThreshold = 50;
+    let lastScrollTop = 0; 
+    let currentSelectedLanguage = 'th';
 
-    // --- Swipe Detection Variables ---
-    let touchStartX = 0;
-    let touchEndX = 0;
-    let isSwiping = false;
-    const swipeThreshold = 50; // Min distance (px) to trigger swipe
 
-    // --- DOM Elements (Cached for performance) ---
+    // --- DOM Elements ---
+    const categoryBarEl = document.querySelector('.category-bar'); 
     const tableNumberDisplay = document.getElementById('table-number-display');
     const tableNumberText = document.getElementById('table-number-text');
     const tableSelectModal = document.getElementById('table-select-modal');
@@ -738,18 +749,19 @@
     const tablePromptNotification = document.getElementById('table-prompt-notification');
     const mainFoodImage = document.getElementById('main-food-image');
     const imageContainer = document.getElementById('image-swipe-area');
+    const filmStripSection = document.getElementById('film-strip-section');
+    const filmStripItemsContainer = document.getElementById('film-strip-items-container');
     const bottomMenu = document.querySelector('.bottom-menu');
     const menuDetailsContainer = document.getElementById('menu-details');
     const menuNameElement = document.getElementById('menu-name');
     const menuDescriptionElement = document.getElementById('menu-description');
     const menuPriceContainer = document.getElementById('menu-price');
-    const priceElementsCache = { // Cache elements for price display optimization
+    const priceElementsCache = {
         'Small': { label: document.getElementById('label-small'), value: document.getElementById('price-small'), button: menuPriceContainer?.querySelector('button[data-size="Small"]'), separator: document.getElementById('price-sep-small') },
-        'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null }, // Normal ไม่มี Separator ก่อนหน้าตัวมันเองโดยตรง
+        'Normal': { label: document.getElementById('label-normal'), value: document.getElementById('price-normal'), button: menuPriceContainer?.querySelector('button[data-size="Normal"]'), separator: null },
         'Extra': { label: document.getElementById('label-extra'), value: document.getElementById('price-extra'), button: menuPriceContainer?.querySelector('button[data-size="Extra"]'), separator: document.getElementById('price-sep') },
         'Family': { label: document.getElementById('label-family'), value: document.getElementById('price-family'), button: menuPriceContainer?.querySelector('button[data-size="Family"]'), separator: document.getElementById('price-sep-family') }
     };
-    // --- NEW: Cache Option Elements ---
     const menuOptionsSection = document.getElementById('menu-options-section');
     const menuOption1Container = document.getElementById('menu-option1-container');
     const menuOption1TitleEl = document.getElementById('option1-title');
@@ -757,7 +769,6 @@
     const menuOption2Container = document.getElementById('menu-option2-container');
     const menuOption2TitleEl = document.getElementById('option2-title');
     const menuOption2ChoicesEl = document.getElementById('option2-choices');
-    // --- END NEW ---
     const cartIconContainer = document.getElementById('cart-icon-container');
     const cartItemCountBadge = document.getElementById('cart-item-count');
     const cartPopup = document.getElementById('cart-popup');
@@ -772,1506 +783,692 @@
     const myFoodCloseBtn = myFoodPopup?.querySelector('.my-food-close-btn');
     const myFoodCheckoutButton = document.getElementById('my-food-checkout-button');
     const callStaffIconContainer = document.getElementById('call-staff-icon-container');
-    // Receipt Modal Elements
     const receiptModal = document.getElementById('receipt-modal');
-    const receiptContent = document.getElementById('receipt-content'); // Area to capture
+    const receiptContent = document.getElementById('receipt-content');
     const receiptRestaurantName = document.getElementById('receipt-restaurant-name');
     const receiptTableInfo = document.getElementById('receipt-table-info');
     const receiptDateTime = document.getElementById('receipt-datetime');
-    const receiptItemsList = document.getElementById('receipt-items-list');
+    const receiptItemsListEl = document.getElementById('receipt-items-list');
     const receiptGrandTotal = document.getElementById('receipt-grand-total');
     const receiptQrImage = document.getElementById('receipt-qr-image');
     const saveReceiptBtn = document.getElementById('save-receipt-btn');
     const closeReceiptBtn = document.getElementById('close-receipt-btn');
+    
+    // New DOM Elements for Language Feature
+    const translateIconContainer = document.getElementById('translate-icon-container');
+    const currentLangIndicator = document.getElementById('current-lang-indicator');
+    const languagePopup = document.getElementById('language-popup');
+    const languageOptionsList = document.getElementById('language-options-list');
+    const languageCloseBtn = languagePopup?.querySelector('.language-close-btn');
+
 
     // --- Utility Functions ---
-
-    /** Gets the current date as YYYY-MM-DD string. */
-    function getCurrentDateString() {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    /** Gets locale-specific date (Buddhist year) and time strings. */
+    function getCurrentDateString() { const today = new Date(); return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`; }
     function getCurrentLocalDateTimeStrings() {
-        const now = new Date();
-        const thaiLocale = 'th-TH';
-        // Use Intl.DateTimeFormat for locale-specific formatting including Buddhist year
+        const now = new Date(); const thaiLocale = 'th-TH';
         const dateFormatter = new Intl.DateTimeFormat(thaiLocale, { year: 'numeric', month: '2-digit', day: '2-digit', calendar: 'buddhist'});
-        const formattedDate = dateFormatter.format(now);
         const timeFormatter = new Intl.DateTimeFormat(thaiLocale, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-        const formattedTime = timeFormatter.format(now);
-        return { date: formattedDate, time: formattedTime };
+        return { date: dateFormatter.format(now), time: timeFormatter.format(now) };
+    }
+    function getExpiryTimestamp(hours) { return Date.now() + hours * 60 * 60 * 1000; }
+    function safeJsonParse(key) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : null; } catch (e) { console.error(`LS Error (Parse ${key}):`, e); localStorage.removeItem(key); return null; } }
+
+    // --- Google Translate Functions ---
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'th',
+            includedLanguages: 'en,zh-CN,ja,ko,th', // Ensure 'th' is here for reverting
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+        // After init, check current language cookie and update UI
+        updateLanguageIndicator();
     }
 
-    /** Calculates future timestamp in milliseconds. */
-    function getExpiryTimestamp(hours) {
-        return Date.now() + hours * 60 * 60 * 1000;
-    }
-
-    /** Safely parse JSON from localStorage. */
-    function safeJsonParse(key) {
-        try {
-            const storedData = localStorage.getItem(key);
-            if (storedData) {
-                return JSON.parse(storedData);
-            }
-        } catch (error) {
-            console.error(`LS Error (Parse ${key}):`, error);
-            localStorage.removeItem(key); // Clear corrupted data
+    function changeLanguage(langCode) {
+        console.log("Attempting to change language to:", langCode);
+        currentSelectedLanguage = langCode;
+        if (langCode === 'th') {
+            // Remove the googtrans cookie to revert to original (Thai)
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax';
+        } else {
+            // Set the googtrans cookie for the selected language
+            document.cookie = `googtrans=/th/${langCode}; path=/; SameSite=Lax`;
         }
-        return null;
+        // Reload the page for the translation to take effect
+        location.reload();
     }
+    
+    function populateLanguageOptions() {
+        if (!languageOptionsList) return;
+        languageOptionsList.innerHTML = '';
+        const frag = document.createDocumentFragment();
+        const currentLang = getCurrentSelectedLanguage();
+
+        AVAILABLE_LANGUAGES.forEach(lang => {
+            const item = document.createElement('div');
+            item.className = 'language-option-item notranslate'; // 'notranslate' class to prevent this item itself from being translated
+            if (lang.code === currentLang) {
+                item.classList.add('selected-lang');
+            }
+            item.dataset.langCode = lang.code;
+            item.innerHTML = `<span class="lang-flag">${lang.flag}</span> ${lang.name} <i class="fas fa-check ${lang.code === currentLang ? '' : 'hidden'}"></i>`;
+            item.onclick = () => {
+                if (lang.code !== currentSelectedLanguage) {
+                    changeLanguage(lang.code);
+                }
+                closeLanguagePopup();
+            };
+            frag.appendChild(item);
+        });
+        languageOptionsList.appendChild(frag);
+    }
+
+    function openLanguagePopup() {
+        if (languagePopup) {
+            closeAllPopupsExcept(languagePopup);
+            populateLanguageOptions();
+            languagePopup.classList.add('open');
+        }
+    }
+
+    function closeLanguagePopup() {
+        if (languagePopup) languagePopup.classList.remove('open');
+    }
+    
+    function getCurrentSelectedLanguage() {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.startsWith('googtrans=')) {
+                const parts = cookie.split('=')[1].split('/');
+                if (parts.length === 3 && parts[1] === 'th' && parts[2]) {
+                    return parts[2]; // e.g., 'en' from '/th/en'
+                }
+            }
+        }
+        return 'th'; // Default language
+    }
+
+    function updateLanguageIndicator() {
+        currentSelectedLanguage = getCurrentSelectedLanguage();
+        const langObj = AVAILABLE_LANGUAGES.find(l => l.code === currentSelectedLanguage);
+        if (currentLangIndicator && langObj && langObj.code !== 'th') {
+            currentLangIndicator.textContent = langObj.short;
+            currentLangIndicator.classList.remove('hidden');
+            if(translateIconContainer) translateIconContainer.style.backgroundColor = 'var(--color-dark-green)'; // Visual cue
+        } else if (currentLangIndicator) {
+            currentLangIndicator.classList.add('hidden');
+            if(translateIconContainer) translateIconContainer.style.backgroundColor = 'var(--color-medium-green)';
+        }
+    }
+
 
     // --- Table Selection Logic ---
-
-    /** Opens the table selection modal. */
-    function openTableSelectModal() {
-        if (tableSelectModal) {
-            const listItems = tableListContainer?.querySelectorAll('.table-list-item');
-            listItems?.forEach(item => {
-                item.classList.toggle('selected', item.dataset.table === selectedTableNumber);
-            });
-            tableSelectModal.classList.add('open');
-        }
-    }
-
-    /** Closes the table selection modal. */
-    function closeTableSelectModal() {
-        if (tableSelectModal) tableSelectModal.classList.remove('open');
-    }
-
-    /** Populates the table list in the modal. */
+    function openTableSelectModal() { if (tableSelectModal) { closeAllPopupsExcept(tableSelectModal); tableListContainer?.querySelectorAll('.table-list-item')?.forEach(i => i.classList.toggle('selected', i.dataset.table === selectedTableNumber)); tableSelectModal.classList.add('open'); } }
+    function closeTableSelectModal() { if (tableSelectModal) tableSelectModal.classList.remove('open'); }
     function populateTableList(maxTables) {
-        if (!tableListContainer) return;
-        tableListContainer.innerHTML = ''; // Clear existing
-        const fragment = document.createDocumentFragment();
-        for (let i = 1; i <= maxTables; i++) {
-            const tableNum = String(i);
-            const listItem = document.createElement('div');
-            listItem.classList.add('table-list-item');
-            listItem.textContent = tableNum;
-            listItem.dataset.table = tableNum;
-            listItem.addEventListener('click', () => selectTable(tableNum));
-            fragment.appendChild(listItem);
-        }
-        tableListContainer.appendChild(fragment);
+        if (!tableListContainer) return; tableListContainer.innerHTML = ''; const frag = document.createDocumentFragment();
+        for (let i = 1; i <= maxTables; i++) { const t = String(i), li = document.createElement('div'); li.className = 'table-list-item'; li.textContent = t; li.dataset.table = t; li.onclick = () => selectTable(t); frag.appendChild(li); }
+        tableListContainer.appendChild(frag);
     }
-
-    /** Handles selecting a table number. */
     function selectTable(tableNum) {
-        selectedTableNumber = tableNum;
-        updateTableDisplay(tableNum);
-        saveSelectedTable(tableNum);
-        closeTableSelectModal();
-        document.title = `${RESTAURANT_NAME} - ${TABLE_NUMBER_PREFIX}${tableNum}`;
-        hideTablePromptNotification();
-        // Reload data specific to this table
-        loadCartFromLocalStorage();
-        loadOrderedItemsFromLocalStorage();
-        renderCart();
-        renderOrderedItems();
-        updateCartIconCount();
-        updateMyFoodIconCount();
+        selectedTableNumber = tableNum; updateTableDisplay(tableNum); saveSelectedTable(tableNum); closeTableSelectModal();
+        document.title = `${RESTAURANT_NAME} - ${TABLE_NUMBER_PREFIX}${tableNum}`; hideTablePromptNotification();
+        loadCartFromLocalStorage(); loadOrderedItemsFromLocalStorage(); renderCart(); renderOrderedItems(); updateCartIconCount(); updateMyFoodIconCount();
     }
-
-    /** Updates the table number display element. */
     function updateTableDisplay(tableNum) {
         if (tableNumberText) {
-            if (tableNum) {
-                tableNumberText.innerHTML = `<i class="fas fa-chair table-icon"></i>${TABLE_NUMBER_PREFIX}${tableNum}`;
-                tableNumberText.classList.remove('placeholder-text');
+            if (tableNum) { tableNumberText.innerHTML = `<i class="fas fa-chair table-icon"></i>${TABLE_NUMBER_PREFIX}${tableNum}`; tableNumberText.classList.remove('placeholder-text'); }
+            else { tableNumberText.innerHTML = `<span class="placeholder-text">เลือกโต๊ะ</span>`; tableNumberText.classList.add('placeholder-text'); document.title = `เมนูอาหาร - ${RESTAURANT_NAME}`; }
+        }
+    }
+    function saveSelectedTable(tableNum) { const exp = getExpiryTimestamp(TABLE_EXPIRY_HOURS); try { localStorage.setItem(TABLE_STORAGE_KEY, JSON.stringify({ tableNumber: tableNum, expiry: exp })); } catch (e) { console.error("LS Error (Save Table):", e); } }
+    function loadSelectedTable() {
+        const p = safeJsonParse(TABLE_STORAGE_KEY);
+        if (p && p.tableNumber && p.expiry && Date.now() < p.expiry) return p.tableNumber;
+        if (p) localStorage.removeItem(TABLE_STORAGE_KEY); return null;
+    }
+    function showTablePromptNotification() {
+        if (tablePromptNotification) {
+            tablePromptNotification.classList.add('show');
+            if (categoryBarEl && categoryBarEl.classList.contains('hidden-by-scroll')) {
+                tablePromptNotification.classList.add('category-bar-is-hidden');
             } else {
-                tableNumberText.innerHTML = `<span class="placeholder-text">เลือกโต๊ะ</span>`;
-                tableNumberText.classList.add('placeholder-text');
-                document.title = `เมนูอาหาร - ${RESTAURANT_NAME}`;
+                tablePromptNotification.classList.remove('category-bar-is-hidden');
             }
         }
     }
-
-    /** Saves the selected table number and expiry to localStorage. */
-    function saveSelectedTable(tableNum) {
-        const expiry = getExpiryTimestamp(TABLE_EXPIRY_HOURS);
-        const data = { tableNumber: tableNum, expiry: expiry };
-        try {
-            localStorage.setItem(TABLE_STORAGE_KEY, JSON.stringify(data));
-        } catch (error) { console.error("LS Error (Save Table):", error); }
-    }
-
-    /** Loads the selected table number from localStorage if not expired. */
-    function loadSelectedTable() {
-        const parsedData = safeJsonParse(TABLE_STORAGE_KEY);
-        if (parsedData && parsedData.tableNumber && parsedData.expiry && Date.now() < parsedData.expiry) {
-            return parsedData.tableNumber;
-        } else if (parsedData) { // Expired or invalid data
-            localStorage.removeItem(TABLE_STORAGE_KEY);
-        }
-        return null;
-    }
-
-    /** Shows the "select table" prompt notification. */
-    function showTablePromptNotification() { if (tablePromptNotification) tablePromptNotification.classList.add('show'); }
-    /** Hides the "select table" prompt notification. */
     function hideTablePromptNotification() { if (tablePromptNotification) tablePromptNotification.classList.remove('show'); }
 
     // --- Fetch Menu Data ---
     async function fetchMenuData() {
-        console.log("Fetching menu data...");
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.textContent = 'กำลังโหลดเมนู...';
-        loadingIndicator.style.cssText = 'text-align: center; padding: 20px; color: var(--color-text-secondary);';
-        const container = document.querySelector('.container');
-        const categoryBarElement = document.querySelector('.category-bar'); // Get reference before potentially removing it
-        if (container && categoryBarElement) container.insertBefore(loadingIndicator, categoryBarElement);
-        else if (container) container.prepend(loadingIndicator); // Fallback
+        console.log("Fetching menu data..."); const ld = document.createElement('div'); ld.textContent = 'กำลังโหลดเมนู...'; ld.style.cssText = 'text-align: center; padding: 20px; color: var(--color-text-secondary);';
+        const cont = document.querySelector('.container');
+        if (cont && categoryBarEl) cont.insertBefore(ld, categoryBarEl.nextSibling);
+        else if (cont) cont.prepend(ld);
 
         try {
-            const response = await fetch(GOOGLE_SCRIPT_URL);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}, statusText: ${response.statusText}`);
-            }
-            const contentType = response.headers.get("content-type");
-             if (!contentType || !contentType.includes("application/json")) {
-                const textResponse = await response.text();
-                console.error("Non-JSON response received:", textResponse.substring(0, 200)); // Log start of text response
-                throw new Error(`Expected JSON, but got ${contentType}. Check GAS deployment and script output.`);
-             }
-            const data = await response.json();
-            // Check for success flag from GAS (if implemented) or specific data structure
-            if (data.error || (data.success === false)) { // Check for explicit error or success:false
-                throw new Error(`Script error: ${data.message || 'Unknown error from script'}`);
-            }
-            // Validate the expected data structure from GAS
-            if (!data || !Array.isArray(data.menuData) || !Array.isArray(data.categories)) {
-                console.error("Invalid data structure received:", data);
-                throw new Error("Invalid data structure received from script.");
-            }
-
+            const resp = await fetch(GOOGLE_SCRIPT_URL); if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}, statusText: ${resp.statusText}`);
+            const ct = resp.headers.get("content-type"); if (!ct || !ct.includes("application/json")) { const tr = await resp.text(); console.error("Non-JSON response received:", tr.substring(0,200)); throw new Error(`Expected JSON, but got ${ct}. Check GAS deployment and script output.`); }
+            const data = await resp.json(); if (data.error || (data.success === false)) throw new Error(`Script error: ${data.message || 'Unknown error from script'}`);
+            if (!data || !Array.isArray(data.menuData) || !Array.isArray(data.categories)) { console.error("Invalid data structure received:", data); throw new Error("Invalid data structure received from script.");}
             console.log("Menu data fetched successfully:", data.menuData.length, "items,", data.categories.length, "categories.");
-            menuData = data.menuData; // Assign fetched menu data
-            allCategories = data.categories; // Assign fetched categories
-            return true; // Success
-        } catch (error) {
-            console.error('Error fetching or processing menu data:', error);
-            const errorDiv = document.createElement('div');
-            errorDiv.innerHTML = `<p style="color: red; text-align: center; padding: 20px; background-color: #ffebee; border: 1px solid red; border-radius: 5px;">
-                ❌ เกิดข้อผิดพลาดในการโหลดข้อมูลเมนู:<br><small>${error.message}</small><br>โปรดลองรีเฟรชหน้า หรือติดต่อพนักงาน</p>`;
-            if (container && categoryBarElement) { container.insertBefore(errorDiv, categoryBarElement); }
-            else if (container) { container.prepend(errorDiv); }
-            menuData = []; // Clear data on error
-            allCategories = []; // Clear categories on error
-            return false; // Failure
-        } finally {
-            if (loadingIndicator) loadingIndicator.remove(); // Remove indicator
+            menuData = data.menuData; allCategories = data.categories; return true;
+        } catch (e) {
+            console.error('Error fetching or processing menu data:', e); const errDiv = document.createElement('div');
+            errDiv.innerHTML = `<p style="color:red;text-align:center;padding:20px;background-color:#ffebee;border:1px solid red;border-radius:5px;">❌ เกิดข้อผิดพลาดในการโหลดข้อมูลเมนู:<br><small>${e.message}</small><br>โปรดลองรีเฟรชหน้า หรือติดต่อพนักงาน</p>`;
+            if (cont && categoryBarEl) cont.insertBefore(errDiv, categoryBarEl.nextSibling);
+            else if (cont) cont.prepend(errDiv);
+            menuData = []; allCategories = []; return false;
+        } finally { if (ld) ld.remove(); }
+    }
+
+    // --- Film Strip Logic ---
+    function getSortedCategories() {
+        if (sortedCategoriesCache.length > 0) return sortedCategoriesCache;
+        const desiredCategoryOrder = ["ทานเล่น", "สลัด", "เฮลท์ตี้ โบวล์", "ซุป", "จานหลัก", "ทะเล", "เครื่องดื่ม", "ของหวาน"];
+        const orderMap = new Map(desiredCategoryOrder.map((cat, index) => [cat.trim().toLowerCase(), index]));
+        sortedCategoriesCache = [...allCategories].sort((a, b) => {
+            const normA = String(a).trim().toLowerCase(); const normB = String(b).trim().toLowerCase();
+            const indexA = orderMap.get(normA); const indexB = orderMap.get(normB);
+            if (indexA !== undefined && indexB !== undefined) return indexA - indexB;
+            if (indexA !== undefined) return -1; if (indexB !== undefined) return 1;
+            return String(a).localeCompare(String(b), 'th');
+        });
+        return sortedCategoriesCache;
+    }
+
+    function initializeGlobalFilmStripItems() {
+        globalFilmStripItems = [];
+        const sortedCats = getSortedCategories();
+        sortedCats.forEach(categoryName => {
+            menuData.forEach((item, originalIndex) => {
+                if (Array.isArray(item.category) && item.category.includes(categoryName)) {
+                    globalFilmStripItems.push({
+                        id: item.id,
+                        name: item.name,
+                        src: item.dataImageSrc || item.src,
+                        alt: item.alt || item.name,
+                        categoryName: categoryName,
+                        originalMenuDataIndex: originalIndex,
+                        prices: item.prices,
+                        description: item.description,
+                        option1_title: item.option1_title,
+                        option1_choices: item.option1_choices,
+                        option2_title: item.option2_title,
+                        option2_choices: item.option2_choices,
+                    });
+                }
+            });
+        });
+        console.log("Global film strip items initialized:", globalFilmStripItems.length);
+    }
+
+    function populateFilmStrip() {
+        if (!filmStripItemsContainer) { console.error("Film strip container not found."); return; }
+        filmStripItemsContainer.innerHTML = '';
+        if (globalFilmStripItems.length === 0) {
+            filmStripItemsContainer.innerHTML = '<p style="color:var(--color-text-secondary);padding:5px;">ไม่มีภาพตัวอย่าง</p>';
+            return;
+        }
+        const frag = document.createDocumentFragment();
+        globalFilmStripItems.forEach((item, globalIndex) => {
+            const div = document.createElement('div');
+            div.className = 'film-strip-item';
+            div.dataset.itemId = item.id;
+            div.dataset.globalIndex = globalIndex;
+            const img = document.createElement('img');
+            img.src = item.src || 'placeholder.jpg';
+            img.alt = item.alt || item.name || 'Menu thumbnail';
+            img.loading = 'lazy';
+            img.onerror = function() { this.onerror = null; this.src = 'placeholder.jpg'; this.alt = `${item.name || 'Menu item'} (Image unavailable)`; };
+            div.appendChild(img);
+            div.onclick = () => onFilmStripItemClick(globalIndex);
+            frag.appendChild(div);
+        });
+        filmStripItemsContainer.appendChild(frag);
+    }
+
+    function onFilmStripItemClick(globalIndex) {
+        currentGlobalFilmStripIndex = globalIndex;
+        const itemData = globalFilmStripItems[globalIndex];
+        showItemDetailsByGlobalIndex(globalIndex, 'none');
+
+        if (itemData.categoryName !== currentCategory) {
+            currentCategory = itemData.categoryName;
+            document.querySelectorAll('.category-bar .category-item').forEach(c => c.classList.remove('selected'));
+            const catEl = Array.from(document.querySelectorAll('.category-bar .category-item')).find(el => el.dataset.category === currentCategory);
+            if (catEl) {
+                 catEl.classList.add('selected');
+                 catEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+            displayMenuItems(currentCategory);
+        }
+         if (imageContainer) { 
+            const imageContainerTop = imageContainer.getBoundingClientRect().top + window.pageYOffset - (categoryBarEl && !categoryBarEl.classList.contains('hidden-by-scroll') ? categoryBarEl.offsetHeight : 0);
+            window.scrollTo({ top: imageContainerTop - 10, behavior: 'smooth' });
+        }
+    }
+
+    function highlightActiveFilmStripItem(globalIndex) {
+        if (!filmStripItemsContainer) return;
+        filmStripItemsContainer.querySelectorAll('.film-strip-item').forEach(thumb => thumb.classList.remove('active'));
+        const activeThumbnail = filmStripItemsContainer.querySelector(`.film-strip-item[data-global-index="${globalIndex}"]`);
+        if (activeThumbnail) {
+            activeThumbnail.classList.add('active');
+            activeThumbnail.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
     }
 
     // --- Local Storage (Cart & Ordered Items) ---
-
-    /** Saves the current cart items to localStorage, tagged with table number. */
-    function saveCartToLocalStorage() {
-        if (!selectedTableNumber) return; // Don't save if no table selected
-        const cartData = { table: selectedTableNumber, date: getCurrentDateString(), items: cartItems };
-        try { localStorage.setItem(CART_LOCAL_STORAGE_KEY, JSON.stringify(cartData)); }
-        catch (error) { console.error("LS Error (Save Cart):", error); }
-    }
-
-    /** Loads cart items from localStorage *only* if they match the current table number. */
-    function loadCartFromLocalStorage() {
-        cartItems = []; // Start fresh
-        const parsedData = safeJsonParse(CART_LOCAL_STORAGE_KEY);
-        if (parsedData && Array.isArray(parsedData.items) && parsedData.table === selectedTableNumber) {
-             cartItems = parsedData.items;
-             console.log(`Loaded cart for table ${selectedTableNumber}. Items: ${cartItems.length}`);
-        } else if (parsedData && parsedData.table !== selectedTableNumber) {
-             console.log(`Ignoring cart data from table ${parsedData.table}. Current table: ${selectedTableNumber}.`);
-        }
-    }
-
-    /** Saves the current ordered items to localStorage, tagged with table number. */
-    function saveOrderedItemsToLocalStorage() {
-        if (!selectedTableNumber) return; // Don't save if no table selected
-        const orderedData = { table: selectedTableNumber, date: getCurrentDateString(), items: orderedItems };
-        try { localStorage.setItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY, JSON.stringify(orderedData)); }
-        catch (error) { console.error("LS Error (Save Ordered):", error); }
-    }
-
-    /** Loads ordered items from localStorage *only* if they match the current table number. */
-    function loadOrderedItemsFromLocalStorage() {
-        orderedItems = []; // Start fresh
-        const parsedData = safeJsonParse(ORDERED_ITEMS_LOCAL_STORAGE_KEY);
-        if (parsedData && Array.isArray(parsedData.items) && parsedData.table === selectedTableNumber) {
-            orderedItems = parsedData.items;
-            console.log(`Loaded ordered items for table ${selectedTableNumber}. Items: ${orderedItems.length}`);
-        } else if (parsedData && parsedData.table !== selectedTableNumber) {
-             console.log(`Ignoring ordered items data from table ${parsedData.table}. Current table: ${selectedTableNumber}.`);
-        }
-    }
+    function saveCartToLocalStorage() { if (!selectedTableNumber) return; try { localStorage.setItem(CART_LOCAL_STORAGE_KEY, JSON.stringify({ table: selectedTableNumber, date: getCurrentDateString(), items: cartItems })); } catch (e) { console.error("LS Save Cart Error:", e); } }
+    function loadCartFromLocalStorage() { cartItems = []; const p = safeJsonParse(CART_LOCAL_STORAGE_KEY); if (p && Array.isArray(p.items) && p.table === selectedTableNumber) {cartItems = p.items; console.log(`Loaded cart for table ${selectedTableNumber}. Items: ${cartItems.length}`);} else if (p && p.table !== selectedTableNumber) { console.log(`Ignoring cart data from table ${p.table}. Current table: ${selectedTableNumber}.`);}}
+    function saveOrderedItemsToLocalStorage() { if (!selectedTableNumber) return; try { localStorage.setItem(ORDERED_ITEMS_LOCAL_STORAGE_KEY, JSON.stringify({ table: selectedTableNumber, date: getCurrentDateString(), items: orderedItems })); } catch (e) { console.error("LS Save Ordered Error:", e); } }
+    function loadOrderedItemsFromLocalStorage() { orderedItems = []; const p = safeJsonParse(ORDERED_ITEMS_LOCAL_STORAGE_KEY); if (p && Array.isArray(p.items) && p.table === selectedTableNumber) {orderedItems = p.items; console.log(`Loaded ordered items for table ${selectedTableNumber}. Items: ${orderedItems.length}`);} else if (p && p.table !== selectedTableNumber) { console.log(`Ignoring ordered items data from table ${p.table}. Current table: ${selectedTableNumber}.`);}}
 
     // --- Cart Update Functions ---
-
-    /** Adds an item to the cart or increments its quantity. */
-    // --- MODIFIED: addToCart Function ---
     function addToCart(itemId, size) {
-        const product = menuData.find(item => item.id === itemId);
-        if (!product || typeof product.prices !== 'object') { console.error("Product not found:", itemId); return; }
-        const price = product.prices[size];
-        if (price === null || price === undefined || isNaN(price)) { console.error("Invalid price for", itemId, size); return; }
+        if (currentGlobalFilmStripIndex < 0 || currentGlobalFilmStripIndex >= globalFilmStripItems.length) { console.error("Invalid currentGlobalFilmStripIndex for addToCart"); return; }
+        const prod = globalFilmStripItems[currentGlobalFilmStripIndex];
+        if (!prod || prod.id !== itemId) { console.error("Product mismatch for addToCart:", itemId, prod.id); return; }
+        if (typeof prod.prices !== 'object') {console.error("Product prices not found:",itemId); return;}
 
-        // --- NEW: Get selected options ---
-        // Check if the option elements exist before querying
-        const selectedOption1Input = menuOption1ChoicesEl ? menuOption1ChoicesEl.querySelector('input[name="option1"]:checked') : null;
-        const selectedOption1Value = selectedOption1Input ? selectedOption1Input.value : null;
+        const price = prod.prices[size]; if (price == null || isNaN(price)) {console.error("Invalid price for",itemId,size);return;}
+        const opt1 = menuOption1ChoicesEl?.querySelector('input[name="option1"]:checked')?.value || null;
+        const opt2 = menuOption2ChoicesEl?.querySelector('input[name="option2"]:checked')?.value || null;
+        const cartId = `${itemId}-${size}${(opt1?'-'+opt1.replace(/\s+/g,''):'')}${(opt2?'-'+opt2.replace(/\s+/g,''):'')}`;
+        const exIdx = cartItems.findIndex(i => i.cartId === cartId);
 
-        const selectedOption2Input = menuOption2ChoicesEl ? menuOption2ChoicesEl.querySelector('input[name="option2"]:checked') : null;
-        const selectedOption2Value = selectedOption2Input ? selectedOption2Input.value : null;
-        // --- END NEW ---
-
-        // --- Keep cartItemId simple as options don't affect price ---
-        const cartItemId = `${itemId}-${size}`;
-
-        const existingItemIndex = cartItems.findIndex(item => item.cartId === cartItemId);
-
-        if (existingItemIndex > -1) {
-            // Item already exists, increment quantity
-            cartItems[existingItemIndex].quantity++;
-            // Update options to the newly selected ones (overwrites previous selection for this specific cart item entry)
-            cartItems[existingItemIndex].selectedOption1 = selectedOption1Value;
-            cartItems[existingItemIndex].selectedOption2 = selectedOption2Value;
-        } else {
-            // --- MODIFIED: Add options to the new cart item object ---
-            cartItems.push({
-                cartId: cartItemId,
-                id: product.id,
-                name: product.name,
-                price: price,
-                size: size,
-                quantity: 1,
-                selectedOption1: selectedOption1Value, // Store selected option 1
-                selectedOption2: selectedOption2Value  // Store selected option 2
-            });
-            // --- END MODIFIED ---
-        }
-
-        saveCartToLocalStorage();
-        renderCart();
-        updateCartIconCount();
-        // Visual feedback on icon
-        cartIconContainer?.classList.add('updated');
-        setTimeout(() => { cartIconContainer?.classList.remove('updated'); }, 300);
+        if (exIdx > -1) { cartItems[exIdx].quantity++; }
+        else { cartItems.push({ cartId, id: prod.id, name: prod.name, price, size, quantity: 1, selectedOption1: opt1, selectedOption2: opt2 }); }
+        saveCartToLocalStorage(); renderCart(); updateCartIconCount();
+        cartIconContainer?.classList.add('updated'); setTimeout(() => cartIconContainer?.classList.remove('updated'), 300);
     }
-    // --- END MODIFIED addToCart ---
-
-
-    /** Updates the quantity of a cart item, removes if quantity <= 0. */
     function updateQuantity(cartId, change) {
-        const itemIndex = cartItems.findIndex(item => item.cartId === cartId);
-        if (itemIndex > -1) {
-            cartItems[itemIndex].quantity += change;
-            if (cartItems[itemIndex].quantity <= 0) { cartItems.splice(itemIndex, 1); } // Remove item
-            saveCartToLocalStorage();
-            renderCart();
-            updateCartIconCount();
-        }
+        const idx = cartItems.findIndex(i => i.cartId === cartId);
+        if (idx > -1) { cartItems[idx].quantity += change; if (cartItems[idx].quantity <= 0) cartItems.splice(idx, 1); saveCartToLocalStorage(); renderCart(); updateCartIconCount(); }
     }
-
-    /** Removes an item entirely from the cart. */
     function removeFromCart(cartId) {
-         const itemIndex = cartItems.findIndex(item => item.cartId === cartId);
-         if (itemIndex > -1) {
-             cartItems.splice(itemIndex, 1);
-             saveCartToLocalStorage();
-             renderCart();
-             updateCartIconCount();
-         }
+        const idx = cartItems.findIndex(i => i.cartId === cartId);
+        if (idx > -1) { cartItems.splice(idx, 1); saveCartToLocalStorage(); renderCart(); updateCartIconCount(); }
     }
 
     // --- Rendering Functions ---
-
-    /** Renders the cart items list in the cart popup. */
-    // --- MODIFIED: renderCart Function ---
     function renderCart() {
-        if (!cartItemsList) return;
-        cartItemsList.innerHTML = ''; // Clear previous items
-        if (cartItems.length === 0) {
-            cartItemsList.innerHTML = '<p class="popup-empty-message cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>';
-        } else {
-            const fragment = document.createDocumentFragment();
-            cartItems.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.classList.add('list-item-base', 'cart-item'); // Use base class
-                const itemPrice = item.price || 0;
-                const itemQuantity = item.quantity || 0;
-                const itemTotalPrice = itemPrice * itemQuantity;
-
-                // Build options HTML string conditionally
-                let optionsHtml = '';
-                if (item.selectedOption1 || item.selectedOption2) {
-                    optionsHtml += '<div class="list-item-options">';
-                    if (item.selectedOption1) {
-                        optionsHtml += `<span>+ ${item.selectedOption1}</span>`;
-                    }
-                    if (item.selectedOption2) {
-                        optionsHtml += `<span>+ ${item.selectedOption2}</span>`;
-                    }
-                    optionsHtml += '</div>';
-                }
-
-                itemElement.innerHTML = `
-                    <div class="list-item-details cart-item-details">
-                        <div class="list-item-name cart-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</div>
-                        ${optionsHtml} 
-                        <div class="list-item-info cart-item-price">${itemPrice.toLocaleString()} x ${itemQuantity} = ${itemTotalPrice.toLocaleString()}</div>
-                    </div>
-                    <div class="cart-item-controls">
-                        <button class="cart-quantity-btn decrease-qty" data-cartid="${item.cartId}" aria-label="ลดจำนวน">-</button>
-                        <span class="cart-item-quantity">${itemQuantity}</span>
-                        <button class="cart-quantity-btn increase-qty" data-cartid="${item.cartId}" aria-label="เพิ่มจำนวน">+</button>
-                        <button class="cart-remove-btn" data-cartid="${item.cartId}" title="ลบรายการนี้" aria-label="ลบรายการนี้"><i class="fas fa-trash-alt"></i></button>
-                    </div>`;
-
-                // Add event listeners directly
-                itemElement.querySelector('.decrease-qty')?.addEventListener('click', (e) => updateQuantity(e.currentTarget.dataset.cartid, -1));
-                itemElement.querySelector('.increase-qty')?.addEventListener('click', (e) => updateQuantity(e.currentTarget.dataset.cartid, 1));
-                itemElement.querySelector('.cart-remove-btn')?.addEventListener('click', (e) => removeFromCart(e.currentTarget.dataset.cartid));
-                fragment.appendChild(itemElement);
-            });
-            cartItemsList.appendChild(fragment);
+        if (!cartItemsList) return; cartItemsList.innerHTML = '';
+        if (cartItems.length === 0) { cartItemsList.innerHTML = '<p class="popup-empty-message cart-empty-message">ตระกร้าของคุณว่างเปล่า</p>'; }
+        else { const frag = document.createDocumentFragment(); cartItems.forEach(item => {
+                const el = document.createElement('div'); el.className = 'list-item-base cart-item';
+                let optsHtml = ''; if (item.selectedOption1 || item.selectedOption2) { optsHtml += '<div class="list-item-options">'; if (item.selectedOption1) optsHtml += `<span>+ ${item.selectedOption1}</span>`; if (item.selectedOption2) optsHtml += `<span>+ ${item.selectedOption2}</span>`; optsHtml += '</div>'; }
+                el.innerHTML = `<div class="list-item-details cart-item-details"><div class="list-item-name cart-item-name">${item.name||'N/A'} (${item.size||'N/A'})</div>${optsHtml}<div class="list-item-info cart-item-price">${(item.price||0).toLocaleString()} x ${item.quantity||0} = ${((item.price||0)*(item.quantity||0)).toLocaleString()}</div></div><div class="cart-item-controls"><button class="cart-quantity-btn decrease-qty" data-cartid="${item.cartId}" aria-label="ลดจำนวน">-</button><span class="cart-item-quantity">${item.quantity||0}</span><button class="cart-quantity-btn increase-qty" data-cartid="${item.cartId}" aria-label="เพิ่มจำนวน">+</button><button class="cart-remove-btn" data-cartid="${item.cartId}" title="ลบรายการนี้" aria-label="ลบรายการนี้"><i class="fas fa-trash-alt"></i></button></div>`;
+                el.querySelector('.decrease-qty').onclick = (e) => updateQuantity(e.currentTarget.dataset.cartid, -1);
+                el.querySelector('.increase-qty').onclick = (e) => updateQuantity(e.currentTarget.dataset.cartid, 1);
+                el.querySelector('.cart-remove-btn').onclick = (e) => removeFromCart(e.currentTarget.dataset.cartid);
+                frag.appendChild(el); }); cartItemsList.appendChild(frag);
         }
-         // Enable/disable order button
-         if (orderButton) {
-             orderButton.disabled = !(cartItems.length > 0 && selectedTableNumber);
-             orderButton.title = (cartItems.length === 0) ? "ตระกร้าว่างเปล่า" : (!selectedTableNumber ? "กรุณาเลือกโต๊ะก่อน" : "สั่งรายการอาหาร");
-         }
+        if (orderButton) { orderButton.disabled = !(cartItems.length > 0 && selectedTableNumber); orderButton.title = (cartItems.length === 0)?"ตระกร้าว่างเปล่า":(!selectedTableNumber?"กรุณาเลือกโต๊ะก่อน":"สั่งรายการอาหาร");}
     }
-    // --- END MODIFIED renderCart ---
-
-    /** Updates the badge count on the cart icon. */
-    function updateCartIconCount() {
-        if (!cartItemCountBadge) return;
-        const totalQuantity = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-        cartItemCountBadge.textContent = totalQuantity;
-        cartItemCountBadge.classList.toggle('hidden', totalQuantity === 0);
-    }
-
-    /** Renders the ordered items list and total in the "My Food" popup. */
-    // --- MODIFIED: renderOrderedItems Function ---
+    function updateCartIconCount() { if (!cartItemCountBadge) return; const qty = cartItems.reduce((s, i) => s + (i.quantity || 0), 0); cartItemCountBadge.textContent = qty; cartItemCountBadge.classList.toggle('hidden', qty === 0); }
     function renderOrderedItems() {
-        if (!myFoodItemsList || !myFoodCheckoutButton || !myFoodTotalDisplay) return;
-        myFoodItemsList.innerHTML = ''; // Clear previous
-         let grandOrderedTotal = 0;
-         let hasOrderedItems = orderedItems.length > 0;
-
-        if (!hasOrderedItems) {
-            myFoodItemsList.innerHTML = '<p class="popup-empty-message my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>';
-            myFoodTotalDisplay.textContent = ''; // Clear total display
-        } else {
-            const fragment = document.createDocumentFragment();
-            orderedItems.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.classList.add('list-item-base', 'ordered-item'); // Use base class
-                const itemPrice = item.price || 0;
-                const itemQuantity = item.quantity || 0;
-                const itemTotalPrice = itemPrice * itemQuantity;
-                grandOrderedTotal += itemTotalPrice;
-
-                // Build options HTML string conditionally
-                let optionsHtml = '';
-                if (item.selectedOption1 || item.selectedOption2) {
-                    optionsHtml += '<div class="list-item-options">';
-                    if (item.selectedOption1) {
-                        optionsHtml += `<span>+ ${item.selectedOption1}</span>`;
-                    }
-                    if (item.selectedOption2) {
-                        optionsHtml += `<span>+ ${item.selectedOption2}</span>`;
-                    }
-                    optionsHtml += '</div>';
-                }
-
-                itemElement.innerHTML = `
-                    <div class="list-item-details ordered-item-details">
-                        <div class="list-item-name ordered-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</div>
-                        ${optionsHtml} 
-                        <div class="list-item-info ordered-item-info">จำนวน: ${itemQuantity} (${itemPrice.toLocaleString()}/ชิ้น)</div>
-                    </div>
-                    <div class="list-item-total ordered-item-total">${itemTotalPrice.toLocaleString()}</div>`;
-                fragment.appendChild(itemElement);
-            });
-            myFoodItemsList.appendChild(fragment);
-            // Display total in its dedicated div
-            myFoodTotalDisplay.textContent = `ยอดรวมที่สั่งแล้ว: ${grandOrderedTotal.toLocaleString()}`;
+        if (!myFoodItemsList || !myFoodCheckoutButton || !myFoodTotalDisplay) return; myFoodItemsList.innerHTML = ''; let grandTotal = 0; const hasItems = orderedItems.length > 0;
+        if (!hasItems) { myFoodItemsList.innerHTML = '<p class="popup-empty-message my-food-empty-message">ยังไม่มีรายการอาหารที่สั่ง</p>'; myFoodTotalDisplay.textContent = ''; }
+        else { const frag = document.createDocumentFragment(); orderedItems.forEach(item => {
+                const el = document.createElement('div'); el.className = 'list-item-base ordered-item'; const itemTotal = (item.price||0)*(item.quantity||0); grandTotal += itemTotal;
+                let optsHtml = ''; if (item.selectedOption1 || item.selectedOption2) { optsHtml += '<div class="list-item-options">'; if (item.selectedOption1) optsHtml += `<span>+ ${item.selectedOption1}</span>`; if (item.selectedOption2) optsHtml += `<span>+ ${item.selectedOption2}</span>`; optsHtml += '</div>'; }
+                el.innerHTML = `<div class="list-item-details ordered-item-details"><div class="list-item-name ordered-item-name">${item.name||'N/A'} (${item.size||'N/A'})</div>${optsHtml}<div class="list-item-info ordered-item-info">จำนวน: ${item.quantity||0} (${(item.price||0).toLocaleString()}/ชิ้น)</div></div><div class="list-item-total ordered-item-total">${itemTotal.toLocaleString()}</div>`;
+                frag.appendChild(el); }); myFoodItemsList.appendChild(frag); myFoodTotalDisplay.textContent = `ยอดรวมที่สั่งแล้ว: ${grandTotal.toLocaleString()}`;
         }
-         // Enable/disable checkout button and show/hide total
-         myFoodCheckoutButton.disabled = !(hasOrderedItems && selectedTableNumber);
-         myFoodCheckoutButton.title = (!hasOrderedItems) ? "ไม่มีรายการที่สั่ง" : (!selectedTableNumber ? "กรุณาเลือกโต๊ะก่อน" : "สรุปยอดและเรียกชำระเงิน");
-         myFoodTotalDisplay.style.display = hasOrderedItems ? 'block' : 'none';
+        myFoodCheckoutButton.disabled = !(hasItems && selectedTableNumber); myFoodCheckoutButton.title = (!hasItems)?"ไม่มีรายการที่สั่ง":(!selectedTableNumber?"กรุณาเลือกโต๊ะก่อน":"สรุปยอดและเรียกชำระเงิน"); myFoodTotalDisplay.style.display = hasItems?'block':'none';
     }
-    // --- END MODIFIED renderOrderedItems ---
+    function updateMyFoodIconCount() { if (!myFoodItemCountBadge) return; const qty = orderedItems.reduce((s, i) => s + (i.quantity || 0), 0); myFoodItemCountBadge.textContent = qty; myFoodItemCountBadge.classList.toggle('hidden', qty === 0); if (qty > 0 && myFoodIconContainer) { myFoodIconContainer.classList.add('updated'); setTimeout(() => myFoodIconContainer?.classList.remove('updated'), 300);}}
 
+    function showItemDetailsByGlobalIndex(globalIndex, direction = 'none') {
+        if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer || !menuOptionsSection || !menuOption1Container || !menuOption1TitleEl || !menuOption1ChoicesEl || !menuOption2Container || !menuOption2TitleEl || !menuOption2ChoicesEl) {console.error("Required elements for item details/options missing."); return;}
+        if (globalIndex < 0 || globalIndex >= globalFilmStripItems.length) { menuDetailsContainer.style.display = 'none'; currentDisplayedItemId = null; currentGlobalFilmStripIndex = -1; highlightActiveFilmStripItem(-1); return; }
 
-    /** Updates the badge count on the "My Food" icon. */
-    function updateMyFoodIconCount() {
-         if (!myFoodItemCountBadge) return;
-         const totalQuantity = orderedItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-         myFoodItemCountBadge.textContent = totalQuantity;
-         myFoodItemCountBadge.classList.toggle('hidden', totalQuantity === 0);
-         // Visual feedback on icon
-         if (totalQuantity > 0 && myFoodIconContainer) {
-             myFoodIconContainer.classList.add('updated');
-             setTimeout(() => { myFoodIconContainer?.classList.remove('updated'); }, 300);
-         }
-     }
-
-    // --- START: showItemDetails function (Modified for Options) ---
-    function showItemDetails(index, direction = 'none') {
-        // Ensure required elements exist (including new option elements)
-        if (!menuDetailsContainer || !mainFoodImage || !menuNameElement || !menuDescriptionElement || !menuPriceContainer || !imageContainer ||
-            !menuOptionsSection || !menuOption1Container || !menuOption1TitleEl || !menuOption1ChoicesEl ||
-            !menuOption2Container || !menuOption2TitleEl || !menuOption2ChoicesEl) {
-            console.error("One or more required elements for item details/options are missing.");
-            return;
-        }
-
-        if (index < 0 || index >= currentFilteredItems.length) {
-            menuDetailsContainer.style.display = 'none';
-            currentDisplayedItemId = null;
-            currentIndex = -1;
-            return;
-        }
-
-        currentIndex = index;
-        const itemData = currentFilteredItems[currentIndex];
+        currentGlobalFilmStripIndex = globalIndex;
+        const itemData = globalFilmStripItems[currentGlobalFilmStripIndex];
         currentDisplayedItemId = itemData.id;
 
-        // --- Image Update Logic (Existing, Unchanged) ---
-        const newImageSrc = itemData.dataImageSrc || itemData.src || 'placeholder.jpg';
-        const currentImageSrc = mainFoodImage.getAttribute('src');
-        const updateImageElement = (src, alt) => {
-            mainFoodImage.setAttribute('src', src);
-            mainFoodImage.alt = alt || itemData.name || 'Menu item image';
-            mainFoodImage.onerror = () => {
-                console.warn(`Image failed to load: ${src}. Using placeholder.`);
-                mainFoodImage.src = 'placeholder.jpg';
-                mainFoodImage.alt = `${itemData.name || 'Menu item'} (Image unavailable)`;
-                mainFoodImage.onerror = null; // Prevent infinite error loops
-            };
-        };
-        imageContainer.classList.remove('slide-out-left', 'slide-in-right', 'slide-out-right', 'slide-in-left');
-        if (direction !== 'none' && currentImageSrc !== newImageSrc && currentImageSrc !== 'placeholder.jpg') {
-            let outClass = ''; let inClass = '';
-            if (direction === 'next') { outClass = 'slide-out-left'; inClass = 'slide-in-right'; }
-            else if (direction === 'prev') { outClass = 'slide-out-right'; inClass = 'slide-in-left'; }
-            requestAnimationFrame(() => {
-                imageContainer.classList.add(outClass);
-                const handleOutAnimationEnd = () => {
-                    imageContainer.removeEventListener('animationend', handleOutAnimationEnd);
-                    imageContainer.classList.remove(outClass);
-                    updateImageElement(newImageSrc, itemData.alt);
-                    requestAnimationFrame(() => {
-                        imageContainer.classList.add(inClass);
-                        const handleInAnimationEnd = () => {
-                            imageContainer.removeEventListener('animationend', handleInAnimationEnd);
-                            imageContainer.classList.remove(inClass);
-                        };
-                        imageContainer.addEventListener('animationend', handleInAnimationEnd, { once: true });
-                    });
-                };
-                imageContainer.addEventListener('animationend', handleOutAnimationEnd, { once: true });
-            });
-        } else {
-            updateImageElement(newImageSrc, itemData.alt);
-        }
-        // --- End Image Update Logic ---
+        const newImgSrc = itemData.src || 'placeholder.jpg', curImgSrc = mainFoodImage.getAttribute('src');
+        const updateImgEl = (src, alt) => { mainFoodImage.src = src; mainFoodImage.alt = alt||itemData.name||'Menu item'; mainFoodImage.onerror = () => { mainFoodImage.src = 'placeholder.jpg'; mainFoodImage.alt = `${itemData.name||'Menu item'} (Image unavailable)`; mainFoodImage.onerror=null;};};
+        imageContainer.classList.remove('slide-out-left','slide-in-right','slide-out-right','slide-in-left');
+        if (direction!=='none' && curImgSrc!==newImgSrc && curImgSrc!=='placeholder.jpg') {
+            let outC='',inC=''; if(direction==='next'){outC='slide-out-left';inC='slide-in-right';}else if(direction==='prev'){outC='slide-out-right';inC='slide-in-left';}
+            requestAnimationFrame(()=>{ imageContainer.classList.add(outC); imageContainer.addEventListener('animationend', function hOut(){ imageContainer.removeEventListener('animationend',hOut); imageContainer.classList.remove(outC); updateImgEl(newImgSrc, itemData.alt); requestAnimationFrame(()=>{ imageContainer.classList.add(inC); imageContainer.addEventListener('animationend', function hIn(){ imageContainer.removeEventListener('animationend',hIn); imageContainer.classList.remove(inC);},{once:true});});},{once:true});});
+        } else { updateImgEl(newImgSrc,itemData.alt); }
 
-        // --- Update Text Details (Existing, Unchanged) ---
-        menuNameElement.textContent = itemData.name || 'ชื่อเมนู';
-        menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
+        menuNameElement.textContent = itemData.name || 'ชื่อเมนู'; menuDescriptionElement.textContent = itemData.description || 'ไม่มีคำอธิบาย';
+        const prices = itemData.prices || {}, order = ['Small','Normal','Extra','Family']; order.forEach(s => { const c=priceElementsCache[s]; if(c){c.label?.closest('.price-item')?.classList.add('hidden'); if(c.separator)c.separator.classList.add('hidden');}});
+        let visCnt=0; order.forEach(s => { const c=priceElementsCache[s]; if(c?.label && c.value && c.button){ const pVal=prices[s], pSpan=c.label.closest('.price-item'); if(pSpan){ if(pVal!=null && !isNaN(pVal)){c.value.textContent=`${Number(pVal).toLocaleString()}`; pSpan.classList.remove('hidden'); visCnt++;}}}});
+        let firstVis=false; order.forEach(s=>{ const c=priceElementsCache[s], pSpan=c?.label?.closest('.price-item'); if(pSpan&&!pSpan.classList.contains('hidden')){ if(firstVis){ if(s==='Normal'&&priceElementsCache['Small']?.separator)priceElementsCache['Small'].separator.classList.remove('hidden'); else if(s==='Extra'&&priceElementsCache['Extra']?.separator)priceElementsCache['Extra'].separator.classList.remove('hidden'); else if(s==='Family'&&priceElementsCache['Family']?.separator)priceElementsCache['Family'].separator.classList.remove('hidden');} firstVis=true;}});
 
-        // --- Update Prices and Separators (Existing, Unchanged) ---
-        const prices = itemData.prices || {};
-        const displayOrder = ['Small', 'Normal', 'Extra', 'Family'];
-        displayOrder.forEach(size => {
-            const cache = priceElementsCache[size];
-            if (cache) {
-                cache.label?.closest('.price-item')?.classList.add('hidden');
-                if (cache.separator) cache.separator.classList.add('hidden');
-            }
-        });
-        let visibleCount = 0;
-        displayOrder.forEach(size => {
-            const cache = priceElementsCache[size];
-            if (cache?.label && cache.value && cache.button) {
-                const priceValue = prices[size];
-                const parentSpan = cache.label.closest('.price-item');
-                if (parentSpan) {
-                    if (priceValue !== null && priceValue !== undefined && !isNaN(priceValue)) {
-                        cache.value.textContent = `${Number(priceValue).toLocaleString()}`;
-                        parentSpan.classList.remove('hidden');
-                        visibleCount++;
-                    }
-                }
-            }
-        });
-        let firstVisibleFound = false;
-        displayOrder.forEach(size => {
-            const cache = priceElementsCache[size];
-            const parentSpan = cache?.label?.closest('.price-item');
-            if (parentSpan && !parentSpan.classList.contains('hidden')) {
-                if (firstVisibleFound) {
-                    if (size === 'Normal' && priceElementsCache['Small']?.separator) priceElementsCache['Small'].separator.classList.remove('hidden');
-                    else if (size === 'Extra' && priceElementsCache['Extra']?.separator) priceElementsCache['Extra'].separator.classList.remove('hidden');
-                    else if (size === 'Family' && priceElementsCache['Family']?.separator) priceElementsCache['Family'].separator.classList.remove('hidden');
-                }
-                firstVisibleFound = true;
-            }
-        });
-        // --- End Price Logic ---
-
-
-        // --- NEW: Populate Options ---
-        // Helper function to create radio buttons styled as labels
-        const createOptionRadio = (name, value, label, index) => {
-            const uniqueId = `${name}-${value.replace(/\s+/g, '-')}-${index}`; // Create a more unique ID
-
-            const labelEl = document.createElement('label');
-            labelEl.classList.add('option-choice-label');
-            labelEl.setAttribute('for', uniqueId); // Associate label with input
-
-            const inputEl = document.createElement('input');
-            inputEl.type = 'radio';
-            inputEl.name = name; // Group radio buttons
-            inputEl.value = value;
-            inputEl.id = uniqueId; // Assign unique ID
-            // No default selection unless specified
-            // if (index === 0) { inputEl.checked = true; }
-
-            const spanEl = document.createElement('span');
-            spanEl.textContent = label;
-
-            labelEl.appendChild(inputEl);
-            labelEl.appendChild(spanEl);
-            return labelEl;
-        };
-
-        let hasVisibleOptions = false; // Track if any options are displayed
-
-        // Populate Option 1
-        if (menuOption1Container && menuOption1TitleEl && menuOption1ChoicesEl && itemData.option1_title && itemData.option1_choices && itemData.option1_choices.length > 0) {
-            menuOption1TitleEl.textContent = itemData.option1_title;
-            menuOption1ChoicesEl.innerHTML = ''; // Clear previous
-            const fragment1 = document.createDocumentFragment();
-            itemData.option1_choices.forEach((choice, index) => {
-                fragment1.appendChild(createOptionRadio('option1', choice, choice, index));
-            });
-            menuOption1ChoicesEl.appendChild(fragment1);
-            menuOption1Container.classList.remove('hidden');
-            hasVisibleOptions = true;
-        } else if (menuOption1Container) {
-            menuOption1Container.classList.add('hidden');
-            if(menuOption1ChoicesEl) menuOption1ChoicesEl.innerHTML = ''; // Clear radios if hidden
-        }
-
-        // Populate Option 2
-        if (menuOption2Container && menuOption2TitleEl && menuOption2ChoicesEl && itemData.option2_title && itemData.option2_choices && itemData.option2_choices.length > 0) {
-            menuOption2TitleEl.textContent = itemData.option2_title;
-            menuOption2ChoicesEl.innerHTML = ''; // Clear previous
-            const fragment2 = document.createDocumentFragment();
-            itemData.option2_choices.forEach((choice, index) => {
-                 fragment2.appendChild(createOptionRadio('option2', choice, choice, index));
-            });
-            menuOption2ChoicesEl.appendChild(fragment2);
-            menuOption2Container.classList.remove('hidden');
-            hasVisibleOptions = true;
-        } else if (menuOption2Container) {
-            menuOption2Container.classList.add('hidden');
-            if(menuOption2ChoicesEl) menuOption2ChoicesEl.innerHTML = ''; // Clear radios if hidden
-        }
-
-        // Show/Hide the entire options section based on visibility
-        if (menuOptionsSection) {
-            menuOptionsSection.style.display = hasVisibleOptions ? 'block' : 'none';
-        }
-        // --- END NEW OPTIONS POPULATION ---
-
-
-        // --- Show the details container ---
+        const createOptRadio = (name, val, lbl, idx) => { const uid=`${name}-${val.replace(/\s+/g,'-')}-${idx}`, lab=document.createElement('label'); lab.className='option-choice-label'; lab.htmlFor=uid; const inp=document.createElement('input'); inp.type='radio'; inp.name=name; inp.value=val; inp.id=uid; const spn=document.createElement('span'); spn.textContent=lbl; lab.append(inp,spn); return lab;};
+        let hasVisOpts=false;
+        if(menuOption1Container&&menuOption1TitleEl&&menuOption1ChoicesEl&&itemData.option1_title&&itemData.option1_choices?.length>0){ menuOption1TitleEl.textContent=itemData.option1_title; menuOption1ChoicesEl.innerHTML=''; const f1=document.createDocumentFragment(); itemData.option1_choices.forEach((c,i)=>f1.appendChild(createOptRadio('option1',c,c,i))); menuOption1ChoicesEl.appendChild(f1); menuOption1Container.classList.remove('hidden'); hasVisOpts=true;}else if(menuOption1Container){menuOption1Container.classList.add('hidden'); if(menuOption1ChoicesEl)menuOption1ChoicesEl.innerHTML='';}
+        if(menuOption2Container&&menuOption2TitleEl&&menuOption2ChoicesEl&&itemData.option2_title&&itemData.option2_choices?.length>0){ menuOption2TitleEl.textContent=itemData.option2_title; menuOption2ChoicesEl.innerHTML=''; const f2=document.createDocumentFragment(); itemData.option2_choices.forEach((c,i)=>f2.appendChild(createOptRadio('option2',c,c,i))); menuOption2ChoicesEl.appendChild(f2); menuOption2Container.classList.remove('hidden'); hasVisOpts=true;}else if(menuOption2Container){menuOption2Container.classList.add('hidden'); if(menuOption2ChoicesEl)menuOption2ChoicesEl.innerHTML='';}
+        if(menuOptionsSection)menuOptionsSection.style.display=hasVisOpts?'block':'none';
         menuDetailsContainer.style.display = 'block';
+
+        highlightActiveFilmStripItem(globalIndex);
+
+        if (itemData.categoryName !== currentCategory) {
+            currentCategory = itemData.categoryName;
+            document.querySelectorAll('.category-bar .category-item').forEach(c => c.classList.remove('selected'));
+            const catEl = Array.from(document.querySelectorAll('.category-bar .category-item')).find(el => el.dataset.category === currentCategory);
+            if (catEl) {
+                catEl.classList.add('selected');
+                catEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
     }
-    // --- END: showItemDetails function UPDATE ---
 
-
-    /** Displays menu items filtered by the selected category. */
     function displayMenuItems(category) {
         if (!bottomMenu) { console.error("Bottom menu element not found."); return; }
-        bottomMenu.innerHTML = ''; // Clear previous items
-        currentCategory = category;
+        bottomMenu.innerHTML = '';
+        if (!menuData || menuData.length === 0) { bottomMenu.innerHTML = '<p style="text-align:center;color:var(--color-text-secondary);grid-column:1 / -1;">ไม่มีข้อมูลเมนู</p>'; return; }
 
-        if (!menuData || menuData.length === 0) {
-            console.warn("menuData is empty, cannot display items.");
-            bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีข้อมูลเมนู</p>';
-            if (menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-            currentFilteredItems = []; currentDisplayedItemId = null; currentIndex = -1;
-            return;
-        }
+        const filteredItemsForGrid = menuData.filter(item => Array.isArray(item.category) && item.category.includes(category));
+        if (filteredItemsForGrid.length === 0) { bottomMenu.innerHTML = `<p style="text-align:center;color:var(--color-text-secondary);grid-column:1 / -1;">ไม่มีเมนูในหมวดหมู่ "${category}"</p>`; return;}
 
-        // Filter items based on the category
-        currentFilteredItems = menuData.filter(item => Array.isArray(item.category) && item.category.includes(category));
-
-        if (currentFilteredItems.length === 0) {
-             bottomMenu.innerHTML = `<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีเมนูในหมวดหมู่ "${category}"</p>`;
-             if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-             currentDisplayedItemId = null; currentIndex = -1;
-             return;
-        }
-
-        // Use DocumentFragment for better performance when adding many items
-        const fragment = document.createDocumentFragment();
-        currentFilteredItems.forEach((item, index) => {
-            const menuItemDiv = document.createElement('div');
-            menuItemDiv.classList.add('menu-item');
-            menuItemDiv.dataset.itemId = item.id;
-            menuItemDiv.dataset.index = index; // Store index for click handler
-
-            const img = document.createElement('img');
-            img.src = item.src || 'placeholder.jpg'; // Fallback src
-            img.alt = item.alt || item.name || 'Menu item'; // Fallback alt
-            img.loading = 'lazy'; // Improve initial load performance
-            img.onerror = function() { // Handle image errors for thumbnails
-                 this.onerror=null; // Prevent infinite loop if placeholder fails
-                 this.src='placeholder.jpg';
-                 this.alt = `${item.name || 'Menu item'} (Image unavailable)`;
+        const frag = document.createDocumentFragment();
+        filteredItemsForGrid.forEach((item) => {
+            const div = document.createElement('div'); div.className = 'menu-item'; div.dataset.itemId = item.id;
+            const img = document.createElement('img'); img.src = item.src||'placeholder.jpg'; img.alt = item.alt||item.name||'Menu item'; img.loading='lazy'; img.onerror=function(){this.onerror=null;this.src='placeholder.jpg';this.alt=`${item.name||'Menu item'} (Image unavailable)`;};
+            div.appendChild(img);
+            div.onclick = () => {
+                const clickedItemId = item.id;
+                const globalIdx = globalFilmStripItems.findIndex(fsItem => fsItem.id === clickedItemId);
+                if (globalIdx !== -1) {
+                    onFilmStripItemClick(globalIdx);
+                }
             };
-
-            menuItemDiv.appendChild(img);
-            // Add listener to show details when this grid item is clicked
-            menuItemDiv.addEventListener('click', () => {
-                 const clickedIndex = parseInt(menuItemDiv.dataset.index, 10);
-                 if (!isNaN(clickedIndex) && clickedIndex >= 0 && clickedIndex < currentFilteredItems.length) {
-                     showItemDetails(clickedIndex); // Show details, no swipe animation
-                     // Smooth scroll to top (optional, can be jarring)
-                     requestAnimationFrame(() => {
-                         window.scrollTo({ top: 0, behavior: 'smooth' });
-                     });
-                 } else { console.error("Invalid index on menu item click:", menuItemDiv.dataset.index); }
-             });
-            fragment.appendChild(menuItemDiv);
+            frag.appendChild(div);
         });
-        bottomMenu.appendChild(fragment); // Append all items at once
-
-        // Show details of the first item in the filtered list
-        if (currentFilteredItems.length > 0) {
-            showItemDetails(0);
-        } else { // Should be caught above, but as a safeguard
-            if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-            currentDisplayedItemId = null; currentIndex = -1;
-        }
+        bottomMenu.appendChild(frag);
     }
-
-    /** Shows the previous item in the current filtered list (for swiping). */
     function showPreviousItem() {
-        if (currentFilteredItems.length <= 1 || currentIndex < 0) return; // No swipe if 0 or 1 item
-        let newIndex = (currentIndex - 1 + currentFilteredItems.length) % currentFilteredItems.length;
-        showItemDetails(newIndex, 'prev'); // Pass 'prev' direction for animation
+        if (globalFilmStripItems.length <= 1 || currentGlobalFilmStripIndex < 0) return;
+        let prevIndex = (currentGlobalFilmStripIndex - 1 + globalFilmStripItems.length) % globalFilmStripItems.length;
+        showItemDetailsByGlobalIndex(prevIndex, 'prev');
     }
-
-    /** Shows the next item in the current filtered list (for swiping). */
     function showNextItem() {
-        if (currentFilteredItems.length <= 1 || currentIndex < 0) return; // No swipe if 0 or 1 item
-        let newIndex = (currentIndex + 1) % currentFilteredItems.length;
-        showItemDetails(newIndex, 'next'); // Pass 'next' direction for animation
+        if (globalFilmStripItems.length <= 1 || currentGlobalFilmStripIndex < 0) return;
+        let nextIndex = (currentGlobalFilmStripIndex + 1) % globalFilmStripItems.length;
+        showItemDetailsByGlobalIndex(nextIndex, 'next');
     }
 
-    /** Populates the category bar dynamically based on fetched categories. */
-     function populateCategoryBar() {
-        const categoryBar = document.querySelector('.category-bar');
-        if (!categoryBar) { console.error("Category bar element not found."); return; }
-
-        if (!allCategories || allCategories.length === 0) {
-            console.warn("No categories fetched or available.");
-            categoryBar.innerHTML = '<p style="color: var(--color-text-secondary); padding: 10px; white-space: normal;">ไม่มีหมวดหมู่ให้แสดง</p>';
-            return;
-        }
-
-        categoryBar.innerHTML = ''; // Clear any static/previous content
-
-        // --- Define Category Icons (Customize map based on your category names) ---
-         const categoryIcons = {
-             "จานหลัก": "fas fa-utensils",
-             "เฮลท์ตี้ โบวล์": "fas fa-seedling",
-             "ทานเล่น": "fas fa-cookie-bite",
-             "สลัด": "fas fa-leaf",
-             "ทะเล": "fas fa-fish",
-             "ของหวาน": "fas fa-ice-cream",
-             "เครื่องดื่ม": "fas fa-coffee",
-             "ซุป": "fas fa-mug-hot", // Example: Add more mappings
-             // Add more mappings as needed...
-             "default": "fas fa-tag" // Fallback icon if no specific match
-         };
-        // --- End Icon Mapping ---
-
-        const fragment = document.createDocumentFragment();
-        allCategories.forEach(category => {
-            const categoryDiv = document.createElement('div');
-            categoryDiv.classList.add('category-item');
-            categoryDiv.dataset.category = category; // Store category name in data attribute
-
-            const iconClass = categoryIcons[category] || categoryIcons["default"]; // Get icon or default
-            categoryDiv.innerHTML = `
-                <i class="${iconClass}"></i>
-                <span>${category}</span>
-            `;
-
-            categoryDiv.addEventListener('click', handleCategoryClick); // Add click listener
-            fragment.appendChild(categoryDiv);
+    function populateCategoryBar() {
+        if (!categoryBarEl) { console.error("Category bar element not found."); return; }
+        const sortedCats = getSortedCategories();
+        if (!sortedCats || sortedCats.length === 0) { console.warn("No categories fetched or available."); categoryBarEl.innerHTML = '<p style="color:var(--color-text-secondary);padding:10px;white-space:normal;">ไม่มีหมวดหมู่ให้แสดง</p>'; return; }
+        categoryBarEl.innerHTML = '';
+        const categoryIcons = { "จานหลัก":"fas fa-utensils", "เฮลท์ตี้ โบวล์":"fas fa-seedling", "ทานเล่น":"fas fa-cookie-bite", "สลัด":"fas fa-leaf", "ทะเล":"fas fa-fish", "ของหวาน":"fas fa-ice-cream", "เครื่องดื่ม":"fas fa-coffee", "ซุป":"fas fa-mug-hot", "default":"fas fa-tag" };
+        const frag = document.createDocumentFragment();
+        sortedCats.forEach(category => {
+            const div = document.createElement('div'); div.className = 'category-item'; div.dataset.category = category;
+            const icon = categoryIcons[category] || categoryIcons["default"];
+            div.innerHTML = `<i class="${icon}"></i><span>${category}</span>`;
+            div.onclick = handleCategoryClick; frag.appendChild(div);
         });
-         categoryBar.appendChild(fragment); // Add all categories at once
-     }
+        categoryBarEl.appendChild(frag);
+    }
+    function handleCategoryClick(event) {
+        const clicked = event.currentTarget, selCat = clicked.dataset.category;
+        document.querySelectorAll('.category-bar .category-item').forEach(c => c.classList.remove('selected'));
+        clicked.classList.add('selected');
+        currentCategory = selCat;
 
-    /** Handles clicking on a category item. */
-     function handleCategoryClick(event) {
-         const clickedItem = event.currentTarget;
-         const selectedCategory = clickedItem.dataset.category;
-
-         // Update visual selection state
-         const allDynamicCategoryItems = document.querySelectorAll('.category-bar .category-item');
-         allDynamicCategoryItems.forEach(cat => cat.classList.remove('selected'));
-         clickedItem.classList.add('selected');
-
-         // Filter and display menu items for the selected category
-         displayMenuItems(selectedCategory);
-
-         // Optional: Scroll the clicked category into view smoothly
-         clickedItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-     }
+        const firstItemGlobalIndexOfCategory = globalFilmStripItems.findIndex(item => item.categoryName === selCat);
+        if (firstItemGlobalIndexOfCategory !== -1) {
+            showItemDetailsByGlobalIndex(firstItemGlobalIndexOfCategory, 'none');
+        } else {
+            if(menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+            highlightActiveFilmStripItem(-1);
+        }
+        displayMenuItems(selCat);
+        clicked.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        if (imageContainer) {
+            const imageContainerTop = imageContainer.getBoundingClientRect().top + window.pageYOffset - (categoryBarEl && !categoryBarEl.classList.contains('hidden-by-scroll') ? categoryBarEl.offsetHeight : 0);
+            window.scrollTo({ top: imageContainerTop - 10, behavior: 'smooth' });
+        }
+    }
+    
+    function closeAllPopupsExcept(exceptPopup = null) {
+        const popups = [cartPopup, myFoodPopup, languagePopup, receiptModal, tableSelectModal];
+        popups.forEach(p => {
+            if (p && p !== exceptPopup) {
+                p.classList.remove('open');
+            }
+        });
+    }
 
     // --- Event Listeners Setup ---
     function setupEventListeners() {
         console.log("Setting up event listeners...");
-
-        // Table Selection
         tableNumberDisplay?.addEventListener('click', openTableSelectModal);
         tableSelectCloseBtn?.addEventListener('click', closeTableSelectModal);
-        // Close modal if clicking outside the content area
         tableSelectModal?.addEventListener('click', (e) => { if (e.target === tableSelectModal) closeTableSelectModal(); });
-        // Hide prompt on click/touch
         tablePromptNotification?.addEventListener('click', hideTablePromptNotification);
         tablePromptNotification?.addEventListener('touchstart', hideTablePromptNotification, { passive: true });
-
-        // Add to Cart Buttons (Event Delegation on price container)
-         menuPriceContainer?.addEventListener('click', (e) => {
-             if (e.target && e.target.classList.contains('add-to-cart-button')) {
-                 const size = e.target.dataset.size;
-                 if (currentDisplayedItemId && size) {
-                     addToCart(currentDisplayedItemId, size); // This now includes option handling
-                 } else { console.warn("Cannot add to cart. Missing item ID or size."); }
-             }
-         });
-
-        // Category listeners are added dynamically in populateCategoryBar
-
-        // Cart Icon & Popup Toggle
-        cartIconContainer?.addEventListener('click', () => {
-            myFoodPopup?.classList.remove('open'); // Close other popups
-            receiptModal?.classList.remove('open');
-            cartPopup?.classList.toggle('open');
-            if (cartPopup?.classList.contains('open')) renderCart(); // Re-render if opening
-        });
+        menuPriceContainer?.addEventListener('click', (e) => { if (e.target?.classList.contains('add-to-cart-button')) { const size = e.target.dataset.size; if (currentDisplayedItemId && size) addToCart(currentDisplayedItemId, size); else { console.warn("Cannot add to cart. Missing item ID or size.");}}});
+        
+        cartIconContainer?.addEventListener('click', () => { closeAllPopupsExcept(cartPopup); cartPopup?.classList.toggle('open'); if (cartPopup?.classList.contains('open')) renderCart(); });
         cartCloseBtn?.addEventListener('click', () => cartPopup?.classList.remove('open'));
-
-        // My Food Icon & Popup Toggle
-        myFoodIconContainer?.addEventListener('click', () => {
-            cartPopup?.classList.remove('open'); // Close other popups
-            receiptModal?.classList.remove('open');
-            myFoodPopup?.classList.toggle('open');
-            if (myFoodPopup?.classList.contains('open')) renderOrderedItems(); // Re-render if opening
-        });
+        
+        myFoodIconContainer?.addEventListener('click', () => { closeAllPopupsExcept(myFoodPopup); myFoodPopup?.classList.toggle('open'); if (myFoodPopup?.classList.contains('open')) renderOrderedItems(); });
         myFoodCloseBtn?.addEventListener('click', () => myFoodPopup?.classList.remove('open'));
+        
+        callStaffIconContainer?.addEventListener('click', () => { closeAllPopupsExcept(); handleCallStaff(); });
 
-        // Call Staff Icon Action
-        callStaffIconContainer?.addEventListener('click', () => {
-            cartPopup?.classList.remove('open'); // Close other popups
-            myFoodPopup?.classList.remove('open');
-            receiptModal?.classList.remove('open');
-            handleCallStaff();
-        });
+        translateIconContainer?.addEventListener('click', () => { closeAllPopupsExcept(languagePopup); languagePopup?.classList.toggle('open'); if(languagePopup?.classList.contains('open')) populateLanguageOptions(); });
+        languageCloseBtn?.addEventListener('click', () => languagePopup?.classList.remove('open'));
 
-        // --- Image Swipe Listeners (Touch & Mouse) ---
+
         if (imageContainer) {
-            // Touch Events
             imageContainer.addEventListener('touchstart', (e) => { if (e.touches.length === 1) { touchStartX = e.touches[0].clientX; isSwiping = true; imageContainer.style.cursor = 'grabbing'; } }, { passive: true });
             imageContainer.addEventListener('touchmove', (e) => { if (isSwiping && e.touches.length === 1) touchEndX = e.touches[0].clientX; }, { passive: true });
-            imageContainer.addEventListener('touchend', (e) => {
-                if (!isSwiping || e.changedTouches.length !== 1) { isSwiping = false; imageContainer.style.cursor = 'grab'; return; }
-                touchEndX = e.changedTouches[0].clientX;
-                const deltaX = touchEndX - touchStartX;
-                if (Math.abs(deltaX) > swipeThreshold) { // Check threshold
-                    if (deltaX > 0) showPreviousItem(); else showNextItem();
-                }
-                isSwiping = false; touchStartX = 0; touchEndX = 0; imageContainer.style.cursor = 'grab';
-            });
-
-            // Mouse Events (for desktop usability)
-             let isDragging = false;
-             let dragStartX = 0;
-             imageContainer.addEventListener('mousedown', (e) => {
-                 // Prevent drag on buttons or other interactive elements if they were inside
-                 if (e.target !== mainFoodImage && e.target !== imageContainer) return;
-                 isDragging = true;
-                 dragStartX = e.clientX;
-                 imageContainer.style.cursor = 'grabbing';
-                 e.preventDefault(); // Prevent image ghost dragging
-             });
-             // Add mousemove listener to the *window* to catch drags outside the container
-             window.addEventListener('mousemove', (e) => { if (!isDragging) return; /* Optionally update visual feedback */ });
-             window.addEventListener('mouseup', (e) => { // Listen on window to catch mouseup anywhere
-                 if (!isDragging) return;
-                 isDragging = false;
-                 const dragEndX = e.clientX;
-                 const deltaX = dragEndX - dragStartX;
-                 imageContainer.style.cursor = 'grab';
-                 if (Math.abs(deltaX) > swipeThreshold) { // Check threshold
-                     if (deltaX > 0) showPreviousItem(); else showNextItem();
-                 }
-             });
-             // Reset cursor if mouse leaves the container while dragging (optional)
-             imageContainer.addEventListener('mouseleave', () => {
-                 if (isDragging) { imageContainer.style.cursor = 'grab'; /* Don't reset isDragging here, wait for mouseup */ }
-             });
+            imageContainer.addEventListener('touchend', (e) => { if (!isSwiping || e.changedTouches.length !== 1) { isSwiping = false; imageContainer.style.cursor = 'grab'; return; } touchEndX = e.changedTouches[0].clientX; const dX = touchEndX - touchStartX; if (Math.abs(dX) > swipeThreshold) { if (dX > 0) showPreviousItem(); else showNextItem(); } isSwiping = false; touchStartX = 0; touchEndX = 0; imageContainer.style.cursor = 'grab'; });
+            let isDrag = false, dragX = 0;
+            imageContainer.addEventListener('mousedown', (e) => { if (e.target !== mainFoodImage && e.target !== imageContainer) return; isDrag = true; dragX = e.clientX; imageContainer.style.cursor = 'grabbing'; e.preventDefault(); });
+            window.addEventListener('mousemove', (e) => { if (!isDrag) return; });
+            window.addEventListener('mouseup', (e) => { if (!isDrag) return; isDrag = false; const endX = e.clientX, dX = endX - dragX; imageContainer.style.cursor = 'grab'; if (Math.abs(dX) > swipeThreshold) { if (dX > 0) showPreviousItem(); else showNextItem(); }});
+            imageContainer.addEventListener('mouseleave', () => { if (isDrag) imageContainer.style.cursor = 'grab'; });
         }
-
-        // Order Button (Cart Popup)
         orderButton?.addEventListener('click', handleOrderSubmission);
-
-        // Checkout Button (My Food Popup) - Triggers Receipt Modal, Sends Photo, Sends Text
         myFoodCheckoutButton?.addEventListener('click', async () => {
-            // 1. Generate receipt HTML and display modal for customer FIRST
-            const generated = handleGenerateReceipt();
-            if (!generated) {
-                return; // Stop if modal generation failed (e.g., no items, no table)
-            }
-
-            // 2. Disable button and show loading state immediately
-            const originalButtonContent = myFoodCheckoutButton.innerHTML;
-            let photoSent = false;
-            let textSent = false;
-            myFoodCheckoutButton.disabled = true;
-            myFoodCheckoutButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> กำลังเตรียม...`;
-
+            if (!handleGenerateReceipt()) return;
+            const origBtn = myFoodCheckoutButton.innerHTML; let photoOK=false, textOK=false; myFoodCheckoutButton.disabled=true; myFoodCheckoutButton.innerHTML=`<i class="fas fa-spinner fa-spin"></i> กำลังเตรียม...`;
             try {
-                // 3. Generate the canvas (async)
                 const canvas = await generateReceiptCanvas();
-
-                // 4. Send the photo (async)
-                if (canvas) {
-                    const photoCaption = `🧾 ใบสรุปยอด *โต๊ะ ${selectedTableNumber}*`;
-                    myFoodCheckoutButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> กำลังส่งรูป...`; // Update status
-                    photoSent = await sendTelegramPhoto(canvas, photoCaption); // Don't pass button here
-                    if (!photoSent) {
-                         alert("⚠️ เกิดข้อผิดพลาดในการส่งรูปภาพใบเสร็จ"); // Alert if photo fails
-                    }
-                } else {
-                    alert("⚠️ ไม่สามารถสร้างรูปภาพใบเสร็จสำหรับส่งได้");
-                }
-
-                // 5. Send the text summary (async) - Use the RENAMED function
-                myFoodCheckoutButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> กำลังส่งข้อความ...`; // Update status
-                // Call the renamed function
-                textSent = await sendCheckoutTextSummaryToTelegram();
-                 if (!textSent) {
-                     alert("⚠️ เกิดข้อผิดพลาดในการส่งข้อความสรุปยอด"); // Alert if text fails
-                 }
-
-            } catch (error) {
-                 console.error("Error during checkout process:", error);
-                 alert(`🚨 เกิดข้อผิดพลาดโดยรวม: ${error.message}`);
-            } finally {
-                 // 6. Restore button state AFTER all async operations attempt
-                 myFoodCheckoutButton.disabled = false;
-                 myFoodCheckoutButton.innerHTML = originalButtonContent;
-
-                 // 7. Give final feedback based on success
-                 if (photoSent && textSent) {
-                      alert(`✅ เรียกเก็บเงินโต๊ะ ${selectedTableNumber} สำเร็จ (ส่งรูปและข้อความแล้ว)`);
-                 } else {
-                     // Specific errors already alerted, maybe a general notice?
-                     console.warn("Checkout process completed with partial or full failure.");
-                 }
-            }
+                if(canvas){ myFoodCheckoutButton.innerHTML=`<i class="fas fa-spinner fa-spin"></i> กำลังส่งรูป...`; photoOK = await sendTelegramPhoto(canvas, `🧾 ใบสรุปยอด *โต๊ะ ${selectedTableNumber}*`); if(!photoOK) alert("⚠️ เกิดข้อผิดพลาดในการส่งรูปภาพใบเสร็จ"); } else { alert("⚠️ ไม่สามารถสร้างรูปภาพใบเสร็จสำหรับส่งได้"); }
+                myFoodCheckoutButton.innerHTML=`<i class="fas fa-spinner fa-spin"></i> กำลังส่งข้อความ...`; textOK = await sendCheckoutTextSummaryToTelegram(); if(!textOK) alert("⚠️ เกิดข้อผิดพลาดในการส่งข้อความสรุปยอด");
+            } catch(e) { console.error("Checkout Error:",e); alert(`🚨 เกิดข้อผิดพลาดโดยรวม: ${e.message}`);}
+            finally { myFoodCheckoutButton.disabled=false; myFoodCheckoutButton.innerHTML=origBtn; if(photoOK&&textOK) alert(`✅ เรียกเก็บเงินโต๊ะ ${selectedTableNumber} สำเร็จ (ส่งรูปและข้อความแล้ว)`); }
         });
-
-        // --- Receipt Modal Listeners ---
         closeReceiptBtn?.addEventListener('click', () => receiptModal?.classList.remove('open'));
-        saveReceiptBtn?.addEventListener('click', saveReceiptAsImage); // Uses the updated save function
-        // Close receipt modal on click outside content area
+        saveReceiptBtn?.addEventListener('click', saveReceiptAsImage);
         receiptModal?.addEventListener('click', (e) => { if (e.target === receiptModal) receiptModal.classList.remove('open'); });
+
+        window.addEventListener('scroll', function() {
+            if (!categoryBarEl) return;
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const categoryBarHeight = categoryBarEl.offsetHeight;
+
+            if (scrollTop > lastScrollTop && scrollTop > categoryBarHeight / 2) { 
+                categoryBarEl.classList.add('hidden-by-scroll');
+            } else if (scrollTop < lastScrollTop) { 
+                categoryBarEl.classList.remove('hidden-by-scroll');
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+
+            if (tablePromptNotification && tablePromptNotification.classList.contains('show')) {
+                if (categoryBarEl.classList.contains('hidden-by-scroll')) {
+                    tablePromptNotification.classList.add('category-bar-is-hidden');
+                } else {
+                    tablePromptNotification.classList.remove('category-bar-is-hidden');
+                }
+            }
+        }, false);
 
         console.log("Event listeners setup complete.");
     }
 
-    // --- Action Handlers (Telegram, Order, Checkout, Receipt Generation) ---
-
-    /** Decodes the obfuscated Telegram bot token parts. */
-    function getTelegramToken() {
-        try { return atob(tPart1) + atob(tPart2) + atob(tPart3) + atob(tPart4); }
-        catch (e) { console.error("Error decoding Telegram token:", e); return null; }
-    }
-
-    /** Sends a message to the configured Telegram chat using standard Markdown. */
-    async function sendTelegramMessage(messageText, buttonElement = null, loadingText = 'กำลังส่ง...') {
-        // This function remains largely the same, but button state might be handled externally now
-        if (!selectedTableNumber && buttonElement !== myFoodCheckoutButton) {
-            alert('⚠️ กรุณาเลือกหมายเลขโต๊ะก่อนค่ะ');
-            openTableSelectModal();
-            return false;
-        }
-        if (!selectedTableNumber && buttonElement === myFoodCheckoutButton) {
-             // This case is handled by the main checkout listener now
-             return false;
-        }
-
-        const token = getTelegramToken();
-        if (!token) { alert("🚨 ข้อผิดพลาด: Token ไม่ถูกต้อง"); return false; }
-
-        let originalButtonContent = '';
-        let isLoading = false;
-        // Handle button loading state ONLY if buttonElement is provided AND not null
-        if (buttonElement) {
-             if (buttonElement.classList.contains('loading')) {
-                 console.log("Action already in progress for this button (sendTelegramMessage).");
-                 return false;
-             }
-             originalButtonContent = buttonElement.innerHTML;
-             buttonElement.disabled = true;
-             buttonElement.classList.add('loading');
-             buttonElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
-             isLoading = true;
-         }
-
-        const telegramApiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
-        const payload = {
-            chat_id: CHAT_ID,
-            text: messageText,
-            parse_mode: 'Markdown'
-        };
-
+    // --- Action Handlers (Telegram, Order, Receipt etc. - Kept as is, assuming no direct changes needed for film strip) ---
+    function getTelegramToken() { try { return atob(tPart1)+atob(tPart2)+atob(tPart3)+atob(tPart4); } catch(e){ console.error("Token Decode Error:", e); return null;} }
+    async function sendTelegramMessage(msgTxt, btnEl = null, loadTxt = 'กำลังส่ง...') {
+        if (!selectedTableNumber && btnEl !== myFoodCheckoutButton) { alert('⚠️ กรุณาเลือกหมายเลขโต๊ะก่อนค่ะ'); openTableSelectModal(); return false; }
+        if (!selectedTableNumber && btnEl === myFoodCheckoutButton) return false;
+        const token = getTelegramToken(); if (!token) { alert("🚨 ข้อผิดพลาด: Token ไม่ถูกต้อง"); return false; }
+        let origBtnCnt='', isLoading=false;
+        if(btnEl){ if(btnEl.classList.contains('loading')) { console.log("Action already in progress."); return false; } origBtnCnt=btnEl.innerHTML; btnEl.disabled=true; btnEl.classList.add('loading'); btnEl.innerHTML=`<i class="fas fa-spinner fa-spin"></i> ${loadTxt}`; isLoading=true;}
+        const apiUrl=`https://api.telegram.org/bot${token}/sendMessage`, payload={chat_id:CHAT_ID, text:msgTxt, parse_mode:'Markdown'};
         try {
-            console.log("Sending Telegram message (Markdown):", payload);
-            const response = await fetch(telegramApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            const result = await response.json();
-            console.log("Telegram response:", result);
-
-            if (!result.ok) {
-                 console.warn(`Markdown failed (${result.description}), attempting plain text.`);
-                 const plainPayload = { chat_id: CHAT_ID, text: messageText };
-                 const plainResponse = await fetch(telegramApiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(plainPayload) });
-                 const plainResult = await plainResponse.json();
-                 console.log("Plain text Telegram response:", plainResult);
-                 if (!plainResult.ok) {
-                     throw new Error(plainResult.description || result.description || 'Unknown Telegram API error');
-                 }
-             }
+            const resp = await fetch(apiUrl, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); let res = await resp.json();
+            if(!res.ok){ console.warn(`Markdown failed (${res.description}), attempting plain text.`); const plainP={chat_id:CHAT_ID,text:msgTxt}; const plainR = await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(plainP)}); res=await plainR.json(); if(!res.ok) throw new Error(res.description || result.description || 'Unknown Telegram API error');}
             return true;
-        } catch (error) {
-            console.error('Error sending Telegram message:', error);
-            // Avoid redundant alerts if called from checkout process
-            if (buttonElement !== null) { // Only alert if this is the primary action (like Call Staff)
-                 const tableInfo = selectedTableNumber ? `${TABLE_NUMBER_PREFIX}${selectedTableNumber}` : 'โต๊ะที่ไม่ได้เลือก';
-                 alert(`🚨 เกิดข้อผิดพลาดในการสื่อสาร (${tableInfo}): ${error.message}.\nกรุณาลองใหม่อีกครั้ง หรือแจ้งพนักงาน`);
-            }
-            return false;
-        } finally {
-             // Restore button state ONLY if it was handled by this function
-             if (isLoading && buttonElement) {
-                 buttonElement.disabled = false;
-                 buttonElement.classList.remove('loading');
-                 buttonElement.innerHTML = originalButtonContent;
-             }
-        }
+        } catch(e){ console.error('Error sending Telegram message:',e); if(btnEl !== null) { alert(`🚨 เกิดข้อผิดพลาดในการสื่อสาร (${selectedTableNumber?TABLE_NUMBER_PREFIX+selectedTableNumber:'โต๊ะที่ไม่ได้เลือก'}): ${e.message}.\nกรุณาลองใหม่อีกครั้ง หรือแจ้งพนักงาน`);} return false;}
+        finally { if(isLoading&&btnEl){ btnEl.disabled=false; btnEl.classList.remove('loading'); btnEl.innerHTML=origBtnCnt;}}
     }
-
-    /** Helper function to generate Canvas from receipt content */
     async function generateReceiptCanvas() {
-        if (!receiptContent || typeof html2canvas === 'undefined') {
-            console.error("html2canvas library not found or receiptContent element missing.");
-            return null; // Indicate failure
-        }
-
-        // Temporarily store scroll position and styles that might interfere
-        const currentScroll = receiptContent.scrollTop;
-        const originalStyles = {
-            maxHeight: receiptContent.style.maxHeight,
-            overflowY: receiptContent.style.overflowY
-        };
-
-        // --- Prepare for full capture by removing constraints ---
-        receiptContent.style.maxHeight = 'none';
-        receiptContent.style.overflowY = 'visible';
-        // Allow browser time to reflow the layout with full height
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        await new Promise(resolve => setTimeout(resolve, 50)); // Small extra delay
-
-        // --- Capture using html2canvas ---
-        const options = {
-            useCORS: true,
-            scale: window.devicePixelRatio * 1.5, // Adjust scale for quality
-            backgroundColor: '#ffffff',
-            logging: false,
-            scrollY: -currentScroll, // Use negative scrollY of the element itself
-            height: receiptContent.scrollHeight,
-            width: receiptContent.scrollWidth
-        };
-
-        try {
-            console.log("Generating receipt canvas...");
-            const canvas = await html2canvas(receiptContent, options);
-            console.log("Canvas generated successfully.");
-            return canvas; // Return the canvas element
-        } catch (err) {
-            console.error("Error generating receipt canvas with html2canvas:", err);
-            return null; // Indicate failure
-        } finally {
-            // --- Restore original styles and scroll position ---
-            receiptContent.style.maxHeight = originalStyles.maxHeight;
-            receiptContent.style.overflowY = originalStyles.overflowY;
-            receiptContent.scrollTop = currentScroll;
-            console.log("Restored receipt content styles.");
-        }
+        if (!receiptContent || typeof html2canvas==='undefined') { console.error("html2canvas library not found or receiptContent element missing."); return null; }
+        const scroll=receiptContent.scrollTop, styles={maxH:receiptContent.style.maxHeight, ovY:receiptContent.style.overflowY};
+        receiptContent.style.maxHeight='none'; receiptContent.style.overflowY='visible';
+        await new Promise(r=>requestAnimationFrame(r)); await new Promise(r=>setTimeout(r,50));
+        const opts={useCORS:true, scale:window.devicePixelRatio*1.5, backgroundColor:'#ffffff', logging:false, scrollY:-scroll, height:receiptContent.scrollHeight, width:receiptContent.scrollWidth};
+        try { console.log("Generating receipt canvas..."); const canvas = await html2canvas(receiptContent, opts); console.log("Canvas generated."); return canvas; }
+        catch(e){ console.error("Error generating receipt canvas with html2canvas:",e); return null; }
+        finally { receiptContent.style.maxHeight=styles.maxH; receiptContent.style.overflowY=styles.ovY; receiptContent.scrollTop=scroll; console.log("Restored receipt content styles.");}
     }
-
-    /** Sends a photo (Blob) to Telegram */
-    async function sendTelegramPhoto(canvas, caption = '') {
-        if (!canvas) {
-            console.error("sendTelegramPhoto: No canvas provided.");
-            return false;
-        }
-        const token = getTelegramToken();
-        if (!token) { /* alert("🚨 ข้อผิดพลาด: Token ไม่ถูกต้อง (Photo)"); */ console.error("Telegram token invalid for photo."); return false; } // Avoid double alert
-        if (!selectedTableNumber) { console.error("Cannot send photo without table number."); return false; }
-
-        const telegramApiUrl = `https://api.telegram.org/bot${token}/sendPhoto`;
-
+    async function sendTelegramPhoto(canvas, caption='') {
+        if(!canvas){console.error("sendTelegramPhoto: No canvas."); return false;} const token=getTelegramToken(); if(!token || !selectedTableNumber){console.error("Token/Table invalid for photo.");return false;}
+        const apiUrl=`https://api.telegram.org/bot${token}/sendPhoto`;
         try {
-            // Convert canvas to Blob (asynchronous)
-            console.log("Converting canvas to Blob...");
-            const blob = await new Promise((resolve, reject) => {
-                canvas.toBlob(blob => {
-                    if (blob) {
-                        console.log("Blob conversion successful.");
-                        resolve(blob);
-                    } else {
-                        console.error('Canvas to Blob conversion failed.');
-                        reject(new Error('Canvas to Blob conversion failed'));
-                    }
-                }, 'image/png', 0.9); // Specify image type and quality (optional)
-            });
-             console.log("Blob size:", blob.size); // Log blob size
-
-            // Create FormData
-            const formData = new FormData();
-            formData.append('chat_id', CHAT_ID);
-            // Add blob with filename including table number and timestamp
-            const timestamp = Date.now();
-            const filename = `receipt_table_${selectedTableNumber}_${timestamp}.png`;
-            formData.append('photo', blob, filename);
-            if (caption) {
-                formData.append('caption', caption);
-                formData.append('parse_mode', 'Markdown'); // Use Markdown for caption
-            }
-
+            const blob = await new Promise((res,rej)=>{ canvas.toBlob(b=>{if(b){console.log("Blob success.");res(b);}else{console.error('Blob fail.');rej(new Error('Blob fail'))}},'image/png',0.9);});
+            console.log("Blob size:", blob.size);
+            const fd=new FormData(); fd.append('chat_id',CHAT_ID); fd.append('photo',blob,`receipt_table_${selectedTableNumber}_${Date.now()}.png`);
+            if(caption){fd.append('caption',caption);fd.append('parse_mode','Markdown');}
             console.log(`Sending Telegram photo for table ${selectedTableNumber}...`);
-            const response = await fetch(telegramApiUrl, {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-            console.log("Telegram photo response:", result);
-
-            if (!result.ok) {
-                throw new Error(`[${result.error_code}] ${result.description}` || 'Unknown Telegram API error sending photo');
-            }
-            console.log("Telegram photo sent successfully.");
-            return true; // Success
-
-        } catch (error) {
-            console.error('Error sending Telegram photo:', error);
-            // Don't alert here, let the calling function handle combined status
-            return false; // Failure
-        }
-        // Button loading state is handled by the calling function (checkout listener)
+            const resp = await fetch(apiUrl, {method:'POST', body:fd}); const res = await resp.json(); console.log("Telegram photo response:", res);
+            if(!res.ok) throw new Error(`[${res.error_code}] ${res.description}` || 'Unknown Telegram API error sending photo'); console.log("Telegram photo sent."); return true;
+        } catch(e){ console.error('Error sending Telegram photo:',e); return false; }
     }
-
-    /** Sends a "Call Staff" notification to Telegram. */
     async function handleCallStaff() {
         if (!selectedTableNumber) { alert('⚠️ กรุณาเลือกหมายเลขโต๊ะก่อนค่ะ'); openTableSelectModal(); return; }
-
-        // *** Use simpler Markdown formatting ***
-        let callStaffMessage = `🚨 *!! เรียกพนักงาน !!* 🚨\n`;
-        callStaffMessage += `------------------------------------\n`;
-        callStaffMessage += `โต๊ะ: *${selectedTableNumber}* ต้องการความช่วยเหลือ\n`;
-        callStaffMessage += `------------------------------------\n`;
-        const { time } = getCurrentLocalDateTimeStrings();
-        callStaffMessage += `_(เวลา: ${time})_`;
-
-        // Pass the button element to handle its loading state correctly
-        const success = await sendTelegramMessage(callStaffMessage, callStaffIconContainer, '');
-
-         if (success) {
-             alert('✅ เรียกพนักงานบริการให้เรียบร้อยค่ะ กรุณารอสักครู่ 💁‍♀️');
-         }
-         // Button state (incl. resetting icon) is handled within sendTelegramMessage now
+        let msg = `🚨 *!! เรียกพนักงาน !!* 🚨\n`; msg+=`------------------------------------\n`; msg+=`โต๊ะ: *${selectedTableNumber}* ต้องการความช่วยเหลือ\n`; msg+=`------------------------------------\n`; const {time} = getCurrentLocalDateTimeStrings(); msg+=`_(เวลา: ${time})_`;
+        const success = await sendTelegramMessage(msg, callStaffIconContainer, '');
+        if (success) alert('✅ เรียกพนักงานบริการให้เรียบร้อยค่ะ กรุณารอสักครู่ 💁‍♀️');
     }
-
-    /** Sends the current cart contents as a new order to Telegram. */
-    // --- MODIFIED: handleOrderSubmission Function ---
     async function handleOrderSubmission() {
-         if (cartItems.length === 0) { alert('ตระกร้าสินค้าของคุณว่างเปล่า'); return; }
-         if (!selectedTableNumber) { alert('กรุณาเลือกโต๊ะก่อนสั่งอาหาร'); openTableSelectModal(); return; }
-
-        // Build the message string including options
-        let orderMessage = `*โต๊ะ ${selectedTableNumber} - รายการสั่งซื้อใหม่* ✨\n`;
-        orderMessage += `------------------------------------\n`;
-        let total = 0;
-        cartItems.forEach((item, index) => {
-            const itemPrice = item.price || 0;
-            const itemQuantity = item.quantity || 0;
-            const lineTotal = itemPrice * itemQuantity;
-
-            // Start item line
-            orderMessage += `*${index + 1}. ${item.name || 'N/A'}* (${item.size || 'N/A'})`;
-
-            // Add options if they exist
-            if (item.selectedOption1 || item.selectedOption2) {
-                orderMessage += `\n`; // Newline before options
-                if (item.selectedOption1) {
-                    orderMessage += `   + ${item.selectedOption1}\n`;
-                }
-                if (item.selectedOption2) {
-                    orderMessage += `   + ${item.selectedOption2}\n`;
-                }
-                orderMessage += `   `; // Indent for the quantity line
-            } else {
-                orderMessage += `\n   `; // Indent for quantity line even if no options
-            }
-
-            // Add quantity and total line
-            orderMessage += `(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n\n`; // Add double newline for spacing
-
-            total += lineTotal;
-        }); // End forEach cartItems
-
-        orderMessage += `------------------------------------\n`;
-        orderMessage += `*ยอดรวม: ${total.toLocaleString()}*\n`; // Bold grand total
-        const { date, time } = getCurrentLocalDateTimeStrings();
-        orderMessage += `_(สั่งเมื่อ: ${date} ${time})_`;
-
-         // Pass the order button to handle its loading state
-         const success = await sendTelegramMessage(orderMessage, orderButton, 'กำลังสั่ง...');
-
-        if (success) {
+        if(cartItems.length===0){alert('ตระกร้าสินค้าของคุณว่างเปล่า');return;} if(!selectedTableNumber){alert('กรุณาเลือกโต๊ะก่อนสั่งอาหาร');openTableSelectModal();return;}
+        let orderMsg = `*โต๊ะ ${selectedTableNumber} - รายการสั่งซื้อใหม่* ✨\n`; orderMsg+=`------------------------------------\n`; let total=0;
+        cartItems.forEach((item,idx)=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; orderMsg+=`*${idx+1}. ${item.name||'N/A'}* (${item.size||'N/A'})`; if(item.selectedOption1||item.selectedOption2){orderMsg+=`\n`; if(item.selectedOption1)orderMsg+=`   + ${item.selectedOption1}\n`; if(item.selectedOption2)orderMsg+=`   + ${item.selectedOption2}\n`; orderMsg+=`   `;}else{orderMsg+=`\n   `;} orderMsg+=`(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n\n`; total+=lineTotal;});
+        orderMsg+=`------------------------------------\n`; orderMsg+=`*ยอดรวม: ${total.toLocaleString()}*\n`; const{date,time}=getCurrentLocalDateTimeStrings(); orderMsg+=`_(สั่งเมื่อ: ${date} ${time})_`;
+        const success = await sendTelegramMessage(orderMsg,orderButton,'กำลังสั่ง...');
+        if(success){
             alert(`ส่งรายการสั่งซื้อจาก ${TABLE_NUMBER_PREFIX}${selectedTableNumber} สำเร็จ!`);
-
-            // Move items from cart to ordered list
-            // IMPORTANT: Use spread syntax to ensure options are copied
-            cartItems.forEach(cartItem => {
-                const existingIndex = orderedItems.findIndex(orderedItem =>
-                    orderedItem.id === cartItem.id &&
-                    orderedItem.size === cartItem.size &&
-                    orderedItem.selectedOption1 === cartItem.selectedOption1 && // Match options too for merging
-                    orderedItem.selectedOption2 === cartItem.selectedOption2
-                );
-                if (existingIndex > -1) {
-                    orderedItems[existingIndex].quantity += cartItem.quantity; // Increment quantity if item+size+options match
-                } else {
-                    orderedItems.push({ ...cartItem }); // Add as new ordered item (copies options)
-                }
-            });
-            cartItems = []; // Clear the cart
-
-            // Update storage and UI
-            saveCartToLocalStorage();
-            saveOrderedItemsToLocalStorage();
-            renderCart();
-            updateCartIconCount();
-            renderOrderedItems(); // Update "My Food" list as well
-            updateMyFoodIconCount();
-            if (cartPopup) cartPopup.classList.remove('open'); // Close cart popup
-         }
-         // Button state is handled by sendTelegramMessage
-     }
-    // --- END MODIFIED handleOrderSubmission ---
-
-
-    /** Generates the content for the receipt modal and displays it. */
-    // --- MODIFIED: handleGenerateReceipt Function ---
+            cartItems.forEach(ci=>{ const exIdx=orderedItems.findIndex(oi=>oi.id===ci.id&&oi.size===ci.size&&oi.selectedOption1===ci.selectedOption1&&oi.selectedOption2===ci.selectedOption2); if(exIdx>-1)orderedItems[exIdx].quantity+=ci.quantity; else orderedItems.push({...ci});});
+            cartItems=[]; saveCartToLocalStorage();saveOrderedItemsToLocalStorage();renderCart();updateCartIconCount();renderOrderedItems();updateMyFoodIconCount();
+            if(cartPopup)cartPopup.classList.remove('open');
+        }
+    }
     function handleGenerateReceipt() {
-        // Validate required data
-        if (orderedItems.length === 0) {
-             alert('ยังไม่มีรายการอาหารที่สั่งสำหรับสรุปยอด');
-             return false; // Indicate failure
-         }
-        if (!selectedTableNumber) {
-            alert('⚠️ กรุณาเลือกหมายเลขโต๊ะก่อนค่ะ');
-            openTableSelectModal();
-            return false; // Indicate failure
-        }
-        // Ensure all required DOM elements for the receipt are present
-        if (!receiptModal || !receiptContent || !receiptItemsList || !receiptGrandTotal || !receiptQrImage || !receiptRestaurantName || !receiptTableInfo || !receiptDateTime) {
-            console.error("Receipt modal elements not found.");
-            alert("เกิดข้อผิดพลาดในการแสดงใบสรุปยอด");
-            return false; // Indicate failure
-        }
-
-        // --- Populate Receipt Header ---
-        receiptRestaurantName.textContent = RESTAURANT_NAME;
-        receiptTableInfo.textContent = `${TABLE_NUMBER_PREFIX}${selectedTableNumber}`;
-        const { date, time } = getCurrentLocalDateTimeStrings();
-        receiptDateTime.textContent = `วันที่: ${date} เวลา: ${time}`;
-
-        // --- Populate Receipt Items ---
-        receiptItemsList.innerHTML = ''; // Clear previous items
-        let grandTotal = 0;
-        const fragment = document.createDocumentFragment(); // Use fragment for performance
-        orderedItems.forEach((item) => {
-            const itemPrice = item.price || 0;
-            const itemQuantity = item.quantity || 0;
-            const lineTotal = itemPrice * itemQuantity;
-            grandTotal += lineTotal;
-
-            // Build options HTML conditionally
-            let optionsHtml = '';
-            if (item.selectedOption1 || item.selectedOption2) {
-                optionsHtml += '<div class="receipt-item-options">'; // Use the specific class for receipt options
-                if (item.selectedOption1) {
-                    optionsHtml += `<span>+ ${item.selectedOption1}</span>`;
-                }
-                if (item.selectedOption2) {
-                    optionsHtml += `<span>+ ${item.selectedOption2}</span>`;
-                }
-                optionsHtml += '</div>';
-            }
-
-
-            const itemElement = document.createElement('div');
-            itemElement.classList.add('receipt-item');
-            // Structure matches the header columns + options div
-            itemElement.innerHTML = `
-                <span class="receipt-item-name">${item.name || 'N/A'} (${item.size || 'N/A'})</span>
-                <span class="receipt-item-qty">${itemQuantity}x</span>
-                <span class="receipt-item-price">${itemPrice.toLocaleString()}</span>
-                <span class="receipt-item-total">${lineTotal.toLocaleString()}</span>
-                ${optionsHtml} 
-            `;
-            fragment.appendChild(itemElement);
-        });
-        receiptItemsList.appendChild(fragment);
-
-        // --- Populate Receipt Total ---
-        receiptGrandTotal.innerHTML = `
-            ยอดรวมสุทธิ: ${grandTotal.toLocaleString()}
-            <span class="total-label-eng">(Total)</span>
-        `;
-
-        // --- Set QR Code Image ---
-        receiptQrImage.src = QR_CODE_IMAGE_URL; // Use configured URL
-        receiptQrImage.alt = "QR Code สำหรับชำระเงิน";
-        // Add error handling for the QR image itself
-        receiptQrImage.onerror = () => {
-            receiptQrImage.onerror = null; // Prevent potential loops
-            console.error("Failed to load QR code image from:", QR_CODE_IMAGE_URL);
-            receiptQrImage.alt = "QR Code ไม่สามารถแสดงได้";
-            // Optionally display a placeholder or hide the QR section
-            // receiptQrImage.style.display = 'none';
-        };
-
-        // --- Show Modal ---
-        receiptModal.classList.add('open');
-        // Scroll receipt content to top when opening
-        if (receiptContent) receiptContent.scrollTop = 0;
-        console.log("Receipt generated successfully.");
-        return true; // Indicate success
+        if(orderedItems.length===0){alert('ยังไม่มีรายการอาหารที่สั่งสำหรับสรุปยอด');return false;} if(!selectedTableNumber){alert('⚠️ กรุณาเลือกหมายเลขโต๊ะก่อนค่ะ');openTableSelectModal();return false;}
+        if(!receiptModal || !receiptContent || !receiptItemsListEl || !receiptGrandTotal || !receiptQrImage || !receiptRestaurantName || !receiptTableInfo || !receiptDateTime){ console.error("Receipt modal elements not found."); alert("เกิดข้อผิดพลาดในการแสดงใบสรุปยอด"); return false; }
+        receiptRestaurantName.textContent=RESTAURANT_NAME; receiptTableInfo.textContent=`${TABLE_NUMBER_PREFIX}${selectedTableNumber}`; const{date,time}=getCurrentLocalDateTimeStrings(); receiptDateTime.textContent=`วันที่: ${date} เวลา: ${time}`;
+        receiptItemsListEl.innerHTML=''; let grandTotal=0; const frag=document.createDocumentFragment();
+        orderedItems.forEach(item=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; grandTotal+=lineTotal; let optsHtml=''; if(item.selectedOption1||item.selectedOption2){optsHtml+='<div class="receipt-item-options">';if(item.selectedOption1)optsHtml+=`<span>+ ${item.selectedOption1}</span>`;if(item.selectedOption2)optsHtml+=`<span>+ ${item.selectedOption2}</span>`;optsHtml+='</div>';} const el=document.createElement('div');el.className='receipt-item'; el.innerHTML=`<span class="receipt-item-name">${item.name||'N/A'} (${item.size||'N/A'})</span><span class="receipt-item-qty">${itemQuantity}x</span><span class="receipt-item-price">${itemPrice.toLocaleString()}</span><span class="receipt-item-total">${lineTotal.toLocaleString()}</span>${optsHtml}`; frag.appendChild(el);});
+        receiptItemsListEl.appendChild(frag); receiptGrandTotal.innerHTML=`ยอดรวมสุทธิ: ${grandTotal.toLocaleString()}<span class="total-label-eng">(Total)</span>`;
+        receiptQrImage.src=QR_CODE_IMAGE_URL; receiptQrImage.alt="QR Code สำหรับชำระเงิน"; receiptQrImage.onerror=()=>{receiptQrImage.onerror=null;console.error("Failed to load QR code image from:",QR_CODE_IMAGE_URL);receiptQrImage.alt="QR Code ไม่สามารถแสดงได้";};
+        closeAllPopupsExcept(receiptModal); // Close other popups before showing receipt
+        receiptModal.classList.add('open'); 
+        if(receiptContent)receiptContent.scrollTop=0; 
+        console.log("Receipt generated successfully."); return true;
     }
-    // --- END MODIFIED handleGenerateReceipt ---
-
-
-    /** Saves the content of the receipt modal as a PNG image. */
     async function saveReceiptAsImage() {
-        const saveButton = document.getElementById('save-receipt-btn');
-        const originalButtonContent = saveButton ? saveButton.innerHTML : '';
-        if (saveButton) {
-            saveButton.disabled = true;
-            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังสร้าง...';
-        }
-
-        // --- Generate Canvas using the helper function ---
+        const btn=document.getElementById('save-receipt-btn'), origBtn=btn?btn.innerHTML:''; if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> กำลังสร้าง...';}
         const canvas = await generateReceiptCanvas();
-        // --- ---
-
-        if (!canvas) {
-            alert("เกิดข้อผิดพลาด: ไม่สามารถสร้างรูปภาพใบเสร็จได้");
-            if (saveButton) { // Restore button if canvas fails
-                saveButton.disabled = false;
-                saveButton.innerHTML = originalButtonContent;
-            }
-            return;
-        }
-
-        // --- Create download link (same as before) ---
-        try {
-            const link = document.createElement('a');
-            const now = new Date();
-            const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
-            link.download = `ใบสรุปยอด_${TABLE_NUMBER_PREFIX.trim()}${selectedTableNumber}_${timestamp}.png`;
-            link.href = canvas.toDataURL('image/png');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            console.log("Receipt image download initiated.");
-        } catch (err) {
-            console.error("Error creating download link:", err);
-            alert("เกิดข้อผิดพลาดในการเตรียมไฟล์สำหรับบันทึก");
-        } finally {
-            if (saveButton) {
-                saveButton.disabled = false;
-                saveButton.innerHTML = originalButtonContent;
-            }
-        }
+        if(!canvas){alert("เกิดข้อผิดพลาด: ไม่สามารถสร้างรูปภาพใบเสร็จได้"); if(btn){btn.disabled=false;btn.innerHTML=origBtn;} return;}
+        try{ const link=document.createElement('a'),now=new Date(),ts=`${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`; link.download=`ใบสรุปยอด_${TABLE_NUMBER_PREFIX.trim()}${selectedTableNumber}_${ts}.png`; link.href=canvas.toDataURL('image/png'); document.body.appendChild(link);link.click();document.body.removeChild(link); console.log("Receipt image download initiated.");}
+        catch(e){console.error("Error creating download link:",e);alert("เกิดข้อผิดพลาดในการเตรียมไฟล์สำหรับบันทึก");}
+        finally{if(btn){btn.disabled=false;btn.innerHTML=origBtn;}}
     }
-
-
-    /** Sends ONLY the text summary "Checkout Request" notification to Telegram. */
-    // --- MODIFIED: sendCheckoutTextSummaryToTelegram Function ---
     async function sendCheckoutTextSummaryToTelegram() {
-         // Safety checks
-         if (orderedItems.length === 0 || !selectedTableNumber) {
-             console.warn("sendCheckoutTextSummaryToTelegram called unexpectedly.");
-             return false; // Indicate failure to send text
-         }
-
-         // Build the message string
-         let checkoutMessage = `💰 *!! เรียกชำระเงิน !!* 💰\n`;
-         checkoutMessage += `------------------------------------\n`;
-         checkoutMessage += `โต๊ะ: *${selectedTableNumber}*\n`;
-         checkoutMessage += `------------------------------------\n`;
-         let orderedTotal = 0;
-         orderedItems.forEach((item, index) => {
-             const itemPrice = item.price || 0;
-             const itemQuantity = item.quantity || 0;
-             const lineTotal = itemPrice * itemQuantity;
-
-             // Start item line
-             let itemLine = `*${index + 1}. ${item.name || 'N/A'}* (${item.size || 'N/A'})`;
-
-             // Add options on new lines if they exist
-             if (item.selectedOption1 || item.selectedOption2) {
-                 itemLine += `\n`; // Newline before options
-                 if (item.selectedOption1) {
-                     itemLine += `   + ${item.selectedOption1}\n`;
-                 }
-                 if (item.selectedOption2) {
-                     itemLine += `   + ${item.selectedOption2}\n`;
-                 }
-                  itemLine += `   `; // Indent before quantity/price line
-             } else {
-                  itemLine += `\n   `; // Indent anyway for consistency
-             }
-
-             // Add quantity and price info
-             itemLine += `(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n`; // Add final newline for spacing between items
-
-             checkoutMessage += itemLine;
-             orderedTotal += lineTotal;
-         }); // End forEach orderedItems
-
-         checkoutMessage += `------------------------------------\n`;
-         checkoutMessage += `*ยอดรวมที่สั่งแล้ว: ${orderedTotal.toLocaleString()}*\n`;
-         const { time } = getCurrentLocalDateTimeStrings();
-         checkoutMessage += `_(เวลาเรียกชำระเงิน: ${time})_`;
-
-         // Pass null for buttonElement as the main listener handles the button state now
-         console.log("Sending checkout text summary...");
-         const success = await sendTelegramMessage(checkoutMessage, null, ''); // <<< Pass null for button
-
-         if (success) {
-             console.log("Checkout text summary sent successfully.");
-             // Don't alert here, the main listener will give combined feedback.
-         } else {
-              console.error("Failed to send checkout text summary.");
-         }
-         return success; // Return success status for the text message part
-     }
-    // --- END MODIFIED sendCheckoutTextSummaryToTelegram ---
-
+        if(orderedItems.length===0||!selectedTableNumber){console.warn("sendCheckoutTextSummaryToTelegram called unexpectedly."); return false;}
+        let msg = `💰 *!! เรียกชำระเงิน !!* 💰\n`; msg+=`------------------------------------\n`; msg+=`โต๊ะ: *${selectedTableNumber}*\n`; msg+=`------------------------------------\n`; let total=0;
+        orderedItems.forEach((item,idx)=>{ const itemPrice = item.price||0; const itemQuantity = item.quantity||0; const lineTotal=itemPrice*itemQuantity; let itemLine=`*${idx+1}. ${item.name||'N/A'}* (${item.size||'N/A'})`; if(item.selectedOption1||item.selectedOption2){itemLine+=`\n`;if(item.selectedOption1)itemLine+=`   + ${item.selectedOption1}\n`;if(item.selectedOption2)itemLine+=`   + ${item.selectedOption2}\n`;itemLine+=`   `;}else{itemLine+=`\n   `;} itemLine+=`(จำนวน: ${itemQuantity} x ${itemPrice.toLocaleString()} = *${lineTotal.toLocaleString()}*)\n`; msg+=itemLine; total+=lineTotal;});
+        msg+=`------------------------------------\n`; msg+=`*ยอดรวมที่สั่งแล้ว: ${total.toLocaleString()}*\n`; const {time} = getCurrentLocalDateTimeStrings(); msg+=`_(เวลาเรียกชำระเงิน: ${time})_`;
+        console.log("Sending checkout text summary..."); const success = await sendTelegramMessage(msg, null, '');
+        if(success) console.log("Checkout text summary sent."); else console.error("Failed to send checkout text summary."); return success;
+    }
 
     // --- Initial Application Load ---
     document.addEventListener('DOMContentLoaded', async () => {
         console.log("DOM Content Loaded. Initializing Application...");
+        updateLanguageIndicator(); // Check cookie on load
 
-        // 1. Fetch menu data first (essential for displaying anything)
         const dataLoaded = await fetchMenuData();
+        selectedTableNumber = loadSelectedTable(); updateTableDisplay(selectedTableNumber); populateTableList(MAX_TABLE_NUMBER);
+        if (!selectedTableNumber) { showTablePromptNotification(); document.title = `เมนูอาหาร - ${RESTAURANT_NAME}`; }
+        else { document.title = `${RESTAURANT_NAME} - ${TABLE_NUMBER_PREFIX}${selectedTableNumber}`; }
+        loadCartFromLocalStorage(); loadOrderedItemsFromLocalStorage();
 
-        // 2. Load table number (must happen before loading table-specific cart/orders)
-        selectedTableNumber = loadSelectedTable();
-        updateTableDisplay(selectedTableNumber); // Update UI immediately
-        populateTableList(MAX_TABLE_NUMBER);
-        if (!selectedTableNumber) {
-            showTablePromptNotification(); // Prompt if no table loaded
-             document.title = `เมนูอาหาร - ${RESTAURANT_NAME}`; // Set default title
-        } else {
-             document.title = `${RESTAURANT_NAME} - ${TABLE_NUMBER_PREFIX}${selectedTableNumber}`; // Set title with table
-        }
-
-
-        // 3. Load cart & ordered items (now respects selectedTableNumber)
-        loadCartFromLocalStorage();
-        loadOrderedItemsFromLocalStorage();
-
-        // 4. Populate dynamic category bar only if data fetch was successful
         if (dataLoaded) {
             populateCategoryBar();
+            initializeGlobalFilmStripItems();
+            populateFilmStrip();
         } else {
-             // Handle UI when categories fail to load (e.g., show error in category bar)
-             const categoryBarElement = document.querySelector('.category-bar');
-             if (categoryBarElement) categoryBarElement.innerHTML = '<p style="color: red; padding: 10px; white-space: normal;">⚠ ไม่สามารถโหลดหมวดหมู่ได้</p>';
-             // Clear potentially broken menu grid/details if data fetch failed
-             if (bottomMenu) bottomMenu.innerHTML = '';
-             if (menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+            if(categoryBarEl) categoryBarEl.innerHTML='<p style="color: red; padding: 10px; white-space: normal;">⚠ ไม่สามารถโหลดหมวดหมู่ได้</p>';
+            if(filmStripItemsContainer) filmStripItemsContainer.innerHTML = '<p style="color:red;padding:5px;">⚠ ไม่สามารถโหลดภาพตัวอย่างได้</p>';
+            if(bottomMenu) bottomMenu.innerHTML='';
+            if(menuDetailsContainer) menuDetailsContainer.style.display='none';
         }
 
-        // 5. Render UI based on loaded local data (cart, ordered items)
-        renderCart();
-        updateCartIconCount();
-        renderOrderedItems();
-        updateMyFoodIconCount();
+        renderCart(); updateCartIconCount(); renderOrderedItems(); updateMyFoodIconCount();
 
-        // 6. Display initial category/menu items *if* data was loaded successfully
-        if (dataLoaded && allCategories.length > 0) {
-             const categoryItemsDynamic = document.querySelectorAll('.category-bar .category-item');
-             if (categoryItemsDynamic.length > 0) {
-                 const initialCategoryElement = categoryItemsDynamic[0];
-                 const initialCategory = initialCategoryElement.dataset.category;
-                 initialCategoryElement.classList.add('selected'); // Select the first category
-                 displayMenuItems(initialCategory); // Display items for the first category
-             } else {
-                 // This case implies dataLoaded but populateCategoryBar failed or found no items
-                 console.warn("Data loaded, but no category items rendered.");
-                 if (bottomMenu) bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีเมนูให้แสดง</p>';
-                 if (menuDetailsContainer) menuDetailsContainer.style.display = 'none';
-             }
-        } else if (dataLoaded && allCategories.length === 0) {
-             // Data loaded fine, but the script returned no categories
-             console.warn("Data loaded, but no categories found in the source.");
-             if (bottomMenu) bottomMenu.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); grid-column: 1 / -1;">ไม่มีเมนูให้แสดง</p>';
-             if (menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+        if (dataLoaded && globalFilmStripItems.length > 0) {
+            const sortedCats = getSortedCategories();
+            const firstCategoryName = sortedCats.length > 0 ? sortedCats[0] : (allCategories.length > 0 ? allCategories[0] : null);
+
+            if (firstCategoryName) {
+                document.querySelectorAll('.category-bar .category-item').forEach(ci => ci.classList.remove('selected'));
+                const firstCatEl = Array.from(document.querySelectorAll('.category-bar .category-item')).find(el => el.dataset.category === firstCategoryName);
+                if (firstCatEl) firstCatEl.classList.add('selected');
+
+                const firstItemInSelectedCategoryIndex = globalFilmStripItems.findIndex(item => item.categoryName === firstCategoryName);
+                currentCategory = firstCategoryName;
+
+                if (firstItemInSelectedCategoryIndex !== -1) {
+                    currentGlobalFilmStripIndex = firstItemInSelectedCategoryIndex;
+                    showItemDetailsByGlobalIndex(currentGlobalFilmStripIndex, 'none');
+                } else {
+                    currentGlobalFilmStripIndex = 0;
+                    showItemDetailsByGlobalIndex(0, 'none');
+                     if(globalFilmStripItems[0]) currentCategory = globalFilmStripItems[0].categoryName;
+                }
+                displayMenuItems(currentCategory);
+            } else {
+                 currentGlobalFilmStripIndex = 0;
+                 showItemDetailsByGlobalIndex(0, 'none');
+                 if(globalFilmStripItems[0] && menuDetailsContainer) menuDetailsContainer.style.display = 'block';
+                 else if (menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+                 if (bottomMenu) bottomMenu.innerHTML = '<p style="text-align:center;">ไม่มีเมนู</p>';
+            }
+        } else if (dataLoaded && globalFilmStripItems.length === 0) {
+            if (menuDetailsContainer) menuDetailsContainer.style.display = 'none';
+            if (filmStripItemsContainer) filmStripItemsContainer.innerHTML = '<p style="color:var(--color-text-secondary);padding:5px;">ไม่มีภาพตัวอย่าง</p>';
+            if (bottomMenu) bottomMenu.innerHTML = '<p style="text-align:center;">ไม่มีเมนู</p>';
         }
-        // Note: If !dataLoaded, error message is already shown by fetchMenuData
 
-        // 7. Setup all other event listeners (needs to run regardless of data fetch success)
         setupEventListeners();
-
+        if (tablePromptNotification && tablePromptNotification.classList.contains('show')) {
+            if (categoryBarEl && categoryBarEl.classList.contains('hidden-by-scroll')) {
+                tablePromptNotification.classList.add('category-bar-is-hidden');
+            } else {
+                tablePromptNotification.classList.remove('category-bar-is-hidden');
+            }
+        }
         console.log("Initialization complete.");
     });
 
